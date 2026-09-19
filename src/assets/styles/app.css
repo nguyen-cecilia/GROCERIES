@@ -1,0 +1,11 @@
+@import 'tailwindcss';
+
+@import './fonts.css';
+@import './base.css';
+
+@theme {
+    --color-primary: #699543;
+
+    --font-display: 'Sora', serif;
+    --font-sans: 'Manrope', sans-serif;
+}

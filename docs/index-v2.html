@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Liste de courses</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* Palette « marché naturel » — extraite des références (ref/*.jpg) */
+  --bg: #f7f2e7;
+  --bg-soft: #efe7d3;
+  --card: #fdfbf4;
+  --ink: #34382e;
+  --ink-soft: #6d7560;
+  --ink-faint: #9aa18c;
+  --line: rgba(52,56,46,.13);
+  --brand: #6c8740;
+  --brand-deep: #55692f;
+  --brand-ink: #e9efd8;
+  --tomato: #c2402f;
+  --tomato-deep: #a03223;
+  --rose: #a8382a;
+  --rose-soft: #f7e3dd;
+  --sun: #f8eecb;
+
+  /* Couleurs de catégories (tons terreux) */
+  --c-fruits:   #77963c;
+  --c-viandes:  #c4552b;
+  --c-frais:    #df9634;
+  --c-surgeles: #5e8c7c;
+  --c-epicerie: #c99a2f;
+  --c-boissons: #6682a8;
+  --c-hygiene:  #9b84b5;
+  --c-autre:    #8b9183;
+
+  --font: "Outfit", system-ui, sans-serif;
+  --r: 22px;
+  --r-sm: 15px;
+  --r-pill: 999px;
+  --shadow: 0 14px 34px -20px rgba(52,56,46,.4);
+  --shadow-card: 0 18px 44px -24px rgba(52,56,46,.42);
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: var(--font);
+  color: var(--ink);
+  background:
+    radial-gradient(1000px 520px at 90% -12%, rgba(201,154,47,.10), transparent 60%),
+    radial-gradient(900px 480px at -10% 110%, rgba(119,150,60,.09), transparent 55%),
+    var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+.screen { min-height: 100vh; }
+.hide { display: none !important; }
+
+button { font-family: inherit; cursor: pointer; }
+input { font-family: inherit; }
+
+/* ================= Liens / reset ================= */
+a { color: var(--brand); text-decoration: none; font-weight: 600; }
+a:hover { text-decoration: underline; }
+
+/* ================= Icons helpers ================= */
+.ic { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.ic--sm { width: 17px; height: 17px; }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  border: none; border-radius: var(--r-pill);
+  padding: 13px 22px; font-weight: 700; font-size: 15px; line-height: 1;
+  transition: transform .12s ease, box-shadow .15s ease, background .15s ease;
+}
+.btn:active { transform: translateY(1px) scale(.99); }
+.btn--brand { background: var(--brand); color: #fff; box-shadow: 0 10px 22px -10px rgba(108,135,64,.55); }
+.btn--brand:hover { background: var(--brand-deep); }
+.btn--cta { background: var(--tomato); color: #fff; box-shadow: 0 12px 26px -12px rgba(194,64,47,.55); }
+.btn--cta:hover { background: var(--tomato-deep); }
+.btn--soft { background: var(--brand-ink); color: var(--brand-deep); }
+.btn--soft:hover { background: #dbe6c4; }
+.btn--ghost { background: transparent; color: var(--ink-soft); box-shadow: inset 0 0 0 1.5px var(--line); }
+.btn--ghost:hover { background: #fff; color: var(--ink); }
+.btn--danger { background: var(--rose); color: #fff; }
+.btn--block { width: 100%; }
+.btn--lg { padding: 16px 22px; font-size: 16px; }
+
+/* =========================================================
+   Écran /  connexion inscription
+   ========================================================= */
+.auth { display: grid; place-items: center; padding: 32px 20px; }
+.auth__inner { width: 100%; max-width: 420px; }
+
+.auth__logo { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 8px 0 30px; }
+.auth__logo-badge {
+  width: 62px; height: 62px; border-radius: 20px;
+  background: var(--brand); color: #fff;
+  display: grid; place-items: center;
+  box-shadow: 0 16px 30px -12px rgba(108,135,64,.55);
+}
+.auth__logo-badge .ic { width: 32px; height: 32px; stroke-width: 2.2; }
+.auth__logo h1 { margin: 0; font-size: 26px; letter-spacing: -.02em; font-weight: 800; }
+.auth__logo p { margin: 0; color: var(--ink-faint); font-size: 14.5px; }
+
+.auth__card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  box-shadow: var(--shadow-card);
+  padding: 24px;
+}
+.auth__tabs { display: flex; gap: 6px; background: var(--bg-soft); border-radius: 999px; padding: 5px; margin-bottom: 22px; }
+.auth__tab {
+  flex: 1; border: none; background: transparent;
+  padding: 10px; border-radius: 999px;
+  font-weight: 700; font-size: 14px; color: var(--ink-soft);
+  transition: background .15s, color .15s, box-shadow .15s;
+}
+.auth__tab.is-on { background: #fff; color: var(--ink); box-shadow: 0 4px 12px -4px rgba(52,56,46,.25); }
+
+.field { margin-bottom: 16px; }
+.field label { display: block; font-size: 12.5px; font-weight: 600; color: var(--ink-soft); margin: 0 0 7px 6px; }
+
+.field__wrap { position: relative; }
+.field__wrap .ic { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--ink-faint); }
+.field__wrap input {
+  width: 100%;
+  border: 1.5px solid var(--line);
+  background: #fff;
+  border-radius: var(--r-sm);
+  padding: 14px 16px 14px 46px;
+  font-size: 15px; color: var(--ink);
+  outline: none;
+  transition: border-color .15s, box-shadow .15s;
+}
+.field__wrap input:focus { border-color: var(--brand); box-shadow: 0 0 0 4px rgba(108,135,64,.16); }
+
+.auth__row { display: flex; align-items: center; justify-content: space-between; font-size: 13.5px; margin: 2px 0 20px; padding: 0 4px; }
+
+.auth__divider { display: flex; align-items: center; gap: 12px; color: var(--ink-faint); font-size: 12px; font-weight: 600; margin: 22px 0 14px; }
+.auth__divider::before, .auth__divider::after { content: ""; height: 1px; background: var(--line); flex: 1; }
+.auth__note { text-align: center; font-size: 13px; color: var(--ink-faint); margin: 0; }
+
+/* =========================================================
+   Écran /  mes listes
+   ========================================================= */
+.wrap { max-width: 1180px; margin: 0 auto; padding: 24px 20px 90px; }
+
+.topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
+.topbar__brand { display: flex; align-items: center; gap: 12px; }
+.topbar__badge {
+  width: 44px; height: 44px; border-radius: 14px;
+  background: var(--brand); color: #fff;
+  display: grid; place-items: center;
+  box-shadow: 0 10px 20px -10px rgba(108,135,64,.6);
+}
+.topbar__badge .ic { width: 25px; height: 25px; stroke-width: 2.2; }
+.topbar__name { font-weight: 800; font-size: 18px; line-height: 1.1; letter-spacing: -.01em; }
+
+.topbar__who { display: flex; align-items: center; gap: 14px; }
+.topbar__who-name { font-size: 14px; font-weight: 600; color: var(--ink-soft); }
+.avatar {
+  width: 42px; height: 42px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--c-boissons), var(--c-hygiene));
+  color: #fff; display: grid; place-items: center;
+  font-weight: 800; font-size: 15px;
+  box-shadow: inset 0 0 0 2px rgba(255,255,255,.35);
+}
+
+.lists__head { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
+.lists__head h1 { margin: 0; font-size: 28px; letter-spacing: -.03em; font-weight: 800; }
+.lists__head p { margin: 4px 0 0; color: var(--ink-faint); font-size: 14px; }
+.lists__btn { gap: 8px; }
+
+/* Carte liste active */
+.active-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  gap: 18px;
+}
+.active-card::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 6px;
+  background: linear-gradient(90deg, var(--brand), var(--c-fruits), var(--c-boissons));
+}
+.active-card__top { display: flex; align-items: center; gap: 10px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 7px;
+  border-radius: 999px; padding: 7px 13px;
+  font-size: 12.5px; font-weight: 700;
+}
+.chip--live { background: var(--brand-ink); color: var(--brand-deep); }
+.chip--live::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--brand); }
+.chip--done { background: var(--sun); color: #8a6a08; }
+.chip--date { background: var(--bg-soft); color: var(--ink-soft); font-weight: 600; }
+
+.active-card__title { margin: 2px 0 0; font-size: 23px; font-weight: 800; letter-spacing: -.02em; }
+.active-card__date { color: var(--ink-faint); font-size: 13.5px; }
+
+.active-card__grid { display: grid; gap: 16px; }
+.active-card__stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.stat { background: var(--bg-soft); border-radius: var(--r-sm); padding: 12px 14px; }
+.stat b { display: block; font-size: 18px; font-weight: 800; letter-spacing: -.02em; }
+.stat span { display: block; font-size: 12px; color: var(--ink-soft); font-weight: 600; margin-top: 1px; }
+.stat--money b { font-variant-numeric: tabular-nums; }
+
+.progress { height: 10px; border-radius: 999px; background: var(--bg-soft); overflow: hidden; margin-top: 12px; }
+.progress__fill { height: 100%; border-radius: 999px; background: var(--brand); transition: width .4s ease; }
+.progress__fill--warn { background: var(--rose); }
+
+.active-card__foot { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+.active-card__total { font-size: 13px; color: var(--ink-soft); font-weight: 600; }
+.active-card__total b { font-size: 22px; color: var(--ink); font-variant-numeric: tabular-nums; margin-left: 4px; }
+
+/* Historique */
+.history { margin-top: 40px; }
+.history__head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 16px; }
+.history__head h2 { margin: 0; font-size: 20px; font-weight: 800; letter-spacing: -.02em; }
+.history__head span { color: var(--ink-faint); font-size: 13px; font-weight: 600; }
+
+.history__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+.hist-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  padding: 18px;
+  display: flex; flex-direction: column; gap: 12px;
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.hist-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+.hist-card__top { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.hist-card__title { margin: 0; font-size: 16.5px; font-weight: 700; letter-spacing: -.01em; }
+.hist-card__total { font-size: 15px; font-weight: 800; font-variant-numeric: tabular-nums; padding: 8px 12px; border-radius: 999px; background: var(--bg-soft); white-space: nowrap; }
+.hist-card__meta { color: var(--ink-faint); font-size: 12.5px; font-weight: 500; }
+.hist-card__foot { display: flex; align-items: center; gap: 10px; margin-top: 2px; }
+
+/* =========================================================
+   Écran / liste (mode courses)
+   ========================================================= */
+.list-shell { display: grid; gap: 22px; align-items: start; }
+
+/* barre sticky mobile */
+.stickybar {
+  position: fixed; left: 14px; right: 14px; bottom: 12px;
+  z-index: 50;
+  display: none;
+  align-items: center; gap: 14px;
+  background: var(--ink); color: #fff;
+  border-radius: 18px;
+  padding: 14px 14px 14px 18px;
+  box-shadow: 0 22px 44px -16px rgba(52,56,46,.65);
+}
+.stickybar__total { line-height: 1; }
+.stickybar__label { font-size: 11px; font-weight: 600; opacity: .65; letter-spacing: .04em; text-transform: uppercase; }
+.stickybar__value { font-size: 25px; font-weight: 800; font-variant-numeric: tabular-nums; margin-top: 3px; }
+.stickybar__value small { font-size: 13px; font-weight: 600; opacity: .6; }
+.stickybar__btn { margin-left: auto; background: #fff; color: var(--ink); font-weight: 800; padding: 13px 20px; }
+.stickybar__btn:hover { background: var(--brand-ink); }
+.stickybar__btn--warn { background: var(--rose); color: #fff; }
+
+/* Colonne principale liste */
+.budget-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
+  padding: 22px;
+  display: grid; gap: 10px;
+}
+.budget-card__row { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.budget-card__total { line-height: 1; }
+.budget-card__lbl { font-size: 12.5px; font-weight: 700; color: var(--ink-faint); letter-spacing: .06em; text-transform: uppercase; }
+.budget-card__sum { font-size: 44px; font-weight: 900; letter-spacing: -.04em; line-height: 1; font-variant-numeric: tabular-nums; margin-top: 4px; }
+.budget-card__sum small { font-size: 22px; font-weight: 700; }
+.budget-card__right { text-align: right; font-size: 13px; color: var(--ink-soft); font-weight: 600; }
+.budget-card__right b { font-size: 17px; color: var(--ink); font-variant-numeric: tabular-nums; }
+
+/* ajout rapide */
+.quickadd {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  box-shadow: var(--shadow);
+  padding: 18px;
+  margin-top: 22px;
+}
+.quickadd__row { display: flex; gap: 10px; align-items: stretch; }
+.quickadd input {
+  border: 1.5px solid var(--line);
+  background: #fff;
+  border-radius: 999px;
+  padding: 13px 18px;
+  font-size: 15px;
+  color: var(--ink);
+  outline: none;
+  transition: border-color .15s, box-shadow .15s;
+}
+.quickadd input:focus { border-color: var(--brand); box-shadow: 0 0 0 4px rgba(108,135,64,.16); }
+.quickadd__name { flex: 1; min-width: 0; }
+.quickadd__qty { width: 92px; text-align: center; }
+.quickadd__go { flex: none; border-radius: 999px; padding: 12px 20px; }
+
+/* chips catégories */
+.catchips { display: flex; gap: 8px; margin-top: 12px; overflow-x: auto; padding-bottom: 4px; }
+.catchip {
+  --cat: var(--c-autre);
+  display: inline-flex; align-items: center; gap: 7px;
+  border: 1.5px solid var(--line);
+  background: #fff;
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 13px; font-weight: 600; color: var(--ink-soft);
+  white-space: nowrap;
+  transition: all .15s ease;
+}
+.catchip__dot { width: 9px; height: 9px; border-radius: 50%; background: var(--cat); }
+.catchip:hover { border-color: var(--cat); color: var(--ink); }
+.catchip.is-on { background: var(--cat); border-color: var(--cat); color: #fff; }
+.catchip.is-on .catchip__dot { background: #fff; }
+
+/* groupes d'items */
+.groups { margin-top: 26px; display: grid; gap: 26px; }
+.group__head {
+  --cat: var(--c-autre);
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 12px;
+}
+.group__dot { width: 13px; height: 13px; border-radius: 50%; background: var(--cat); box-shadow: 0 0 0 5px color-mix(in srgb, var(--cat) 16%, transparent); }
+.group__name { font-size: 15.5px; font-weight: 700; }
+.group__count {
+  margin-left: auto;
+  font-size: 12.5px; font-weight: 700;
+  background: color-mix(in srgb, var(--cat) 16%, #fff);
+  color: var(--cat);
+  border-radius: 999px; padding: 5px 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.item-list { display: grid; gap: 8px; list-style: none; margin: 0; padding: 0; }
+.item {
+  --cat: var(--c-autre);
+  display: flex; align-items: center; gap: 14px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  padding: 13px 16px;
+  cursor: pointer;
+  transition: border-color .15s, transform .12s, box-shadow .15s;
+}
+.item:hover { border-color: color-mix(in srgb, var(--cat) 45%, var(--line)); }
+.item:active { transform: scale(.995); }
+.item.is-checked { background: #fff; }
+
+.item__check {
+  width: 30px; height: 30px; flex: none;
+  border-radius: 50%;
+  border: 2px solid color-mix(in srgb, var(--cat) 55%, var(--line));
+  background: transparent;
+  display: grid; place-items: center;
+  color: #fff;
+  padding: 0;
+  transition: background .15s ease, border-color .15s ease, transform .12s;
+}
+.item.is-checked .item__check { background: var(--cat); border-color: var(--cat); transform: scale(1.04); }
+.item.is-checked .item__check .ic { opacity: 1; }
+.item__check .ic { width: 16px; height: 16px; stroke-width: 3; opacity: 0; }
+
+.item__body { flex: 1; min-width: 0; }
+.item__name { display: block; font-size: 15.5px; font-weight: 600; letter-spacing: -.01em; }
+.item.is-checked .item__name { text-decoration: line-through; text-decoration-thickness: 1.5px; text-decoration-color: var(--ink-faint); color: var(--ink-soft); }
+.item__qty {
+  display: inline-block; margin-top: 3px;
+  font-size: 12px; font-weight: 700;
+  color: color-mix(in srgb, var(--cat) 80%, #000);
+  background: color-mix(in srgb, var(--cat) 12%, #fff);
+  border-radius: 999px; padding: 3px 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+.item__price { display: none; align-items: center; gap: 8px; }
+.item.is-checked .item__price { display: flex; }
+.price-pill { position: relative; }
+.price-pill input {
+  width: 96px;
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  background: var(--bg);
+  padding: 9px 12px 9px 16px;
+  font-size: 15px; font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+  outline: none;
+  text-align: right;
+  transition: border-color .15s, box-shadow .15s, width .2s;
+}
+.price-pill input:focus { border-color: var(--cat); box-shadow: 0 0 0 4px color-mix(in srgb, var(--cat) 16%, transparent); width: 106px; }
+.price-pill span { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 13px; font-weight: 700; color: var(--ink-faint); pointer-events: none; }
+
+.memor {
+  background: transparent; border: none;
+  font-size: 12px; font-weight: 700; color: var(--cat);
+  padding: 4px 2px;
+  white-space: nowrap;
+}
+.memor:hover { text-decoration: underline; }
+
+/* condensé récap desktop */
+.recap {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  box-shadow: var(--shadow-card);
+  padding: 24px;
+  display: grid; gap: 18px;
+}
+.recap__label { font-size: 12.5px; font-weight: 700; color: var(--ink-faint); letter-spacing: .06em; text-transform: uppercase; }
+.recap__total { font-size: 46px; font-weight: 900; letter-spacing: -.04em; line-height: 1; font-variant-numeric: tabular-nums; }
+.recap__total small { font-size: 24px; font-weight: 700; }
+.recap__budget { font-size: 14px; color: var(--ink-soft); font-weight: 600; }
+.recap__budget b { color: var(--ink); font-variant-numeric: tabular-nums; }
+
+.recap__divider { border: none; border-top: 2px dashed var(--line); margin: 2px 0; }
+
+.recap__tally { display: grid; gap: 8px; }
+.recap__tally-row { display: flex; justify-content: space-between; font-size: 14px; font-weight: 600; color: var(--ink-soft); }
+.recap__tally-row b { color: var(--ink); font-variant-numeric: tabular-nums; font-weight: 700; }
+.recap__tally-row--ok b { color: var(--brand); }
+.recap__tally-row--warn b { color: var(--rose); }
+
+.recap__cats { display: grid; gap: 6px; }
+.recap__cat {
+  --cat: var(--c-autre);
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13px; font-weight: 600; color: var(--ink-soft);
+}
+.recap__cat i { width: 8px; height: 8px; border-radius: 50%; background: var(--cat); }
+.recap__cat b { margin-left: auto; color: var(--ink); font-variant-numeric: tabular-nums; }
+
+/* topbar de la liste */
+.list__topbar { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.iconbtn {
+  width: 44px; height: 44px; flex: none;
+  border-radius: 50%;
+  border: 1px solid var(--line); background: var(--card);
+  display: grid; place-items: center; color: var(--ink);
+  transition: background .15s, transform .12s;
+}
+.iconbtn:hover { background: #fff; }
+.iconbtn:active { transform: scale(.94); }
+.list__title { margin: 0; font-size: 21px; font-weight: 800; letter-spacing: -.02em; line-height: 1.15; }
+.list__sub { font-size: 12.5px; color: var(--ink-faint); font-weight: 600; }
+
+/* toast */
+.toast {
+  position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(20px);
+  z-index: 90;
+  background: var(--ink); color: #fff;
+  border-radius: 999px; padding: 13px 22px;
+  font-size: 14px; font-weight: 700;
+  box-shadow: 0 18px 34px -14px rgba(52,56,46,.6);
+  opacity: 0; pointer-events: none;
+  transition: opacity .25s ease, transform .25s ease;
+}
+.toast.is-on { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* footer mini */
+.foot-note { text-align: center; color: var(--ink-faint); font-size: 12.5px; margin-top: 56px; }
+
+/* =========================================================
+   Desktop 2 colonnes
+   ========================================================= */
+@media (min-width: 980px) {
+  .list-shell { grid-template-columns: minmax(0, 1fr) 328px; }
+  .recap { position: sticky; top: 24px; }
+  .stickybar { display: none; }
+  .wrap { padding-bottom: 60px; }
+  .auth__inner { max-width: 440px; }
+}
+
+/* mobile : on décale le contenu pour laisser place à la barre */
+@media (max-width: 979px) {
+  .list-screen-pad { padding-bottom: 108px; }
+  .recap { display: none; }
+  .stickybar.show { display: flex; }
+}
+</style>
+</head>
+<body>
+
+<!-- ================= ÉCRAN /auth ================= -->
+<section id="auth" class="screen">
+  <div class="auth">
+    <div class="auth__inner">
+      <div class="auth__logo">
+        <div class="auth__logo-badge"><svg class="ic" viewBox="0 0 24 24"><path d="M6 8h12l1.2 11.2a2 2 0 0 1-2 2H6.8a2 2 0 0 1-2-2L6 8Z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/><path d="M10 12v4M14 12v4"/></svg></div>
+        <h1>Panier</h1>
+        <p>Listes de courses &amp; mémoires des prix.</p>
+      </div>
+
+      <div class="auth__card">
+        <div class="auth__tabs" role="tablist">
+          <button class="auth__tab is-on" data-mode="login">Connexion</button>
+          <button class="auth__tab" data-mode="signup">Inscription</button>
+        </div>
+
+        <div class="auth__mode" id="mode-login">
+          <div class="field">
+            <label for="in-mail">Adresse e-mail</label>
+            <div class="field__wrap">
+              <svg class="ic" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m3 7 9 6 9-6"/></svg>
+              <input id="in-mail" type="email" placeholder="vous@exemple.fr" autocomplete="email">
+            </div>
+          </div>
+          <div class="field">
+            <label for="in-pass">Mot de passe</label>
+            <div class="field__wrap">
+              <svg class="ic" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="3"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+              <input id="in-pass" type="password" placeholder="••••••••" autocomplete="current-password">
+            </div>
+          </div>
+          <div class="auth__row">
+            <label style="display:flex;align-items:center;gap:7px;font-weight:600;cursor:pointer;"><input type="checkbox" checked> Rester connecté</label>
+            <button class="auth__tab" style="flex:none;padding:6px 10px;box-shadow:none;border:0;background:transparent;color:var(--brand);font-size:13px;font-weight:700;width:auto;" data-mode="reset">Mot de passe oublié ?</button>
+          </div>
+          <button class="btn btn--cta btn--block btn--lg" data-go="lists">Se connecter</button>
+        </div>
+
+        <div class="auth__mode hide" id="mode-signup">
+          <div class="field">
+            <label for="in-name">Prénom</label>
+            <div class="field__wrap">
+              <svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.6-3.6 4.2-5.4 8-5.4s6.4 1.8 8 5.4"/></svg>
+              <input id="in-name" type="text" placeholder="Camille">
+            </div>
+          </div>
+          <div class="field">
+            <label for="in-mail2">Adresse e-mail</label>
+            <div class="field__wrap">
+              <svg class="ic" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m3 7 9 6 9-6"/></svg>
+              <input id="in-mail2" type="email" placeholder="vous@exemple.fr" autocomplete="email">
+            </div>
+          </div>
+          <div class="field">
+            <label for="in-pass2">Mot de passe</label>
+            <div class="field__wrap">
+              <svg class="ic" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="3"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+              <input id="in-pass2" type="password" placeholder="6 caractères min." autocomplete="new-password">
+            </div>
+          </div>
+          <button class="btn btn--cta btn--block btn--lg" data-go="lists">Créer mon compte</button>
+        </div>
+
+        <div class="auth__mode hide" id="mode-reset">
+          <div class="field">
+            <label for="in-mail3">Adresse e-mail</label>
+            <div class="field__wrap">
+              <svg class="ic" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m3 7 9 6 9-6"/></svg>
+              <input id="in-mail3" type="email" placeholder="vous@exemple.fr">
+            </div>
+          </div>
+          <p style="font-size:13.5px;color:var(--ink-soft);margin:0 0 18px;">On vous envoie un lien de réinitialisation.</p>
+          <button class="btn btn--cta btn--block" data-go="auth" data-reset>Envoyer le lien</button>
+          <p class="auth__note" style="margin-top:16px;"><button class="auth__tab" style="flex:none;padding:6px 10px;box-shadow:none;border:0;background:transparent;color:var(--brand);font-size:13px;font-weight:700;width:auto;" data-mode="login">← Retour à la connexion</button></p>
+        </div>
+
+        <div class="auth__divider">Sécurisé &amp; privé</div>
+        <p class="auth__note">Données chiffrées et synchronisées<br>entre votre ordinateur et votre téléphone.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ÉCRAN / ================= -->
+<section id="lists" class="screen hide">
+  <div class="wrap">
+
+    <header class="topbar">
+      <div class="topbar__brand">
+        <div class="topbar__badge"><svg class="ic" viewBox="0 0 24 24"><path d="M6 8h12l1.2 11.2a2 2 0 0 1-2 2H6.8a2 2 0 0 1-2-2L6 8Z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/><path d="M10 12v4M14 12v4"/></svg></div>
+        <div>
+          <div class="topbar__name">Panier</div>
+          <div style="font-size:12px;color:var(--ink-faint);font-weight:600;">Camille Roux</div>
+        </div>
+      </div>
+      <div class="topbar__who">
+        <span class="topbar__who-name">camille@exemple.fr</span>
+        <div class="avatar">CR</div>
+      </div>
+    </header>
+
+    <div class="lists__head">
+      <div>
+        <h1>Mes listes</h1>
+        <p>Vos courses en cours et l'historique des courses terminées.</p>
+      </div>
+      <button id="btn-newlist" class="btn btn--brand lists__btn">
+        <svg class="ic ic--sm" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+        Nouvelle liste
+      </button>
+    </div>
+
+    <!-- liste active -->
+    <article class="active-card" id="active-card">
+      <div class="active-card__top">
+        <span class="chip chip--live">En cours</span>
+        <span class="chip chip--date" id="active-date">Modifiée aujourd'hui</span>
+      </div>
+      <div>
+        <h2 class="active-card__title" id="active-title">Courses du samedi</h2>
+      </div>
+      <div class="active-card__grid">
+        <div class="active-card__stats">
+          <div class="stat"><b id="active-count">6/12</b><span>articles cochés</span></div>
+          <div class="stat"><b>Budget</b><span id="active-budget"></span></div>
+          <div class="stat stat--money"><b id="active-spent"></b><span>dépensé</span></div>
+        </div>
+      </div>
+      <div>
+        <div class="progress"><div class="progress__fill" id="active-progress"></div></div>
+      </div>
+      <div class="active-card__foot">
+        <div>
+          <div class="active-card__total">Total saisi<b id="active-total"></b></div>
+          <div style="font-size:12px;color:var(--ink-faint);font-weight:600;margin-top:2px;" id="active-remain"></div>
+        </div>
+        <button class="btn btn--brand" id="btn-open">Ouvrir la liste</button>
+      </div>
+    </article>
+
+    <!-- historique -->
+    <section class="history">
+      <div class="history__head">
+        <h2>Historique</h2>
+        <span id="history-count"></span>
+      </div>
+      <div class="history__grid" id="history-grid">
+        <!-- rempli en JS -->
+      </div>
+    </section>
+
+    <p class="foot-note">Panier · prototype design — liste de courses avec mémoires de prix</p>
+  </div>
+</section>
+
+<!-- ================= ÉCRAN /liste ================= -->
+<section id="list" class="screen hide">
+  <div class="wrap list-screen-pad">
+    <header class="list__topbar">
+      <button class="iconbtn" id="btn-back" aria-label="Retour"><svg class="ic" viewBox="0 0 24 24"><path d="M19 12H5M11 18l-6-6 6-6"/></svg></button>
+      <div>
+        <h1 class="list__title" id="list-title">Courses du samedi</h1>
+        <div class="list__sub" id="list-sub">vendredi 17 septembre</div>
+      </div>
+      <button class="btn btn--ghost" style="margin-left:auto;" id="btn-finish-top">Terminer</button>
+    </header>
+
+    <div class="list-shell">
+      <div>
+        <!-- budget -->
+        <div class="budget-card">
+          <div class="budget-card__row">
+            <div class="budget-card__total">
+              <div class="budget-card__lbl">Total saisi <span id="budget-count"></span></div>
+              <div class="budget-card__sum" id="budget-total">0,00 €</div>
+            </div>
+            <div class="budget-card__right"><b id="budget-remain"></b><br>reste de budget</div>
+          </div>
+          <div>
+            <div class="progress"><div class="progress__fill" id="budget-progress"></div></div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--ink-faint);font-weight:600;margin-top:7px;">
+              <span>Budget <b id="budget-total2" style="color:var(--ink);"></b></span>
+              <span id="budget-remain2"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ajout rapide -->
+        <form class="quickadd" id="quickadd">
+          <div class="quickadd__row">
+            <input class="quickadd__name" id="qa-name" type="text" placeholder="Ex. : Tomates, fromage…" autocomplete="off">
+            <input class="quickadd__qty" id="qa-qty" type="text" placeholder="°1" aria-label="Quantité" autocomplete="off">
+            <button class="btn btn--soft quickadd__go" type="submit">
+              <svg class="ic ic--sm" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+              <span>Ajouter</span>
+            </button>
+          </div>
+          <div class="catchips" id="catchips">
+            <!-- rempli en JS -->
+          </div>
+        </form>
+
+        <!-- groupes par catégorie -->
+        <div class="groups" id="groups"></div>
+      </div>
+
+      <!-- récap desktop -->
+      <aside class="recap">
+        <div>
+          <div class="recap__label">Total</div>
+          <div class="recap__total" id="recap-total">23,13 €</div>
+        </div>
+        <div class="recap__budget">du budget de <b id="recap-budget"></b></div>
+        <div class="progress"><div class="progress__fill" id="recap-progress"></div></div>
+        <hr class="recap__divider">
+        <div class="recap__tally">
+          <div class="recap__tally-row"><span>Cochés</span><b id="recap-checked"></b></div>
+          <div class="recap__tally-row"><span>Restants</span><b id="recap-left"></b></div>
+          <div class="recap__tally-row" id="recap-budget-row"><span>Budget restant</span><b id="recap-remain"></b></div>
+        </div>
+        <hr class="recap__divider">
+        <div class="recap__cats" id="recap-cats"></div>
+        <hr class="recap__divider">
+        <p style="margin:0;font-size:12.5px;color:var(--ink-faint);font-weight:600;">Les prix saisis sont mémorisés par article : ils seront proposés automatiquement à la prochaine course.</p>
+        <button class="btn btn--cta btn--block" id="btn-finish">Terminer la course</button>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ---------------- Navigation écrans ---------------- */
+  var screens = { auth: document.getElementById("auth"), lists: document.getElementById("lists"), list: document.getElementById("list") };
+
+  function go(name) {
+    Object.keys(screens).forEach(function (k) { screens[k].classList.toggle("hide", k !== name); });
+    var sb = document.getElementById("stickybar");
+    if (sb) {
+      var mobile = window.innerWidth < 980;
+      sb.classList.toggle("show", name === "list" && mobile);
+      sb.style.display = (name === "list" && mobile) ? "flex" : "";
+    }
+    window.scrollTo(0, 0);
+  }
+
+  /* ---------------- Toast ---------------- */
+  var toastEl = document.getElementById("toast"), toastTimer;
+  function toast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add("is-on");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toastEl.classList.remove("is-on"); }, 2200);
+  }
+
+  /* ---------------- Auth ---------------- */
+  var tabs = Array.prototype.slice.call(document.querySelectorAll(".auth__tab"));
+  var modes = document.querySelectorAll(".auth__mode");
+  function showMode(name) {
+    var active = name;
+    if (name === "reset") active = "login";
+    tabs.forEach(function (t) { t.classList.toggle("is-on", t.dataset.mode === active); });
+    modes.forEach(function (m) { m.classList.toggle("hide", m.id !== "mode-" + name); });
+  }
+  tabs.forEach(function (t) {
+    t.addEventListener("click", function () {
+      if (t.dataset.mode === "login" || t.dataset.mode === "signup" || t.dataset.mode === "reset") showMode(t.dataset.mode);
+    });
+  });
+  document.querySelectorAll("[data-go]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      go(b.dataset.go);
+      if (b.dataset.reset) { toast("Lien de réinitialisation envoyé ✉"); showMode("login"); }
+    });
+  });
+
+  /* ---------------- Données ---------------- */
+  var CATS = [
+    { key: "fruits",   label: "Fruits & Légumes", color: "#77963c" },
+    { key: "viandes",  label: "Viandes & Poissons", color: "#c4552b" },
+    { key: "frais",    label: "Frais", color: "#df9634" },
+    { key: "surgeles", label: "Surgelés", color: "#5e8c7c" },
+    { key: "epicerie", label: "Épicerie", color: "#c99a2f" },
+    { key: "boissons", label: "Boissons", color: "#6682a8" },
+    { key: "hygiene",  label: "Hygiène", color: "#9b84b5" },
+    { key: "autre",    label: "Autre", color: "#8b9183" }
+  ];
+  function cat(key) { return CATS.filter(function (c) { return c.key === key; })[0] || CATS[CATS.length - 1]; }
+  function fmt(v) { var s = v.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); return s + " €"; }
+
+  /* liste active (en cours de course) */
+  var ACTIVE = {
+    title: "Courses du samedi",
+    budget: 60,
+    items: [
+      { n: "Bananes",           q: "1 kg",           c: "fruits",   p: 1.89, last: 1.89 },
+      { n: "Tomates",           q: "500 g",          c: "fruits",   p: null, last: 2.49 },
+      { n: "Salade verte",      q: "1 pièce",        c: "fruits",   p: null, last: 1.15 },
+      { n: "Citrons",           q: "3 pièces",       c: "fruits",   p: 0.99, last: 0.99 },
+      { n: "Oignons rouges",    q: "1 kg",           c: "fruits",   p: null, last: 1.29 },
+      { n: "Poulet fermier",    q: "1 pièce ~1,2kg", c: "viandes",  p: null, last: 11.90 },
+      { n: "Saumon",            q: "400 g",          c: "viandes",  p: 6.30, last: 6.30 },
+      { n: "Lait demi-écrémé",  q: "1 L",            c: "frais",    p: 1.15, last: 1.15 },
+      { n: "Œufs frais",        q: "6 pièces",       c: "frais",    p: 2.20, last: 2.20 },
+      { n: "Yaourts nature",    q: "x8",             c: "frais",    p: null, last: 2.85 },
+      { n: "Petits pois",       q: "500 g",          c: "surgeles", p: null, last: 1.95 },
+      { n: "Riz basmati",       q: "1 kg",           c: "epicerie", p: 3.49, last: 3.49 },
+      { n: "Pâtes penne",       q: "500 g",          c: "epicerie", p: null, last: 0.95 },
+      { n: "Huile d'olive",     q: "750 ml",         c: "epicerie", p: null, last: 7.90 },
+      { n: "Eau minérale",      q: "6 x 1,5 L",      c: "boissons", p: 2.85, last: 2.85 },
+      { n: "Vin blanc",         q: "1 bouteille",    c: "boissons", p: null, last: 6.50 },
+      { n: "Dentifrice",        q: "1 pièce",        c: "hygiene",  p: null, last: 2.35 },
+      { n: "Sacs poubelle",     q: "x10",            c: "autre",    p: null, last: 3.10 }
+    ]
+  };
+
+  var HISTORY = [
+    {
+      title: "Courses de la semaine", date: "6 septembre", budget: 50,
+      items: [
+        { n: "Pommes", q: "1 kg", c: "fruits", last: 2.20 },
+        { n: "Carottes", q: "1 kg", c: "fruits", last: 1.35 },
+        { n: "Blancs de dinde", q: "2 pièces", c: "viandes", last: 6.80 },
+        { n: "Crème fraîche", q: "30 cl", c: "frais", last: 1.75 },
+        { n: "Pain de mie", q: "800 g", c: "epicerie", last: 1.95 },
+        { n: "Café moulu", q: "250 g", c: "epicerie", last: 5.40 },
+        { n: "Jus d'orange", q: "1,5 L", c: "boissons", last: 2.10 }
+      ],
+      total: 21.55
+    },
+    {
+      title: "Anniversaire Léa", date: "28 août", budget: 90,
+      items: [
+        { n: "Champagne", q: "2 bouteilles", c: "boissons", last: 27.40 },
+        { n: "Santé fraises", q: "1 kg", c: "fruits", last: 6.20 },
+        { n: "Plateau fromages", q: "1 pièce", c: "frais", last: 14.90 },
+        { n: "Gâteaux apéritif", q: "2 paquets", c: "epicerie", last: 3.60 },
+        { n: "Ballons dorés", q: "x20", c: "autre", last: 4.50 }
+      ],
+      total: 56.60
+    },
+    {
+      title: "Courses express", date: "17 août", budget: 30,
+      items: [
+        { n: "Pâtes", q: "1 kg", c: "epicerie", last: 1.89 },
+        { n: "Sauce tomate", q: "2 bocaux", c: "epicerie", last: 2.30 },
+        { n: "Mozzarella", q: "2 pièces", c: "frais", last: 2.80 },
+        { n: "Basilic", q: "1 pot", c: "fruits", last: 1.60 }
+      ],
+      total: 8.59
+    }
+  ];
+  HISTORY.forEach(function (h, i) { h.id = i; h.done = true; });
+
+  /* ---------------- Écran « mes listes » ---------------- */
+  var listsEls = {
+    activeTitle: document.getElementById("active-title"),
+    activeDate:  document.getElementById("active-date"),
+    activeCount: document.getElementById("active-count"),
+    activeBudget: document.getElementById("active-budget"),
+    activeSpent:  document.getElementById("active-spent"),
+    activeTotal:  document.getElementById("active-total"),
+    activeRemain: document.getElementById("active-remain"),
+    activeProgress: document.getElementById("active-progress"),
+    historyGrid: document.getElementById("history-grid"),
+    historyCount: document.getElementById("history-count")
+  };
+
+  function checkedOf(items) { return items.filter(function (i) { return i.p != null; }); }
+  function totalOf(items) { return items.reduce(function (s, i) { return s + (i.p || 0); }, 0); }
+  function activeBudget() { return currentBudget; }
+
+  function svgCheck() { return '<svg class="ic" viewBox="0 0 24 24"><path d="M5 12.5 10 17l9-10"/></svg>'; }
+
+  function renderLists() {
+    var c = checkedOf(ACTIVE.items).length;
+    var spent = totalOf(ACTIVE.items);
+    var remain = Math.max(0, ACTIVE.budget - spent);
+    var pct = Math.min(100, Math.round(spent / ACTIVE.budget * 100));
+
+    listsEls.activeTitle.textContent = ACTIVE.title;
+    listsEls.activeCount.textContent = c + "/" + ACTIVE.items.length;
+    listsEls.activeBudget.textContent = fmt(ACTIVE.budget);
+    listsEls.activeSpent.textContent = fmt(spent);
+    listsEls.activeTotal.textContent = fmt(spent);
+    listsEls.activeRemain.textContent = remain > 0 ? (fmt(remain) + " de budget restant") : ("Dépassement de " + fmt(Math.abs(remain)));
+    listsEls.activeProgress.style.width = pct + "%";
+    listsEls.activeProgress.classList.toggle("progress__fill--warn", spent > ACTIVE.budget);
+
+    listsEls.historyCount.textContent = HISTORY.length + " course" + (HISTORY.length > 1 ? "s" : "") + " terminée" + (HISTORY.length > 1 ? "s" : "");
+    listsEls.historyGrid.innerHTML = "";
+    HISTORY.forEach(function (h) {
+      var card = document.createElement("div");
+      card.className = "hist-card";
+      card.innerHTML =
+        '<div class="hist-card__top">' +
+          '<h3 class="hist-card__title">' + h.title + '</h3>' +
+          '<span class="hist-card__total">' + fmt(h.total) + '</span>' +
+        '</div>' +
+        '<div class="hist-card__meta">' + h.date + ' · ' + h.items.length + ' articles · budget ' + fmt(h.budget) + '</div>' +
+        '<div class="hist-card__foot">' +
+          '<button class="btn btn--ghost" data-copy="' + h.id + '" style="padding:10px 16px;font-size:13.5px;">' +
+            '<svg class="ic ic--sm" viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>' +
+            ' Dupliquer' +
+          '</button>' +
+        '</div>';
+      card.querySelector("[data-copy]").addEventListener("click", function (e) {
+        e.stopPropagation();
+        duplicateList(h);
+      });
+      card.addEventListener("click", function () { duplicateList(h); });
+      listsEls.historyGrid.appendChild(card);
+    });
+  }
+
+  /* ---------------- Ajout rapide ---------------- */
+  var currentCat = "fruits";
+  var chipsEls = [];
+  function renderChips() {
+    var wrap = document.getElementById("catchips");
+    wrap.innerHTML = "";
+    chipsEls = [];
+    CATS.forEach(function (c) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "catchip" + (c.key === currentCat ? " is-on" : "");
+      b.style.setProperty("--cat", c.color);
+      b.dataset.key = c.key;
+      b.innerHTML = '<span class="catchip__dot"></span>' + c.label;
+      b.addEventListener("click", function () {
+        currentCat = c.key;
+        renderChips();
+      });
+      wrap.appendChild(b);
+      chipsEls.push(b);
+    });
+  }
+
+  /* ---------------- Écran liste ---------------- */
+  var currentBudget = ACTIVE.budget;
+  var currentItems = ACTIVE.items; // référence → l'état est partagé avec l'écran listes
+  var currentIsDraft = false;
+
+  var listEls = {
+    title: document.getElementById("list-title"),
+    sub: document.getElementById("list-sub"),
+    budgetTotal: document.getElementById("budget-total"),
+    budgetRemain: document.getElementById("budget-remain"),
+    budgetRemain2: document.getElementById("budget-remain2"),
+    budgetCount: document.getElementById("budget-count"),
+    budgetProgress: document.getElementById("budget-progress"),
+    budgetTotal2: document.getElementById("budget-total2"),
+    recapTotal: document.getElementById("recap-total"),
+    recapBudget: document.getElementById("recap-budget"),
+    recapProgress: document.getElementById("recap-progress"),
+    recapChecked: document.getElementById("recap-checked"),
+    recapLeft: document.getElementById("recap-left"),
+    recapRemain: document.getElementById("recap-remain"),
+    recapCats: document.getElementById("recap-cats"),
+    groups: document.getElementById("groups")
+  };
+
+  function openList(data, isDraft) {
+    currentItems = data.items;
+    currentBudget = data.budget;
+    currentIsDraft = !!isDraft;
+    listEls.title.textContent = data.title;
+    listEls.sub.textContent = (isDraft ? "copie de l'historique" : "course en cours · " + new Date().toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" }));
+    document.getElementById("btn-finish-top").style.display = isDraft ? "none" : "inline-flex";
+    document.getElementById("btn-finish").style.display = isDraft ? "none" : "inline-flex";
+    listEls.recapBudget.textContent = fmt(data.budget);
+    listEls.budgetTotal2.textContent = fmt(data.budget);
+    renderGroups();
+    updateTotals();
+    renderRecapCats();
+    go("list");
+  }
+
+  function renderGroups() {
+    var wrap = listEls.groups;
+    wrap.innerHTML = "";
+    CATS.forEach(function (c) {
+      var group = currentItems.filter(function (i) { return i.c === c.key; });
+      if (!group.length && c.key !== currentCat) return;
+      var sec = document.createElement("section");
+      var cc = cat(c.key);
+      sec.style.setProperty("--cat", cc.color);
+      sec.className = "group";
+      var head = document.createElement("div");
+      head.className = "group__head";
+      head.style.setProperty("--cat", cc.color);
+      head.innerHTML =
+        '<span class="group__dot"></span>' +
+        '<span class="group__name">' + cc.label + '</span>' +
+        '<span class="group__count">' + group.length + '</span>';
+      var ul = document.createElement("ul");
+      ul.className = "item-list";
+      sec.appendChild(head);
+      sec.appendChild(ul);
+      wrap.appendChild(sec);
+    });
+    // remplir les items
+    var sections = wrap.children;
+    Array.prototype.forEach.call(sections, function (sec) {
+      var ckey = catKeyFromSection(sec);
+      var ul = sec.querySelector(".item-list");
+      ul.innerHTML = "";
+      currentItems.forEach(function (it, idx) {
+        if (it.c !== ckey) return;
+        var cc = cat(ckey);
+        var li = document.createElement("li");
+        li.className = "item" + (it.p != null ? " is-checked" : "");
+        li.style.setProperty("--cat", cc.color);
+        li.dataset.idx = idx;
+        li.innerHTML =
+          '<button class="item__check" data-toggle="' + idx + '" aria-label="Cocher">' + svgCheck() + '</button>' +
+          '<div class="item__body">' +
+            '<span class="item__name">' + it.n + '</span>' +
+            '<span class="item__qty">' + it.q + '</span>' +
+          '</div>' +
+          '<div class="item__price">' +
+            '<div class="price-pill">' +
+              '<input type="text" inputmode="decimal" data-price="' + idx + '" value="' + (it.p != null ? String(it.p).replace(".", ",") : "") + '" placeholder="0,00"><span>€</span>' +
+            '</div>' +
+            '<button class="memor" data-memor="' + idx + '"' + (it.last != null ? "" : " disabled style='opacity:0;pointer-events:none;'") + '>dernier ' + (it.last != null ? String(it.last).replace(".", ",") : "") + ' €</button>' +
+          '</div>';
+        ul.appendChild(li);
+      });
+    });
+  }
+
+  function catKeyFromSection(sec) {
+    var name = sec.querySelector(".group__name").textContent;
+    var found = CATS.filter(function (c) { return c.label === name; })[0];
+    return found ? found.key : "autre";
+  }
+
+  function updateTotals() {
+    var spent = totalOf(currentItems);
+    var checked = checkedOf(currentItems);
+    var remain = currentBudget - spent;
+    var pct = Math.min(100, Math.round(spent / currentBudget * 100));
+    var over = spent > currentBudget;
+
+    listEls.budgetTotal.textContent = fmt(spent);
+    listEls.budgetCount.textContent = "· " + checked.length + "/" + currentItems.length + " articles";
+    listEls.budgetRemain.textContent = (over ? "-" : "") + fmt(Math.abs(remain));
+    listEls.budgetRemain2.textContent = (over ? "dépassé de " : "") + fmt(Math.abs(remain));
+    listEls.budgetProgress.style.width = pct + "%";
+    listEls.budgetProgress.classList.toggle("progress__fill--warn", over);
+    listEls.budgetTotal.classList.toggle("budget-card__sum", true);
+    listEls.budgetTotal.style.color = over ? "var(--rose)" : "var(--ink)";
+
+    listEls.recapTotal.textContent = fmt(spent);
+    listEls.recapChecked.textContent = checked.length;
+    listEls.recapLeft.textContent = currentItems.length - checked.length;
+    listEls.recapRemain.textContent = (over ? "-" : "") + fmt(Math.abs(remain));
+    listEls.recapProgress.style.width = pct + "%";
+    listEls.recapProgress.classList.toggle("progress__fill--warn", over);
+    var row = document.getElementById("recap-budget-row");
+    row.classList.toggle("recap__tally-row--warn", over);
+
+    // stickybar mobile
+    var sb = document.getElementById("stickybar");
+    if (sb) {
+      document.getElementById("sb-value").textContent = fmt(spent).replace(" €", "");
+      document.getElementById("sb-remain").textContent = "· budget " + fmt(currentBudget);
+      document.getElementById("sb-btn").textContent = over ? "Budget dépassé" : "Terminer la course";
+      document.getElementById("sb-btn").classList.toggle("stickybar__btn--warn", over);
+    }
+
+    // total en haut de l'écran listes (état partagé)
+    renderLists();
+  }
+
+  function renderRecapCats() {
+    var wrap = listEls.recapCats;
+    wrap.innerHTML = "";
+    CATS.forEach(function (c) {
+      var group = currentItems.filter(function (i) { return i.c === c.key; });
+      if (!group.length) return;
+      var checked = checkedOf(group);
+      var row = document.createElement("div");
+      row.className = "recap__cat";
+      row.style.setProperty("--cat", c.color);
+      row.innerHTML = '<i></i>' + c.label + '<b>' + checked.length + '/' + group.length + '</b>';
+      wrap.appendChild(row);
+    });
+  }
+
+  function duplicateList(h) {
+    var items = h.items.map(function (i) { return { n: i.n, q: i.q, c: i.c, p: null, last: i.last ?? i.p }; });
+    openList({ title: h.title, budget: h.budget, items: items, isDraft: true }, true);
+    toast('Liste « ' + h.title + ' » dupliquée — à vous de jouer');
+  }
+
+  /* ---------------- Interactions liste ---------------- */
+  document.getElementById("groups").addEventListener("click", function (e) {
+    var t = e.target.closest("[data-toggle]");
+    if (t) { toggleItem(+t.dataset.toggle); return; }
+    var m = e.target.closest("[data-memor]");
+    if (m) {
+      var it = currentItems[+m.dataset.memor];
+      if (it.p == null && it.last != null) {
+        it.p = it.last;
+        var inp = document.querySelector('[data-price="' + m.dataset.memor + '"]');
+        if (inp) { inp.value = String(it.last).replace(".", ","); }
+        updateRowUI(+m.dataset.memor);
+        updateTotals();
+      }
+      return;
+    }
+    // clic sur la ligne → cocher
+    var row = e.target.closest(".item");
+    if (row && !e.target.closest(".price-pill")) {
+      var idx = +row.dataset.idx;
+      if (currentIsDraft && currentItems[idx].p == null) { /* draft : cocher marche quand même */ }
+      toggleItem(idx);
+    }
+  });
+
+  function updateRowUI(idx) {
+    var row = document.querySelector('#groups .item[data-idx="' + idx + '"]');
+    if (!row) return;
+    var it = currentItems[idx];
+    row.classList.toggle("is-checked", it.p != null);
+  }
+
+  function toggleItem(idx) {
+    var it = currentItems[idx];
+    if (it.p != null) {
+      it.p = null; // décoche → prix retiré du total
+      updateRowUI(idx);
+      updateTotals();
+      return;
+    }
+    it.p = 0; // coché en attente de prix
+    updateRowUI(idx);
+    updateTotals();
+    var inp = document.querySelector('[data-price="' + idx + '"]');
+    if (inp) setTimeout(function () { inp.focus(); inp.select(); }, 60);
+  }
+
+  document.getElementById("groups").addEventListener("input", function (e) {
+    var inp = e.target.closest("[data-price]");
+    if (!inp) return;
+    var idx = +inp.dataset.price;
+    var val = parseFloat(inp.value.replace(",", "."));
+    var it = currentItems[idx];
+    it.p = isNaN(val) ? 0 : Math.max(0, val);
+    updateTotals();
+  });
+
+  /* boutons */
+
+  // ouvrir la liste active
+  document.getElementById("btn-open").addEventListener("click", function () {
+    openList({ title: ACTIVE.title, budget: ACTIVE.budget, items: ACTIVE.items }, false);
+  });
+
+  // nouvelle liste
+  document.getElementById("btn-newlist").addEventListener("click", function () {
+    var items = [];
+    openList({ title: "Nouvelle liste", budget: 50, items: items }, false);
+    document.getElementById("qa-name").focus();
+  });
+
+  document.getElementById("btn-finish-top").addEventListener("click", finishCourse);
+  document.getElementById("btn-finish").addEventListener("click", finishCourse);
+
+  function finishCourse() {
+    if (currentIsDraft) return;
+    var spent = totalOf(currentItems);
+    var copy = {
+      title: ACTIVE.title,
+      date: new Date().toLocaleDateString("fr-FR", { day: "numeric", month: "long" }),
+      budget: ACTIVE.budget,
+      total: spent,
+      items: currentItems.map(function (i) { return { n: i.n, q: i.q, c: i.c, p: i.p, last: i.p != null ? i.p : i.last }; }),
+      done: true
+    };
+    HISTORY.unshift({ title: copy.title, date: copy.date, budget: copy.budget, total: copy.total, items: copy.items.map(function (i) { return { n: i.n, q: i.q, c: i.c, last: i.last }; }) });
+    // vide la liste active
+    ACTIVE.items = [];
+    renderGroups();
+    go("lists");
+    toast("Course terminée · total " + fmt(spent));
+    renderLists();
+  }
+
+  document.getElementById("btn-back").addEventListener("click", function () { go("lists"); });
+
+  /* ajout rapide */
+  document.getElementById("quickadd").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var name = document.getElementById("qa-name").value.trim();
+    if (!name) {
+      toast("Tapez le nom d'un article");
+      document.getElementById("qa-name").focus();
+      return;
+    }
+    var qty = document.getElementById("qa-qty").value.trim() || "1";
+    currentItems.push({ n: name, q: qty, c: currentCat, p: null, last: null });
+    document.getElementById("qa-name").value = "";
+    document.getElementById("qa-qty").value = "";
+    renderGroups();
+    updateTotals();
+    document.getElementById("qa-name").focus();
+    toast('« ' + name + ' » ajouté');
+  });
+
+  /* stickybar mobile — injectée si absente */
+  var sb = document.getElementById("stickybar");
+  if (!sb) {
+    sb = document.createElement("div");
+    sb.id = "stickybar";
+    sb.className = "stickybar";
+    sb.innerHTML =
+      '<div class="stickybar__total">' +
+        '<div class="stickybar__label">Total</div>' +
+        '<div class="stickybar__value"><span id="sb-value">0,00</span> <small>€</small></div>' +
+      '</div>' +
+      '<div style="font-size:12px;font-weight:600;opacity:.65;" id="sb-remain"></div>' +
+      '<button class="btn stickybar__btn" id="sb-btn">Terminer la course</button>';
+    document.body.appendChild(sb);
+    document.getElementById("sb-btn").addEventListener("click", finishCourse);
+  }
+
+  /* ---------------- INIT ---------------- */
+  renderChips();
+  renderLists();
+  openList({ title: ACTIVE.title, budget: ACTIVE.budget, items: ACTIVE.items }, false);
+  go("auth");
+})();
+</script>
+</body>
+</html>
