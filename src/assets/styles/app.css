@@ -2,10 +2,40 @@
 
 @import './fonts.css';
 @import './base.css';
+@import './form.css';
+
+@plugin "@tailwindcss/forms" {
+    strategy: "class";
+}
 
 @theme {
-    --color-primary: #699543;
+    --color-primary: #c5e397;
+    --color-secondary: #c94b32;
+    --color-tertiary: #d5a332;
+    --color-ink: #2c3d2b;
+    --color-canvas: #FFFDF5;
+    --color-surface: #FFFFFF;
+    --color-deep: #efe4da;
+    --color-line: #d8ddd8;
+    --color-muted: #647762;
+
+    --text-xs: 11px;
+    --text-sm: 12px;
+    --text-base: 14px;
+    --text-md: 16px;
+    --text-lg: 20px;
+    --text-xl: 24px;
+    --text-2xl: 28px;
+    --text-3xl: 32px;
+    --text-4xl: 46px;
 
     --font-display: 'Sora', serif;
     --font-sans: 'Manrope', sans-serif;
+
+    --radius-*: initial;
+    --radius-xs: 5px;
+    --radius-sm: 10px;
+    --radius: 20px;
+    --radius-md: 30px;
+    --radius-full: 9999px;
 }

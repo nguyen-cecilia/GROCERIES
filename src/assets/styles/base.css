@@ -1,5 +1,43 @@
 @layer base {
     body {
-        @apply font-sans;
+        @apply font-sans bg-canvas text-base text-ink font-medium;
+    }
+
+    h1 {
+        @apply font-display text-3xl font-bold tracking-tight;
+    }
+
+    h2 {
+        @apply font-display text-2xl font-bold tracking-tight;
+    }
+
+    h3 {
+        @apply font-display text-xl font-bold tracking-tight;
+    }
+
+    h4 {
+        @apply font-display text-md font-semibold leading-5;
+    }
+
+    table {
+        @apply table-auto w-full;
+
+        & thead {
+            @apply border-b-2 border-dashed border-line;
+
+            & th {
+                @apply text-left text-xs text-muted font-display uppercase font-medium tracking-wider px-3 py-2;
+            }
+        }
+
+        & tbody {
+            & tr:not(:last-child) {
+                @apply border-b border-line;
+            }
+
+            & td {
+                @apply px-3 py-2;
+            }
+        }
     }
 }

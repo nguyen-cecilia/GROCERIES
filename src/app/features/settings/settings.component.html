@@ -1,0 +1,179 @@
+<section class="grid grid-cols-1 lg:grid-cols-[25%_75%] gap-6">
+    <div class="flex flex-col gap-3">
+        <h1>Paramètres</h1>
+        <button app-button
+                [variant]="activePanel() === 'account' ? 'tabActive' : 'tab'"
+                shape="bigPill"
+                role="tab"
+                id="tab-account"
+                aria-controls="panel-account"
+                [attr.aria-selected]="activePanel() === 'account'"
+                (click)="select('account')"
+        >
+            <div class="size-3 bg-primary rounded-full"></div>
+            Compte
+        </button>
+        <button app-button
+                [variant]="activePanel() === 'aisles' ? 'tabActive' : 'tab'"
+                shape="bigPill"
+                role="tab"
+                id="tab-aisles"
+                aria-controls="panel-aisles"
+                [attr.aria-selected]="activePanel() === 'aisles'"
+                (click)="select('aisles')"
+        >
+            <div class="size-3 bg-secondary rounded-full"></div>
+            Rayons
+        </button>
+        <button app-button
+                [variant]="activePanel() === 'articles' ? 'tabActive' : 'tab'" shape="bigPill"
+                role="tab" id="tab-articles" aria-controls="panel-articles"
+                [attr.aria-selected]="activePanel() === 'articles'"
+                (click)="select('articles')">
+            <div class="size-3 bg-tertiary rounded-full"></div>
+            Articles
+        </button>
+    </div>
+
+    <div class="bg-surface rounded shadow-lg p-6 *:space-y-6">
+        @switch (activePanel()) {
+            @case ('account') {
+                <div>
+                    <h2>Compte</h2>
+
+                    <form class="space-y-6">
+                        <div class="flex items-start gap-6 *:flex-1">
+                            <label for="firstName">
+                                <p>Prénom</p>
+                                <input type="text" id="firstName" placeholder="Ex : Sara">
+                            </label>
+
+                            <label for="email">
+                                <p>Email</p>
+                                <input type="email" id="email" placeholder="butt@here.com">
+                            </label>
+                        </div>
+
+                        <div class="flex items-start gap-6 *:flex-1">
+                            <label for="password">
+                                <p>Nouveau mot de passe</p>
+                                <input type="password" id="password">
+                            </label>
+
+                            <label for="confirmPassword">
+                                <p>Confirmer le mot de passe</p>
+                                <input type="password" id="confirmPassword">
+                            </label>
+                        </div>
+
+                        <button app-button shape="bigPill" class="ml-auto">
+                            <svg lucideSave [size]="20"></svg>
+                            Sauvegarder
+                        </button>
+                    </form>
+                </div>
+            }
+            @case ('aisles') {
+                <div>
+                    <div class="flex items-center justify-between gap-3">
+                        <h2>Rayons</h2>
+                        <button app-button variant="tertiary" shape="bigPill">
+                            <svg lucidePlus [size]="20"></svg>
+                            Ajouter
+                        </button>
+                    </div>
+
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-3 bg-deep py-2.5 px-4 rounded-sm">
+                            <div class="size-3.5 rounded-full bg-primary border"></div>
+                            <p class="flex-1 text-md font-semibold">Fruits & légumes</p>
+                            <button app-button variant="ghostPrimary" shape="round">
+                                <svg lucidePencil [size]="16"></svg>
+                            </button>
+                            <button app-button variant="invalid" shape="round">
+                                <svg lucideTrash2 [size]="16"></svg>
+                            </button>
+                        </div>
+                        <div class="flex items-center gap-3 bg-deep py-2.5 px-4 rounded-sm">
+                            <div class="size-3.5 rounded-full bg-secondary border"></div>
+                            <p class="flex-1 text-md font-semibold">Viandes & poissons</p>
+                            <button app-button variant="ghostPrimary" shape="round">
+                                <svg lucidePencil [size]="16"></svg>
+                            </button>
+                            <button app-button variant="invalid" shape="round">
+                                <svg lucideTrash2 [size]="16"></svg>
+                            </button>
+                        </div>
+                        <div class="flex items-center gap-3 bg-deep py-2.5 px-4 rounded-sm">
+                            <div class="size-3.5 rounded-full bg-tertiary border"></div>
+                            <p class="flex-1 text-md font-semibold">Confiserie</p>
+                            <button app-button variant="ghostPrimary" shape="round">
+                                <svg lucidePencil [size]="16"></svg>
+                            </button>
+                            <button app-button variant="invalid" shape="round">
+                                <svg lucideTrash2 [size]="16"></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
+            @default {
+                <div>
+                    <div class="flex items-center justify-between gap-3">
+                        <h2>Articles</h2>
+                        <button app-button variant="tertiary" shape="bigPill">
+                            <svg lucidePlus [size]="20"></svg>
+                            Ajouter
+                        </button>
+                    </div>
+
+                    <!-- TODO: Ajouter un tri sur les colonnes -->
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Label</th>
+                            <th>Rayon</th>
+                            <th>Prix</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td class="font-semibold text-md">Titre de l'article</td>
+                            <td class="flex items-center gap-2">
+                                <div class="size-3 bg-primary rounded-full"></div>
+                                <p>Fruits & légumes</p>
+                            </td>
+                            <td class="font-display font-semibold text-md">6,12 €</td>
+                            <td class="flex items-center justify-end gap-2">
+                                <button app-button variant="ghostPrimary" shape="round">
+                                    <svg lucidePencil [size]="16"></svg>
+                                </button>
+                                <button app-button variant="invalid" shape="round">
+                                    <svg lucideTrash2 [size]="16"></svg>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold text-md">Saumon</td>
+                            <td class="flex items-center gap-2">
+                                <div class="size-3 bg-secondary rounded-full"></div>
+                                <p>Viandes & poissons</p>
+                            </td>
+                            <td class="font-display font-semibold text-md">4,56 €</td>
+                            <td class="flex items-center justify-end gap-2">
+                                <button app-button variant="ghostPrimary" shape="round">
+                                    <svg lucidePencil [size]="16"></svg>
+                                </button>
+                                <button app-button variant="invalid" shape="round">
+                                    <svg lucideTrash2 [size]="16"></svg>
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            }
+        }
+    </div>
+</section>
