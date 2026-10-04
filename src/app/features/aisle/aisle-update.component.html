@@ -1,0 +1,25 @@
+<form class="space-y-6" (submit)="onSubmit($event)" novalidate>
+    <app-color-picker
+        [colors]="colors"
+        [value]="model().color"
+        (valueChange)="model.update((m) => ({ ...m, color: $event }))"
+    />
+
+    <label for="label">
+        <p>Label</p>
+        <input type="text" id="label" placeholder="Ex : Courses du samedi" [formField]="form.label">
+    </label>
+
+    <div class="flex items-center justify-between gap-6">
+        @if (editing()) {
+            <button app-button variant="invalid" (click)="onDelete()">
+                <svg lucideTrash2 [size]="16"></svg>
+                Supprimer
+            </button>
+        }
+        <button app-button type="submit" [disabled]="!canSubmit() || loading()" class="ml-auto">
+            <svg lucideSave [size]="16"></svg>
+            Sauvegarder
+        </button>
+    </div>
+</form>

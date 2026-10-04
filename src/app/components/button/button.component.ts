@@ -27,7 +27,7 @@ export class ButtonComponent {
 
     classes(): string {
         const base =
-            'flex items-center gap-2 leading-4 transition-all cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed hover:-translate-y-0.5';
+            'flex items-center gap-2 leading-4 transition-all cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0 hover:-translate-y-0.5';
 
         const variants = {
             primary: 'bg-ink text-canvas hover:bg-ink/80 font-medium justify-center shadow-xl',

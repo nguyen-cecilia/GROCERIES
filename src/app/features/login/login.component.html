@@ -3,15 +3,24 @@
 
     <h2>Super Groceries</h2>
 
-    <form class="bg-surface shadow-xl border border-line rounded px-6 py-4 flex flex-col gap-3 lg:w-sm">
+    <form class="bg-surface shadow-xl border border-line rounded px-6 py-4 flex flex-col gap-3 lg:w-sm"
+          (submit)="onSubmit($event)" novalidate>
         <label for="email">
             <p>Email</p>
-            <input type="email" id="email" placeholder="user@example.com">
+            <input type="email" id="email" placeholder="user@example.com" autocomplete="email" [formField]="loginForm.email">
         </label>
         <label for="password">
             <p>Mot de passe</p>
-            <input type="password" id="password">
+            <input type="password" id="password" autocomplete="current-password" [formField]="loginForm.password">
         </label>
-        <button app-button shape="bigPill" class="self-center">Se connecter</button>
+
+        @if (error()) {
+            <p role="alert" class="text-secondary text-sm">{{ error() }}</p>
+        }
+
+        <button app-button type="submit" shape="bigPill" class="self-center"
+                [disabled]="!canSubmit() || loading()">
+            {{ loading() ? 'Connexion…' : 'Se connecter' }}
+        </button>
     </form>
 </section>

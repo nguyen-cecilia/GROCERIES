@@ -3,14 +3,18 @@ import { DashboardComponent } from './features/dashboard/dashboard.component';
 import { GroceriesListComponent } from './features/groceries-list/groceries-list.component';
 import { LoginComponent } from './features/login/login.component';
 import { SettingsComponent } from './features/settings/settings.component';
+import { authGuard } from './core/auth.guard';
+import { guestGuard } from './core/guest.guard';
 
 export const routes: Routes = [
     {
         path: 'connexion',
         component: LoginComponent,
+        canActivate: [guestGuard],
     },
     {
         path: '',
+        canActivate: [authGuard],
         children: [
             {
                 path: '',

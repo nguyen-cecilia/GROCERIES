@@ -1,0 +1,17 @@
+<div class="space-y-1">
+    <p class="uppercase font-bold">{{ label() }}</p>
+    <div class="flex flex-wrap gap-3" role="radiogroup" [attr.aria-label]="label()">
+        @for (color of colors(); track color) {
+            <button
+                type="button"
+                class="size-9 rounded-full transition-all hover:scale-110 cursor-pointer"
+                [class]="value() === color ? 'ring-2 ring-ink' : 'ring-line'"
+                [style.background-color]="color"
+                role="radio"
+                [attr.aria-checked]="value() === color"
+                (click)="valueChange.emit(color)"
+            >
+            </button>
+        }
+    </div>
+</div>

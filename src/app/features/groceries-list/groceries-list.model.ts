@@ -1,25 +1,9 @@
-import { Article } from '../article/article.model';
+import { Database } from '../../core/database-types';
 
-export interface GroceriesList {
-    id: string;
-    label: string;
-    userId: string;
-    budget: number;
+export type GroceriesListItem = Database['public']['Tables']['sg_groceries_list_item']['Row'];
+
+export type GroceriesList = Database['public']['Tables']['sg_groceries_list']['Row'] & {
     items: GroceriesListItem[];
-    lastUpdated: Date;
-}
+};
 
-export interface GroceriesListItem {
-    id: string;
-    listId: string;
-    quantity: number;
-    quantityUnit: QuantityUnit;
-    checked: boolean;
-    articleId: string;
-    article?: Article;
-}
-
-export interface QuantityUnit {
-    id: string;
-    label: string;
-}
+export type QuantityUnit = Database['public']['Tables']['sg_quantity_unit']['Row'];

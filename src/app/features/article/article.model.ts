@@ -1,12 +1,6 @@
-import { Aisle } from '../aisle/aisle.model';
+import type { Aisle } from '../aisle/aisle.model';
+import { Database } from '../../core/database-types';
 
-export interface Article {
-    id: string;
-    label: string;
-    price: number | null;
-    lastPrice: number | null;
-    priceCurrency: string;
-    userId: string;
-    aisleId: string;
-    aisle: Aisle;
-}
+export type Article = Database['public']['Tables']['sg_article']['Row'] & {
+    aisle: Aisle | null;
+};

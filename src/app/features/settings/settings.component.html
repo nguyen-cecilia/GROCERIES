@@ -1,4 +1,12 @@
-<section class="grid grid-cols-1 lg:grid-cols-[25%_75%] gap-6">
+<app-modal
+    title="{{ this.modalService.aisle.editing() ? 'Modifier un rayon' : 'Ajouter un rayon' }}"
+    [isOpen]="this.modalService.aisle.isOpen"
+    [onClose]="() => this.modalService.aisle.close()"
+>
+    <app-aisle-update [editing]="modalService.aisle.editing()" />
+</app-modal>
+
+<section class="grid grid-cols-1 lg:grid-cols-[25%_75%] items-start gap-6">
     <div class="flex flex-col gap-3">
         <h1>Paramètres</h1>
         <button app-button
@@ -33,6 +41,18 @@
             <div class="size-3 bg-tertiary rounded-full"></div>
             Articles
         </button>
+        <button app-button
+                [variant]="activePanel() === 'quantityUnits' ? 'tabActive' : 'tab'" shape="bigPill"
+                role="tab" id="tab-quantityUnits" aria-controls="panel-quantityUnits"
+                [attr.aria-selected]="activePanel() === 'quantityUnits'"
+                (click)="select('quantityUnits')">
+            <div class="size-3 bg-primary rounded-full"></div>
+            Unités de quantité
+        </button>
+        <button app-button variant="secondary" shape="bigPill" class="mt-12" (click)="signOut()">
+            <svg lucideLogOut [size]="20"></svg>
+            Se déconnecter
+        </button>
     </div>
 
     <div class="bg-surface rounded shadow-lg p-6 *:space-y-6">
@@ -41,34 +61,51 @@
                 <div>
                     <h2>Compte</h2>
 
-                    <form class="space-y-6">
+                    <form class="space-y-6" (submit)="onSubmit($event)" novalidate>
                         <div class="flex items-start gap-6 *:flex-1">
                             <label for="firstName">
                                 <p>Prénom</p>
-                                <input type="text" id="firstName" placeholder="Ex : Sara">
+                                <input type="text" id="firstName" placeholder="Ex : Sara"
+                                       autocomplete="given-name" [formField]="accountForm.firstName">
                             </label>
 
                             <label for="email">
                                 <p>Email</p>
-                                <input type="email" id="email" placeholder="butt@here.com">
+                                <input type="email" id="email" placeholder="butt@here.com"
+                                       autocomplete="email" [formField]="accountForm.email">
                             </label>
                         </div>
 
                         <div class="flex items-start gap-6 *:flex-1">
                             <label for="password">
                                 <p>Nouveau mot de passe</p>
-                                <input type="password" id="password">
+                                <input type="password" id="password"
+                                       autocomplete="new-password" [formField]="accountForm.password">
                             </label>
 
                             <label for="confirmPassword">
                                 <p>Confirmer le mot de passe</p>
-                                <input type="password" id="confirmPassword">
+                                <input type="password" id="confirmPassword"
+                                       autocomplete="new-password" [formField]="accountForm.confirmPassword">
                             </label>
                         </div>
 
-                        <button app-button shape="bigPill" class="ml-auto">
+                        @if (accountModel().password && accountModel().password !== accountModel().confirmPassword) {
+                            <p class="text-secondary">Les mots de passe ne correspondent pas.</p>
+                        }
+
+                        @if (error()) {
+                            <p class="text-secondary" role="alert">{{ error() }}</p>
+                        }
+
+                        @if (savedMessage()) {
+                            <p class="text-primary">{{ savedMessage() }}</p>
+                        }
+
+                        <button app-button type="submit" shape="bigPill" class="ml-auto"
+                                [disabled]="!canSubmit() || loading()">
                             <svg lucideSave [size]="20"></svg>
-                            Sauvegarder
+                            {{ loading() ? 'Enregistrement…' : 'Sauvegarder' }}
                         </button>
                     </form>
                 </div>
@@ -77,6 +114,60 @@
                 <div>
                     <div class="flex items-center justify-between gap-3">
                         <h2>Rayons</h2>
+                        <button app-button variant="tertiary" shape="bigPill" (click)="this.modalService.aisle.openCreate()">
+                            <svg lucidePlus [size]="20"></svg>
+                            Ajouter
+                        </button>
+                    </div>
+
+                    @if (aislesService.loading()) {
+                        <p class="text-muted">Chargement…</p>
+                    } @else if (aislesService.error()) {
+                        <p class="text-secondary" role="alert">{{ aislesService.error() }}</p>
+                    } @else if (aislesService.aisles().length === 0) {
+                        <p class="text-muted">Ajoute ton premier rayon !</p>
+                    } @else {
+                        <div class="space-y-3">
+                            @for (aisle of aislesService.aisles(); track aisle.id; let i = $index, count = $count) {
+                                <div class="flex items-center gap-3 bg-deep py-2.5 px-4 rounded-sm">
+                                    <div class="flex flex-col">
+                                        <button
+                                            app-button
+                                            variant="ghostPrimary"
+                                            shape="roundSmall"
+                                            [disabled]="i === 0 || aislesService.reordering()"
+                                            (click)="aislesService.move(aisle.id, 'up')"
+                                            aria-label="Monter"
+                                        >
+                                            <svg lucideChevronUp [size]="16"></svg>
+                                        </button>
+                                        <button
+                                            app-button
+                                            variant="ghostPrimary"
+                                            shape="roundSmall"
+                                            [disabled]="i === count - 1 || aislesService.reordering()"
+                                            (click)="aislesService.move(aisle.id, 'down')"
+                                            aria-label="Descendre"
+                                        >
+                                            <svg lucideChevronDown [size]="16"></svg>
+                                        </button>
+                                    </div>
+                                    <div class="size-4 rounded-full border" [style.background-color]="aisle.color"></div>
+                                    <p class="flex-1 text-md font-semibold">{{ aisle.label }}</p>
+                                    <button app-button variant="ghostPrimary" shape="round"
+                                            (click)="modalService.aisle.openEdit(aisle)">
+                                        <svg lucideSettings [size]="16"></svg>
+                                    </button>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+            @case ('quantityUnits') {
+                <div>
+                    <div class="flex items-center justify-between gap-3">
+                        <h2>Unités de quantité</h2>
                         <button app-button variant="tertiary" shape="bigPill">
                             <svg lucidePlus [size]="20"></svg>
                             Ajouter
@@ -85,33 +176,21 @@
 
                     <div class="space-y-3">
                         <div class="flex items-center gap-3 bg-deep py-2.5 px-4 rounded-sm">
-                            <div class="size-3.5 rounded-full bg-primary border"></div>
-                            <p class="flex-1 text-md font-semibold">Fruits & légumes</p>
+                            <p class="flex-1 text-md font-semibold">Unité</p>
                             <button app-button variant="ghostPrimary" shape="round">
-                                <svg lucidePencil [size]="16"></svg>
-                            </button>
-                            <button app-button variant="invalid" shape="round">
-                                <svg lucideTrash2 [size]="16"></svg>
+                                <svg lucideSettings [size]="16"></svg>
                             </button>
                         </div>
                         <div class="flex items-center gap-3 bg-deep py-2.5 px-4 rounded-sm">
-                            <div class="size-3.5 rounded-full bg-secondary border"></div>
-                            <p class="flex-1 text-md font-semibold">Viandes & poissons</p>
+                            <p class="flex-1 text-md font-semibold">Paquet</p>
                             <button app-button variant="ghostPrimary" shape="round">
-                                <svg lucidePencil [size]="16"></svg>
-                            </button>
-                            <button app-button variant="invalid" shape="round">
-                                <svg lucideTrash2 [size]="16"></svg>
+                                <svg lucideSettings [size]="16"></svg>
                             </button>
                         </div>
                         <div class="flex items-center gap-3 bg-deep py-2.5 px-4 rounded-sm">
-                            <div class="size-3.5 rounded-full bg-tertiary border"></div>
-                            <p class="flex-1 text-md font-semibold">Confiserie</p>
+                            <p class="flex-1 text-md font-semibold">kg</p>
                             <button app-button variant="ghostPrimary" shape="round">
-                                <svg lucidePencil [size]="16"></svg>
-                            </button>
-                            <button app-button variant="invalid" shape="round">
-                                <svg lucideTrash2 [size]="16"></svg>
+                                <svg lucideSettings [size]="16"></svg>
                             </button>
                         </div>
                     </div>
@@ -147,10 +226,7 @@
                             <td class="font-display font-semibold text-md">6,12 €</td>
                             <td class="flex items-center justify-end gap-2">
                                 <button app-button variant="ghostPrimary" shape="round">
-                                    <svg lucidePencil [size]="16"></svg>
-                                </button>
-                                <button app-button variant="invalid" shape="round">
-                                    <svg lucideTrash2 [size]="16"></svg>
+                                    <svg lucideSettings [size]="16"></svg>
                                 </button>
                             </td>
                         </tr>
@@ -163,10 +239,7 @@
                             <td class="font-display font-semibold text-md">4,56 €</td>
                             <td class="flex items-center justify-end gap-2">
                                 <button app-button variant="ghostPrimary" shape="round">
-                                    <svg lucidePencil [size]="16"></svg>
-                                </button>
-                                <button app-button variant="invalid" shape="round">
-                                    <svg lucideTrash2 [size]="16"></svg>
+                                    <svg lucideSettings [size]="16"></svg>
                                 </button>
                             </td>
                         </tr>
