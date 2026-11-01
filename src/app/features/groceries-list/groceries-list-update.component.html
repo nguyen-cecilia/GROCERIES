@@ -9,8 +9,15 @@
         <input type="number" id="budget" placeholder="0.00">
     </label>
 
-    <button app-button class="ml-auto">
-        <svg lucideSave [size]="16"></svg>
-        Sauvegarder
-    </button>
+    <div class="flex items-center justify-between gap-3">
+        <button app-button variant="invalid">
+            <svg lucideTrash [size]="16"></svg>
+            Supprimer
+        </button>
+
+        <button app-button class="ml-auto">
+            <svg lucideSave [size]="16"></svg>
+            Sauvegarder
+        </button>
+    </div>
 </form>

@@ -62,7 +62,6 @@ export class AisleUpdateComponent {
         await this.aisleService.load();
     }
 
-    // TODO: Vérifier si des articles ont ce rayon
     async onDelete() {
         const aisle = this.editing();
         if (!aisle || this.loading()) return;

@@ -1,9 +1,9 @@
 @font-face {
-    font-family: 'Manrope';
-    src: url('../fonts/Manrope-VariableFont_wght.ttf');
+    font-family: 'Fraunces';
+    src: url('../fonts/Fraunces-VariableFont_wght.ttf');
 }
 
 @font-face {
-    font-family: 'Sora';
-    src: url('../fonts/Sora-VariableFont_wght.ttf');
+    font-family: 'Work Sans';
+    src: url('../fonts/WorkSans-VariableFont_wght.ttf');
 }

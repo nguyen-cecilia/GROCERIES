@@ -21,6 +21,7 @@ export const AISLE_COLORS = [
 @Injectable({ providedIn: 'root' })
 export class AisleService {
     private readonly aislesState = signal<Aisle[]>([]);
+
     readonly aisles = this.aislesState.asReadonly();
     readonly loading = signal(false);
     readonly error = signal<string | null>(null);

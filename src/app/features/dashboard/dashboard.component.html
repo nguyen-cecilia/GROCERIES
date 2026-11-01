@@ -8,93 +8,105 @@
 
 <section class="space-y-6">
     <div
-        class="shadow-lg bg-primary rounded py-4 px-6 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3">
+        class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3"
+    >
         <div>
             <h1>Mes listes</h1>
-            <p class="font-semibold text-muted">Les listes en cours et l'historique des courses terminées.</p>
+            <p class="text-muted text-sm">4 listes · dernière modification aujourd'hui</p>
         </div>
         <button app-button (click)="this.modalService.groceriesList.openCreate()" shape="bigPill" class="self-end">
-            <svg lucidePlus [size]="24"></svg>
+            <svg lucidePlus [size]="20"></svg>
             Nouvelle liste
         </button>
     </div>
 
-    <div class="bg-surface shadow-lg rounded border border-line py-4 px-6 flex flex-col gap-3">
-        <div class="flex flex-col lg:flex-row justify-between items-start gap-3">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 bg-surface shadow-lg rounded border border-line py-4 px-6 flex flex-col gap-3">
+            <div class="flex items-center justify-between gap-3">
+                <div class="text-sm bg-secondary font-bold rounded-full px-2 py-0.5">Dernière modifiée</div>
+                <p class="font-mono text-muted">Aujourd'hui, 16h27</p>
+            </div>
             <h2 class="line-clamp-2">Courses du samedi</h2>
-            <div class="flex gap-2">
-                <div class="w-fit bg-tertiary/25 px-3 py-1.5 rounded-full text-sm font-bold flex items-center gap-2">
-                    <div class="size-2 rounded-full bg-tertiary"></div>
-                    <p>En cours</p>
+            <div class="w-full h-3 bg-deep rounded-full">
+                <div class="w-4/10 h-full rounded-full bg-primary"></div>
+            </div>
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-y-3 gap-x-6">
+                <div>
+                    <p class="text-sm text-muted uppercase font-semibold">Articles pris</p>
+                    <p class="font-extrabold text-lg font-display leading-6">6 <span class="text-base">/ 7</span></p>
                 </div>
-                <div class="w-fit bg-deep px-3 py-1.5 rounded-full text-sm font-bold flex items-center gap-2">
-                    Modifiée aujourd'hui
+                <div>
+                    <p class="text-sm text-muted uppercase font-semibold">Budget</p>
+                    <p class="font-extrabold text-lg font-display leading-6">60,00 €</p>
+                </div>
+                <div>
+                    <p class="text-sm text-muted uppercase font-semibold">Dépensé</p>
+                    <p class="font-extrabold text-lg font-display leading-6">22,00 €</p>
+                </div>
+                <div>
+                    <p class="text-sm text-muted uppercase font-semibold">Restant</p>
+                    <p class="font-extrabold text-lg font-display leading-6">38,00 €</p>
                 </div>
             </div>
-        </div>
-        <div class="grid grid-cols-2 lg:grid-cols-3 gap-3">
-            <div class="bg-deep rounded p-3">
-                <p class="font-extrabold text-lg font-display leading-6">6<span class="text-base">/7</span></p>
-                <p class="text-sm text-muted">articles pris</p>
+            <div class="mt-3 flex justify-end gap-3">
+                <button app-button variant="outline">
+                    <svg lucideCopy [size]="16"></svg>
+                    <span class="hidden lg:inline">Dupliquer</span>
+                </button>
+                <button app-button [routerLink]="['liste-de-course', 1]">
+                    Voir la liste
+                    <svg lucideArrowRight [size]="16"></svg>
+                </button>
             </div>
-            <div class="bg-deep rounded p-3">
-                <p class="font-extrabold text-lg font-display leading-6">60,00 €</p>
-                <p class="text-sm text-muted">budget</p>
+        </div>
+
+        <div class="bg-deep shadow-lg rounded border border-line py-4 px-6 flex flex-col gap-3">
+            <h2>Statistiques</h2>
+            <div class="grid grid-cols-2 items-center gap-y-1 gap-x-6 *:odd:text-sm *:odd:text-muted *:even:font-bold *:even:text-right">
+                <p>Listes en cours</p>
+                <p>4</p>
+
+                <p>Nombre total d'articles</p>
+                <p>156</p>
+
+                <p>Articles restants</p>
+                <p>10</p>
+
+                <p>Rayon le plus chargé</p>
+                <div>
+                    <app-badge-aisle color="#6C44A4" label="Fruits & légumes" />
+                </div>
             </div>
-        </div>
-        <div class="w-full h-3 bg-deep rounded-full">
-            <div class="w-4/10 h-full rounded-full bg-secondary"></div>
-        </div>
-        <div class="flex items-start justify-between">
-            <p>18,45 € dépensés</p>
-            <p class="font-bold text-md">56,09 € restants</p>
-        </div>
-        <div class="flex justify-end gap-3">
-            <button app-button variant="tertiary">
-                <svg lucideCopy [size]="20"></svg>
-                <span class="hidden lg:inline">Dupliquer la liste</span>
-            </button>
-            <button app-button [routerLink]="['liste-de-course', 1]" variant="outline">
-                <svg lucideArrowRight [size]="20"></svg>
-                Voir la liste
-            </button>
         </div>
     </div>
 </section>
 
-<section class="space-y-6">
+<section class="space-y-4">
     <h2>Historique</h2>
-
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
-        <a [routerLink]="['liste-de-course', 1]" class="bg-surface shadow-md rounded py-4 px-6 space-y-3">
+        <div class="bg-surface shadow-lg border border-line rounded py-4 px-6 space-y-3">
             <div class="flex justify-between items-center lg:items-start gap-3">
-                <h4 class="line-clamp-2">Courses anniversaire 2026</h4>
-                <div class="bg-deep rounded font-extrabold px-3 py-1.5 whitespace-nowrap">36,67 €</div>
+                <h3 class="line-clamp-2">Courses anniversaire 2026</h3>
+                <p class="font-mono text-muted text-sm/4 whitespace-nowrap">16 oct.</p>
             </div>
-            <p class="text-muted">3/6 articles · budget 50,00 € · 17 sept</p>
+            <div class="grid grid-cols-2 items-center gap-y-1 gap-x-6 *:odd:text-sm *:odd:text-muted *:even:font-bold *:even:text-right">
+                <p>Articles</p>
+                <p>3 / 8</p>
+
+                <p>Budget</p>
+                <p>30,00 €</p>
+
+                <p>Dépensé</p>
+                <p>21,00 €</p>
+            </div>
             <div class="flex justify-end items-center gap-3">
-                <button app-button shape="round" variant="invalid">
-                    <svg lucideTrash2 [size]="20"></svg>
+                <button app-button variant="outline">
+                    <svg lucideCopy [size]="16"></svg>
+                    <span class="hidden lg:inline">Dupliquer</span>
                 </button>
-                <button app-button variant="tertiary">
-                    <svg lucideCopy [size]="20"></svg>
-                    Dupliquer
-                </button>
-            </div>
-        </a>
-        <div class="bg-surface shadow-md rounded py-4 px-6 space-y-3">
-            <div class="flex justify-between items-center lg:items-start gap-3">
-                <h4 class="line-clamp-2">Courses anniversaire 2026</h4>
-                <div class="bg-deep rounded font-extrabold px-3 py-1.5 whitespace-nowrap">36,67 €</div>
-            </div>
-            <p class="text-muted">3/6 articles · budget 50,00 € · 17 sept</p>
-            <div class="flex justify-end items-center gap-3">
-                <button app-button shape="round" variant="invalid">
-                    <svg lucideTrash2 [size]="20"></svg>
-                </button>
-                <button app-button variant="tertiary">
-                    <svg lucideCopy [size]="20"></svg>
-                    Dupliquer
+                <button app-button [routerLink]="['liste-de-course', 1]">
+                    Voir la liste
+                    <svg lucideArrowRight [size]="16"></svg>
                 </button>
             </div>
         </div>

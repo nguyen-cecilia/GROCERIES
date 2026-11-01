@@ -2,11 +2,12 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { ButtonComponent } from '../../components/button/button.component';
 import {
     LucideChevronDown,
+    LucideChevronsUpDown,
     LucideChevronUp,
     LucideLogOut,
     LucidePlus,
     LucideSave,
-    LucideSettings,
+    LucideSlidersHorizontal,
 } from '@lucide/angular';
 import { AuthService } from '../../core/auth.service';
 import { Router } from '@angular/router';
@@ -15,6 +16,10 @@ import { ModalService } from '../../components/modal/modal.service';
 import { ModalComponent } from '../../components/modal/modal.component';
 import { AisleUpdateComponent } from '../aisle/aisle-update.component';
 import { AisleService } from '../aisle/aisle.service';
+import { InputSearchComponent } from '../../components/input-search/input-search.component';
+import { ArticleUpdateComponent } from '../article/article-update.component';
+import { BadgeAisleComponent } from '../../components/badge-aisle/badge-aisle.component';
+import { QuantityUnitUpdateComponent } from '../quantity-unit/quantity-unit-update.component';
 
 type accountTabs = 'account' | 'aisles' | 'articles' | 'quantityUnits';
 
@@ -25,12 +30,17 @@ type accountTabs = 'account' | 'aisles' | 'articles' | 'quantityUnits';
         LucideSave,
         LucidePlus,
         LucideLogOut,
-        LucideSettings,
         LucideChevronUp,
         LucideChevronDown,
         FormField,
         ModalComponent,
         AisleUpdateComponent,
+        LucideSlidersHorizontal,
+        LucideChevronsUpDown,
+        InputSearchComponent,
+        ArticleUpdateComponent,
+        BadgeAisleComponent,
+        QuantityUnitUpdateComponent,
     ],
     templateUrl: './settings.component.html',
 })

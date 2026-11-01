@@ -1,0 +1,1758 @@
+<!doctype html>
+<html lang="fr" data-theme="foyer">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="color-scheme" content="light" />
+<title>Cabas · Maquette v6</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400..700&family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Fraunces:opsz,wght@9..144,400..700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Nunito:wght@400..800&family=Space+Mono:wght@400;700&family=Work+Sans:wght@400..700&display=swap" rel="stylesheet" />
+<style>
+/* ============================================================================
+   Hallmark · macrostructure: Workbench + Split Studio + Long Document
+   Hallmark · themes: Foyer · Ration · Panier · Cagette (switch via [data-theme])
+   Hallmark · genre: playful (tokens vary the register)
+   Hallmark · pre-emit critique: P5 H4 E4 S5 R4 V5
+   Hallmark · tokens-first: no inline colour or font-family outside the blocks
+   ============================================================================ */
+
+/* --- 1. Global scale (theme-independent) ---------------------------------- */
+:root {
+  --fs-xs: 11px;
+  --fs-sm: 12.5px;
+  --fs-base: 15px;
+  --fs-md: 17px;
+  --fs-lg: 22px;
+  --fs-xl: 28px;
+  --fs-2xl: 36px;
+  --fs-3xl: 52px;
+
+  --sp-1: 4px;  --sp-2: 8px;   --sp-3: 12px; --sp-4: 16px;
+  --sp-5: 24px; --sp-6: 32px;  --sp-7: 48px; --sp-8: 72px;
+
+  --track-display: -0.015em;
+  --track-label: 0.08em;
+  --dur: 160ms;
+  --ease: cubic-bezier(0.2, 0.7, 0.3, 1);
+  --scrim: oklch(15% 0 0 / 0.55);
+  --width: 1120px;
+}
+
+/* --- 2. Theme · Foyer (doux / chaleureux) --------------------------------- */
+[data-theme="foyer"] {
+  --paper: oklch(97.5% 0.012 85);
+  --surface: oklch(99.5% 0.008 85);
+  --surface-2: oklch(93.5% 0.024 78);
+  --ink: oklch(28% 0.035 55);
+  --ink-soft: oklch(50% 0.03 60);
+  --line: oklch(88% 0.02 80);
+  --accent: oklch(48% 0.15 300);
+  --accent-ink: oklch(98% 0.01 300);
+  --accent-2: oklch(72% 0.12 70);
+  --accent-2-ink: oklch(28% 0.05 60);
+  --warn: oklch(55% 0.16 28);
+  --ok: oklch(57% 0.12 148);
+  --radius: 18px;
+  --radius-sm: 11px;
+  --radius-pill: 999px;
+  --border-w: 1px;
+  --shadow: 0 10px 28px -14px oklch(40% 0.05 60 / 0.3);
+  --shadow-lg: 0 26px 60px -24px oklch(40% 0.05 60 / 0.42);
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body: 'Work Sans', system-ui, sans-serif;
+  --font-mono: ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  --pad-card: var(--sp-5);
+  --display-weight: 700;
+  --btn-radius: var(--radius-pill);
+  --display-transform: none;
+}
+
+/* --- 3. Theme · Ration (utilitaire) --------------------------------------- */
+[data-theme="ration"] {
+  --paper: oklch(96.5% 0.004 250);
+  --surface: oklch(100% 0 0);
+  --surface-2: oklch(92.5% 0.007 250);
+  --ink: oklch(22% 0.012 250);
+  --ink-soft: oklch(48% 0.014 250);
+  --line: oklch(84.5% 0.009 250);
+  --accent: oklch(50% 0.14 252);
+  --accent-ink: oklch(99% 0 0);
+  --accent-2: oklch(42% 0.1 252);
+  --accent-2-ink: oklch(99% 0 0);
+  --warn: oklch(53% 0.17 25);
+  --ok: oklch(52% 0.12 152);
+  --radius: 6px;
+  --radius-sm: 4px;
+  --radius-pill: 6px;
+  --border-w: 1px;
+  --shadow: 0 1px 2px oklch(0% 0 0 / 0.06);
+  --shadow-lg: 0 10px 26px -16px oklch(0% 0 0 / 0.28);
+  --font-display: 'Archivo', system-ui, sans-serif;
+  --font-body: 'IBM Plex Sans', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  --pad-card: var(--sp-4);
+  --display-weight: 700;
+  --btn-radius: 5px;
+  --display-transform: none;
+}
+
+/* --- 4. Theme · Panier (joyeux / ludique) --------------------------------- */
+[data-theme="panier"] {
+  --paper: oklch(98% 0.026 95);
+  --surface: oklch(100% 0 0);
+  --surface-2: oklch(93.5% 0.062 95);
+  --ink: oklch(25% 0.05 285);
+  --ink-soft: oklch(50% 0.05 285);
+  --line: oklch(86% 0.045 92);
+  --accent: oklch(56% 0.2 28);
+  --accent-ink: oklch(100% 0 0);
+  --accent-2: oklch(82% 0.16 88);
+  --accent-2-ink: oklch(25% 0.05 285);
+  --warn: oklch(58% 0.21 25);
+  --ok: oklch(66% 0.15 155);
+  --radius: 26px;
+  --radius-sm: 16px;
+  --radius-pill: 999px;
+  --border-w: 2px;
+  --shadow: 0 8px 0 -2px oklch(25% 0.05 285 / 0.12);
+  --shadow-lg: 0 16px 0 -6px oklch(25% 0.05 285 / 0.16);
+  --font-display: 'Bricolage Grotesque', system-ui, sans-serif;
+  --font-body: 'Nunito', system-ui, sans-serif;
+  --font-mono: ui-monospace, monospace;
+  --pad-card: var(--sp-5);
+  --display-weight: 800;
+  --btn-radius: var(--radius-pill);
+  --display-transform: none;
+}
+
+/* --- 5. Theme · Cagette (brutalist) --------------------------------------- */
+[data-theme="cagette"] {
+  --paper: oklch(96.5% 0.012 100);
+  --surface: oklch(100% 0 0);
+  --surface-2: oklch(90% 0.03 100);
+  --ink: oklch(15% 0 0);
+  --ink-soft: oklch(40% 0 0);
+  --line: oklch(15% 0 0);
+  --accent: oklch(45% 0.22 300);
+  --accent-ink: oklch(99% 0 0);
+  --accent-2: oklch(88% 0.19 105);
+  --accent-2-ink: oklch(15% 0 0);
+  --warn: oklch(55% 0.23 25);
+  --ok: oklch(58% 0.18 150);
+  --radius: 0px;
+  --radius-sm: 0px;
+  --radius-pill: 0px;
+  --border-w: 3px;
+  --shadow: 5px 5px 0 oklch(15% 0 0);
+  --shadow-lg: 9px 9px 0 oklch(15% 0 0);
+  --font-display: 'Archivo Black', system-ui, sans-serif;
+  --font-body: 'Space Mono', ui-monospace, monospace;
+  --font-mono: 'Space Mono', ui-monospace, monospace;
+  --pad-card: var(--sp-4);
+  --display-weight: 400;
+  --btn-radius: 0px;
+  --display-transform: uppercase;
+}
+
+/* --- 6. Reset / base ------------------------------------------------------ */
+*, *::before, *::after { box-sizing: border-box; }
+html { overflow-x: clip; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  overflow-x: clip;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--fs-base);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, h4 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-style: normal;
+  font-weight: var(--display-weight);
+  text-transform: var(--display-transform);
+  letter-spacing: var(--track-display);
+  line-height: 1.08;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+h1 { font-size: var(--fs-2xl); }
+h2 { font-size: var(--fs-xl); }
+h3 { font-size: var(--fs-lg); }
+h4 { font-size: var(--fs-md); }
+p { margin: 0; }
+a { color: inherit; }
+button { font: inherit; }
+[hidden] { display: none !important; }
+
+.muted { color: var(--ink-soft); }
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.label {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.ico { width: 16px; height: 16px; display: block; flex: 0 0 auto; }
+.ico--lg { width: 20px; height: 20px; }
+
+/* --- 7. Demo bar (review chrome, not the product) ------------------------- */
+.mkbar {
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3) var(--sp-5);
+  padding: 10px var(--sp-4);
+  background: var(--ink);
+  color: var(--paper);
+}
+.mkbar__group { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.mkbar__tag {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  opacity: 0.7;
+  margin-right: 4px;
+  white-space: nowrap;
+}
+.mkbtn {
+  border: 1px solid currentColor;
+  background: transparent;
+  color: inherit;
+  border-radius: var(--radius-pill);
+  padding: 5px 11px;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.mkbtn:hover { background: color-mix(in oklab, currentColor 16%, transparent); }
+.mkbtn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.mkbtn.is-active { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+
+.toast {
+  position: fixed;
+  top: auto;
+  bottom: 16px;
+  left: 50%;
+  translate: -50% 0;
+  z-index: 200;
+  border-radius: var(--radius-pill);
+  display: none;
+  justify-content: center;
+}
+
+/* --- 8. App bar ----------------------------------------------------------- */
+.appbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  width: min(var(--width), 100% - var(--sp-6));
+  margin-inline: auto;
+  padding-block: var(--sp-4);
+  border-bottom: var(--border-w) solid var(--line);
+}
+.brand {
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  font-size: var(--fs-lg);
+  letter-spacing: var(--track-display);
+  text-transform: var(--display-transform);
+  background: none;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.brand span { color: var(--accent); }
+.nav { display: flex; gap: var(--sp-1); }
+.navlink {
+  border: 0;
+  background: none;
+  color: var(--ink-soft);
+  font-weight: 600;
+  font-size: var(--fs-sm);
+  padding: 7px 12px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.navlink:hover { background: var(--surface-2); color: var(--ink); }
+.navlink:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.navlink.is-active { background: var(--ink); color: var(--paper); }
+.userchip {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  white-space: nowrap;
+}
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-pill);
+  background: var(--accent-2);
+  color: var(--accent-2-ink);
+  font-weight: 800;
+  font-size: var(--fs-xs);
+}
+
+/* --- 9. Screens ----------------------------------------------------------- */
+.wrap { width: min(var(--width), 100% - var(--sp-6)); margin-inline: auto; padding-block: var(--sp-6); }
+.pagehead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-5);
+}
+.pagehead__meta { color: var(--ink-soft); font-size: var(--fs-sm); }
+
+/* --- 10. Buttons ---------------------------------------------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  padding: 10px 16px;
+  border: var(--border-w) solid var(--line);
+  border-radius: var(--btn-radius);
+  background: var(--surface);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: transform var(--dur) var(--ease), background var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+.btn:hover { background: var(--surface-2); }
+.btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.btn:active { transform: translateY(1px); }
+.btn[disabled] { opacity: 0.45; cursor: not-allowed; }
+.btn--primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn--primary:hover { background: color-mix(in oklab, var(--accent) 88%, var(--ink)); }
+.btn--danger { color: var(--warn); border-color: color-mix(in oklab, var(--warn) 45%, var(--line)); }
+.btn--danger:hover { background: color-mix(in oklab, var(--warn) 12%, var(--surface)); }
+.btn--ghost { border-color: transparent; background: transparent; }
+.btn--ghost:hover { background: var(--surface-2); }
+.btn--icon { padding: 8px; border-radius: var(--radius-sm); }
+.btn--sm { padding: 6px 11px; font-size: var(--fs-xs); }
+.btn--block { width: 100%; }
+.btn-group { display: flex; gap: var(--sp-2); flex-wrap: wrap; }
+
+/* --- 11. Form controls ---------------------------------------------------- */
+.field { display: flex; flex-direction: column; gap: 6px; }
+.form-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--sp-3) var(--sp-4); }
+.form-grid--3 { grid-template-columns: minmax(0, 1.4fr) minmax(0, 0.8fr) minmax(0, 1fr) auto; align-items: end; }
+.input, .select {
+  width: 100%;
+  padding: 11px 13px;
+  border: var(--border-w) solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--fs-base);
+  transition: border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+.input::placeholder { color: var(--ink-soft); opacity: 0.75; }
+.input:hover, .select:hover { border-color: color-mix(in oklab, var(--line) 55%, var(--ink-soft)); }
+.input:focus-visible, .select:focus-visible { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 35%, transparent); }
+.input[readonly] { background: var(--surface-2); }
+.input--price { text-align: right; font-weight: 700; }
+.search { position: relative; }
+.search .ico { position: absolute; left: 12px; top: 50%; translate: 0 -50%; color: var(--ink-soft); }
+.search .input { padding-left: 36px; }
+.hint { font-size: var(--fs-sm); }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+.suggest {
+  position: absolute;
+  left: 0; right: 0; top: calc(100% + 6px);
+  z-index: 30;
+  margin: 0; padding: 6px;
+  list-style: none;
+  background: var(--surface);
+  border: var(--border-w) solid var(--line);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-lg);
+  max-height: 260px;
+  overflow: auto;
+}
+.suggest .naked {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  width: 100%;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  padding: 9px 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+.suggest .naked:hover { background: var(--surface-2); }
+.suggest .naked:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.suggest .naked span { font-size: var(--fs-xs); }
+
+/* --- 12. Cards / layout primitives ---------------------------------------- */
+.card {
+  background: var(--surface);
+  border: var(--border-w) solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: var(--pad-card);
+}
+.card--flat { box-shadow: none; }
+.card--deep { background: var(--surface-2); }
+.stack { display: flex; flex-direction: column; gap: var(--sp-3); }
+.stack--lg { gap: var(--sp-5); }
+.row { display: flex; align-items: center; gap: var(--sp-3); }
+.row--between { justify-content: space-between; }
+.row--wrap { flex-wrap: wrap; }
+.dot { width: 14px; height: 14px; border-radius: var(--radius-pill); border: 1px solid var(--line); flex: 0 0 auto; }
+.dot--sm { width: 10px; height: 10px; }
+.grow { flex: 1 1 auto; min-width: 0; }
+.divider { height: 1px; background: var(--line); border: 0; margin: 0; }
+.mt-auto { margin-top: auto; }
+.mt-3 { margin-top: var(--sp-3); }
+.fw-bold { font-weight: 700; }
+.fw-semi { font-weight: 600; }
+.text-xs { font-size: var(--fs-xs); }
+.row--tight { gap: var(--sp-2); }
+.search-wide { min-width: 260px; }
+
+/* --- 13. Connexion -------------------------------------------------------- */
+.login {
+  display: grid;
+  place-items: center;
+  gap: var(--sp-5);
+  min-height: calc(100vh - 120px);
+  padding-block: var(--sp-7);
+}
+.login__brand {
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  font-size: var(--fs-2xl);
+  letter-spacing: var(--track-display);
+  text-transform: var(--display-transform);
+}
+.login__brand span { color: var(--accent); }
+.login__card { width: min(420px, 100%); display: flex; flex-direction: column; gap: var(--sp-4); }
+
+/* --- 14. Accueil ---------------------------------------------------------- */
+.hero-list {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+  gap: var(--sp-5);
+  align-items: stretch;
+}
+.hero-list__main { display: flex; flex-direction: column; gap: var(--sp-4); }
+.hero-list__title { font-size: var(--fs-2xl); }
+.hero-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+  gap: var(--sp-4);
+}
+.stat__value { font-family: var(--font-display); font-weight: var(--display-weight); font-size: var(--fs-lg); letter-spacing: var(--track-display); }
+.progress { height: 12px; border-radius: var(--radius-pill); background: var(--surface-2); overflow: hidden; border: var(--border-w) solid var(--line); }
+.progress__fill { height: 100%; background: var(--accent); transition: width var(--dur) var(--ease); }
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-2);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  white-space: nowrap;
+}
+.badge--accent { background: var(--accent-2); color: var(--accent-2-ink); }
+.list-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: var(--sp-4); margin-top: var(--sp-5); }
+.mini { display: flex; flex-direction: column; gap: var(--sp-3); }
+.mini__meta { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px var(--sp-3); font-size: var(--fs-sm); }
+.mini__meta dt { color: var(--ink-soft); }
+.mini__meta dd { margin: 0; text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+/* --- 15. Fiche liste ------------------------------------------------------ */
+.detail {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 340px);
+  gap: var(--sp-5);
+  align-items: start;
+}
+.groups { display: flex; flex-direction: column; gap: var(--sp-2); }
+.group__head {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding-bottom: var(--sp-1);
+  border-bottom: 2px solid var(--ink);
+  margin-top: var(--sp-3);
+}
+.group__count {
+  display: grid;
+  place-items: center;
+  min-width: 26px;
+  height: 26px;
+  padding-inline: 7px;
+  border-radius: var(--radius-pill);
+  background: var(--accent-2);
+  color: var(--accent-2-ink);
+  font-weight: 800;
+  font-size: var(--fs-xs);
+}
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-3);
+  border: var(--border-w) solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+.item:hover { border-color: color-mix(in oklab, var(--line) 50%, var(--ink-soft)); }
+.item.is-checked { background: transparent; border-color: transparent; padding-block: var(--sp-2); }
+.item.is-checked .item__label { text-decoration: line-through; color: var(--ink-soft); }
+.check {
+  appearance: none;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 auto;
+  border: 2px solid var(--line);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  cursor: pointer;
+  position: relative;
+  transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+.check:hover { border-color: var(--accent); }
+.check:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.check:checked { background: var(--accent); border-color: var(--accent); }
+.check:checked::after {
+  content: "";
+  position: absolute;
+  left: 11px; top: 6px;
+  width: 9px; height: 16px;
+  border: solid var(--accent-ink);
+  border-width: 0 3px 3px 0;
+  transform: rotate(45deg);
+}
+.item__label { font-weight: 700; font-size: var(--fs-md); overflow-wrap: anywhere; min-width: 0; }
+.item__qtyrow { display: flex; align-items: center; gap: var(--sp-2); margin-top: 4px; }
+.item__unit { color: var(--ink-soft); font-size: var(--fs-sm); white-space: nowrap; }
+.pricebox { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+.pricebox .price { width: 120px; }
+.price { position: relative; display: block; }
+.price .input { padding-right: 26px; }
+.price > span[aria-hidden="true"] {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  translate: 0 -50%;
+  pointer-events: none;
+  color: var(--ink-soft);
+  font-weight: 700;
+}
+.input--sm { padding: 7px 10px; font-size: var(--fs-sm); }
+.chips { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 12px;
+  border: var(--border-w) solid var(--line);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.chip:hover { background: var(--surface-2); }
+.chip:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.chip.is-active { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+.chip .dot { width: 10px; height: 10px; }
+.counter {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  border: var(--border-w) solid var(--line);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  padding: 2px;
+}
+.counter button {
+  width: 24px; height: 24px;
+  display: grid; place-items: center;
+  border: 0; background: none; cursor: pointer;
+  border-radius: var(--radius-pill);
+  color: var(--ink);
+}
+.counter button:hover { background: var(--surface-2); }
+.counter button:focus-visible { outline: 2px solid var(--accent); }
+.counter__input {
+  width: 46px;
+  text-align: center;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+.counter__input::-webkit-outer-spin-button,
+.counter__input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.counter__input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; border-radius: 4px; }
+
+/* --- 16. Récapitulatif ---------------------------------------------------- */
+.recap { position: sticky; top: var(--sp-4); display: flex; flex-direction: column; gap: var(--sp-4); }
+.recap__total { font-family: var(--font-display); font-weight: var(--display-weight); font-size: var(--fs-2xl); letter-spacing: var(--track-display); }
+.recap__rows { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px var(--sp-3); font-size: var(--fs-sm); }
+.recap__rows dt { color: var(--ink-soft); }
+.recap__rows dd { margin: 0; text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; }
+.recap__handle { display: none; }
+
+/* --- 17. Paramètres (onglets + table) ------------------------------------- */
+.tabs { display: flex; gap: var(--sp-1); flex-wrap: wrap; border-bottom: var(--border-w) solid var(--line); margin-bottom: var(--sp-5); }
+.tab {
+  border: 0;
+  background: none;
+  color: var(--ink-soft);
+  font-weight: 700;
+  font-size: var(--fs-sm);
+  padding: 10px 14px;
+  cursor: pointer;
+  white-space: nowrap;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -1px;
+  transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+.tab:hover { color: var(--ink); }
+.tab:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.tab.is-active { color: var(--ink); border-bottom-color: var(--accent); }
+.tabs--rail {
+  flex-direction: column;
+  gap: 2px;
+  border-bottom: 0;
+  border-right: var(--border-w) solid var(--line);
+  margin-bottom: 0;
+  padding-right: var(--sp-3);
+}
+.tabs--rail .tab {
+  justify-content: flex-start;
+  text-align: left;
+  border-bottom: 0;
+  border-left: 3px solid transparent;
+  border-radius: var(--radius-sm);
+  margin-bottom: 0;
+  padding: 10px 12px;
+}
+.tabs--rail .tab.is-active {
+  border-left-color: var(--accent);
+  background: var(--surface-2);
+  color: var(--ink);
+}
+.settings-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 210px) minmax(0, 1fr);
+  gap: var(--sp-6);
+  align-items: start;
+}
+.panels { min-width: 0; }
+.panel { display: none; }
+.panel.is-active { display: block; }
+.panel__head { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-4); flex-wrap: wrap; margin-bottom: var(--sp-4); }
+
+.table-scroll { overflow-x: auto; }
+table.data { width: 100%; border-collapse: collapse; min-width: 520px; }
+table.data th, table.data td { text-align: left; padding: var(--sp-3); vertical-align: middle; }
+table.data thead th { border-bottom: 2px solid var(--ink); font-size: var(--fs-xs); letter-spacing: var(--track-label); text-transform: uppercase; color: var(--ink-soft); }
+table.data tbody tr { border-bottom: var(--border-w) solid var(--line); }
+table.data tbody tr:last-child { border-bottom: 0; }
+.th-sort {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 0; background: none; cursor: pointer; padding: 0;
+  color: inherit; font: inherit; letter-spacing: inherit; text-transform: inherit;
+  white-space: nowrap;
+}
+.th-sort:hover { color: var(--ink); }
+.th-sort:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.th-sort .ico { width: 13px; height: 13px; opacity: 0.5; }
+.th-sort.is-sorted { color: var(--ink); }
+.th-sort.is-sorted .ico { opacity: 1; }
+.cell-actions { text-align: right; white-space: nowrap; }
+.reorder { display: flex; flex-direction: column; gap: 2px; }
+.reorder .btn--icon { padding: 4px; }
+.swatches { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+.swatch {
+  width: 30px; height: 30px;
+  border-radius: var(--radius-sm);
+  border: 2px solid transparent;
+  cursor: pointer;
+  padding: 0;
+  box-shadow: inset 0 0 0 1px oklch(0% 0 0 / 0.12);
+}
+.swatch:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.swatch.is-selected { border-color: var(--ink); }
+
+/* --- 18. Modales ---------------------------------------------------------- */
+.modal { position: fixed; inset: 0; z-index: 100; display: none; }
+.modal.is-open { display: grid; place-items: center; padding: var(--sp-4); }
+.modal__backdrop { position: absolute; inset: 0; background: var(--scrim); }
+.modal__panel {
+  position: relative;
+  width: min(520px, 100%);
+  max-height: calc(100vh - 2 * var(--sp-4));
+  overflow: auto;
+  background: var(--surface);
+  border: var(--border-w) solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  padding: var(--pad-card);
+  animation: pop var(--dur) var(--ease);
+}
+.modal__head { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3); margin-bottom: var(--sp-4); }
+@keyframes pop { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+/* --- 19. Empty state ------------------------------------------------------ */
+.empty { text-align: center; padding: var(--sp-6) var(--sp-4); color: var(--ink-soft); }
+
+/* --- 20. Responsive (320 / 375 / 414 / 768) ------------------------------- */
+@media (max-width: 1024px) {
+  .detail { grid-template-columns: minmax(0, 1fr); }
+  .hero-list { grid-template-columns: minmax(0, 1fr); }
+  .recap { position: static; }
+}
+@media (max-width: 768px) {
+  :root { --fs-3xl: 40px; --fs-2xl: 30px; }
+  .wrap { width: min(var(--width), 100% - var(--sp-4)); padding-block: var(--sp-5); }
+  .appbar { width: min(var(--width), 100% - var(--sp-4)); }
+  .pagehead { flex-direction: column; align-items: stretch; }
+  .form-grid, .form-grid--3 { grid-template-columns: minmax(0, 1fr); }
+  .userchip span:not(.avatar) { display: none; }
+  .settings-grid { grid-template-columns: minmax(0, 1fr); gap: var(--sp-4); }
+  .tabs--rail {
+    flex-direction: row;
+    border-right: 0;
+    border-bottom: var(--border-w) solid var(--line);
+    padding-right: 0;
+    overflow-x: auto;
+  }
+  .tabs--rail .tab { border-left: 0; border-bottom: 3px solid transparent; border-radius: 0; }
+  .tabs--rail .tab.is-active { border-bottom-color: var(--accent); background: transparent; }
+}
+@media (max-width: 640px) {
+  .mkbar { justify-content: center; }
+  .mkbar__tag { width: 100%; text-align: center; margin: 0; }
+  .detail { padding-bottom: 96px; }
+  .recap {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    top: auto;
+    z-index: 40;
+    background: var(--surface);
+    border-top: var(--border-w) solid var(--line);
+    border-radius: var(--radius) var(--radius) 0 0;
+    box-shadow: var(--shadow-lg);
+    padding: var(--sp-4) var(--sp-4) calc(var(--sp-4) + env(safe-area-inset-bottom));
+    max-height: 78vh;
+    overflow: auto;
+  }
+  .recap__handle { display: flex; }
+  .recap__body { display: none; }
+  .recap.is-open .recap__body { display: flex; flex-direction: column; gap: var(--sp-4); }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- Review chrome: theme switch + screen switch. Not part of the product. -->
+<div class="mkbar">
+  <div class="mkbar__group">
+    <span class="mkbar__tag">Cabas · maquette v6 · données d'exemple</span>
+    <button class="mkbtn is-active" data-theme-btn="foyer">Foyer</button>
+    <button class="mkbtn" data-theme-btn="ration">Ration</button>
+    <button class="mkbtn" data-theme-btn="panier">Panier</button>
+    <button class="mkbtn" data-theme-btn="cagette">Cagette</button>
+  </div>
+  <div class="mkbar__group">
+    <span class="mkbar__tag">Écran</span>
+    <button class="mkbtn is-active" data-screen-btn="connexion">Connexion</button>
+    <button class="mkbtn" data-screen-btn="accueil">Accueil</button>
+    <button class="mkbtn" data-screen-btn="liste">Fiche liste</button>
+    <button class="mkbtn" data-screen-btn="parametres">Paramètres</button>
+  </div>
+</div>
+
+<div class="appbar" id="appbar" hidden>
+  <button class="brand" data-goto="accueil">Cab<span>as</span></button>
+  <nav class="nav">
+    <button class="navlink is-active" data-goto="accueil">Accueil</button>
+    <button class="navlink" data-goto="parametres">Paramètres</button>
+  </nav>
+  <div class="userchip"><span class="avatar">C</span><span>Cécilia</span></div>
+</div>
+
+<main>
+  <!-- ===================== CONNEXION ===================== -->
+  <section class="screen" data-screen="connexion">
+    <div class="wrap">
+      <div class="login">
+        <div class="login__brand">Cab<span>as</span></div>
+        <form class="card login__card">
+          <div class="stack">
+            <h1 class="login__title">Content de te revoir</h1>
+            <p class="muted">Connecte-toi pour retrouver tes listes de courses.</p>
+          </div>
+          <div class="field">
+            <label class="label" for="login-email">Email</label>
+            <input class="input" id="login-email" type="email" value="ngcecilia@orange.fr" autocomplete="email" />
+          </div>
+          <div class="field">
+            <label class="label" for="login-pass">Mot de passe</label>
+            <input class="input" id="login-pass" type="password" value="motdepasse" autocomplete="current-password" />
+          </div>
+          <button class="btn btn--primary btn--block" type="button" data-goto="accueil">Se connecter</button>
+          <p class="hint muted">Pas d'inscription : les comptes sont créés directement en base de données.</p>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== ACCUEIL ===================== -->
+  <section class="screen" data-screen="accueil" hidden>
+    <div class="wrap">
+      <div class="pagehead">
+        <div>
+          <h1>Mes listes</h1>
+          <p class="pagehead__meta">4 listes · dernière activité aujourd'hui</p>
+        </div>
+        <button class="btn btn--primary" data-modal-open="modal-list">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          Nouvelle liste
+        </button>
+      </div>
+
+      <div class="hero-list">
+        <article class="card hero-list__main">
+          <div class="row row--between row--wrap">
+            <span class="badge badge--accent">Dernière modifiée</span>
+            <span class="muted mono" id="hero-date">Aujourd'hui, 09:20</span>
+          </div>
+          <h2 class="hero-list__title" id="hero-label">Courses de la semaine</h2>
+          <div class="progress"><div class="progress__fill" id="hero-progress" style="width: 0%"></div></div>
+          <div class="hero-stats">
+            <div><p class="label">Articles pris</p><p class="stat__value" id="hero-taken">—</p></div>
+            <div><p class="label">Dépensé</p><p class="stat__value mono" id="hero-spent">—</p></div>
+            <div><p class="label">Budget</p><p class="stat__value mono" id="hero-budget">—</p></div>
+            <div><p class="label">Restant</p><p class="stat__value mono" id="hero-remaining">—</p></div>
+          </div>
+          <div class="btn-group">
+            <button class="btn btn--primary" data-goto="liste">
+              Voir la liste
+              <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </button>
+            <button class="btn" data-toast="Liste dupliquée">
+              <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+              Dupliquer
+            </button>
+          </div>
+        </article>
+
+        <aside class="card card--deep stack">
+          <h3>Repères</h3>
+          <dl class="recap__rows">
+            <dt>Listes en cours</dt><dd>4</dd>
+            <dt>Articles restants</dt><dd id="hero-remaining-count">—</dd>
+            <dt>Budget du mois</dt><dd class="mono">220,00 €</dd>
+          </dl>
+          <hr class="divider" />
+          <p class="muted hint">Astuce : depuis une liste, tu peux cocher les articles au fur et à mesure des rayons.</p>
+        </aside>
+      </div>
+
+      <div class="list-grid" id="lists-grid"></div>
+    </div>
+  </section>
+
+  <!-- ===================== FICHE LISTE ===================== -->
+  <section class="screen" data-screen="liste" hidden>
+    <div class="wrap">
+      <div class="pagehead">
+        <div class="stack">
+          <button class="btn btn--ghost btn--sm" data-goto="accueil">
+            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            Mes listes
+          </button>
+          <h1 id="detail-label">Courses de la semaine</h1>
+          <p class="pagehead__meta" id="detail-date">Dernière modification : aujourd'hui à 09:20</p>
+        </div>
+        <div class="btn-group">
+          <button class="btn" data-modal-open="modal-list">
+            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+            Gérer la liste
+          </button>
+          <button class="btn" id="btn-reset">
+            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+            Réinitialiser
+          </button>
+          <button class="btn btn--danger" id="btn-clear">
+            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 7l-.9 12.1A2 2 0 0 1 16.1 21H7.9a2 2 0 0 1-2-1.9L5 7"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M4 7h16"/></svg>
+            Vider
+          </button>
+        </div>
+      </div>
+
+      <div class="detail">
+        <div class="stack stack--lg">
+          <form class="card card--flat stack" id="add-form">
+            <h3>Ajouter un article</h3>
+            <div class="form-grid form-grid--3">
+              <div class="field">
+                <label class="label" for="add-article">Article</label>
+                <div class="search">
+                  <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+                  <input class="input" id="add-article" placeholder="Ex : oeufs, lait, pain…" autocomplete="off" />
+                  <ul class="suggest" id="add-suggest" hidden></ul>
+                </div>
+              </div>
+              <div class="field">
+                <label class="label" for="add-qty">Quantité</label>
+                <input class="input" id="add-qty" type="number" min="1" value="1" />
+              </div>
+              <div class="field">
+                <label class="label" for="add-unit">Unité</label>
+                <select class="select" id="add-unit"></select>
+              </div>
+              <button class="btn btn--primary" type="submit">
+                <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                Ajouter
+              </button>
+            </div>
+            <div class="field">
+              <span class="label">Rayon</span>
+              <div class="chips" id="add-aisles"></div>
+            </div>
+          </form>
+
+          <div class="groups" id="detail-groups"></div>
+        </div>
+
+        <aside class="card recap" id="recap">
+          <div class="recap__handle row row--between">
+            <div>
+              <p class="label">Total dépensé</p>
+              <p class="recap__total mono" id="recap-total">0,00 €</p>
+            </div>
+            <button class="btn btn--icon" id="recap-toggle" aria-label="Afficher le récapitulatif">
+              <svg class="ico ico--lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+          </div>
+          <div class="recap__body stack">
+            <div class="progress"><div class="progress__fill" id="recap-progress" style="width: 0%"></div></div>
+            <dl class="recap__rows">
+              <dt>Budget</dt><dd class="mono" id="recap-budget">—</dd>
+              <dt>Restant</dt><dd class="mono" id="recap-remaining">—</dd>
+              <dt>Articles pris</dt><dd id="recap-taken">—</dd>
+              <dt>Articles restants</dt><dd id="recap-left">—</dd>
+            </dl>
+            <hr class="divider" />
+            <dl class="recap__rows" id="recap-by-aisle"></dl>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PARAMÈTRES ===================== -->
+  <section class="screen" data-screen="parametres" hidden>
+    <div class="wrap">
+      <div class="pagehead">
+        <h1>Paramètres</h1>
+        <button class="btn btn--ghost" data-goto="connexion">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
+          Se déconnecter
+        </button>
+      </div>
+
+      <div class="settings-grid">
+        <div class="tabs tabs--rail" role="tablist" aria-orientation="vertical">
+          <button class="tab is-active" data-tab="compte" role="tab">Compte</button>
+          <button class="tab" data-tab="rayons" role="tab">Rayons</button>
+          <button class="tab" data-tab="articles" role="tab">Articles</button>
+          <button class="tab" data-tab="unites" role="tab">Unités de quantité</button>
+        </div>
+
+        <div class="panels">
+          <!-- Compte -->
+          <div class="panel is-active" data-panel="compte">
+        <form class="card stack stack--lg">
+          <div class="form-grid">
+            <div class="field">
+              <label class="label" for="acc-first">Prénom (nom affiché)</label>
+              <input class="input" id="acc-first" value="Cécilia" />
+            </div>
+            <div class="field">
+              <label class="label" for="acc-email">Email</label>
+              <input class="input" id="acc-email" type="email" value="ngcecilia@orange.fr" />
+            </div>
+            <div class="field">
+              <label class="label" for="acc-pass">Nouveau mot de passe</label>
+              <input class="input" id="acc-pass" type="password" placeholder="••••••••" />
+            </div>
+            <div class="field">
+              <label class="label" for="acc-pass2">Confirmer le mot de passe</label>
+              <input class="input" id="acc-pass2" type="password" placeholder="••••••••" />
+            </div>
+          </div>
+          <div class="row row--between row--wrap">
+            <p class="hint muted">Laisse les mots de passe vides pour ne pas les changer.</p>
+            <button class="btn btn--primary" type="button" data-toast="Profil mis à jour">Enregistrer</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Rayons -->
+      <div class="panel" data-panel="rayons">
+        <div class="panel__head">
+          <p class="muted">Range tes rayons dans l'ordre de ton magasin.</p>
+          <button class="btn btn--primary" data-modal-open="modal-aisle">
+            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+            Ajouter un rayon
+          </button>
+        </div>
+        <div class="card card--flat stack" id="aisles-list"></div>
+      </div>
+
+      <!-- Articles -->
+      <div class="panel" data-panel="articles">
+        <div class="panel__head">
+          <div class="field search-wide">
+            <label class="label sr" for="art-search">Rechercher un article</label>
+            <div class="search">
+              <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+              <input class="input" id="art-search" type="search" placeholder="Rechercher un article…" />
+            </div>
+          </div>
+          <button class="btn btn--primary" data-modal-open="modal-article">
+            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+            Ajouter un article
+          </button>
+        </div>
+        <div class="card card--flat">
+          <div class="table-scroll">
+            <table class="data">
+              <thead>
+                <tr>
+                  <th><button class="th-sort is-sorted" data-sort="label">Label <span class="ico" data-arrow="label"></span></button></th>
+                  <th><button class="th-sort" data-sort="aisle">Rayon <span class="ico" data-arrow="aisle"></span></button></th>
+                  <th><button class="th-sort" data-sort="price">Prix <span class="ico" data-arrow="price"></span></button></th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="articles-body"></tbody>
+            </table>
+          </div>
+          <p class="empty" id="articles-empty" hidden>Aucun article ne correspond à cette recherche.</p>
+        </div>
+      </div>
+
+      <!-- Unités -->
+      <div class="panel" data-panel="unites">
+        <div class="panel__head">
+          <p class="muted">Les unités proposées à l'ajout d'un article.</p>
+          <button class="btn btn--primary" data-modal-open="modal-unit">
+            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+            Ajouter une unité
+          </button>
+        </div>
+          <div class="card card--flat stack" id="units-list"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ===================== MODALES ===================== -->
+<div class="modal" id="modal-list" role="dialog" aria-modal="true" aria-labelledby="modal-list-title">
+  <div class="modal__backdrop" data-modal-close></div>
+  <div class="modal__panel">
+    <div class="modal__head">
+      <h3 id="modal-list-title">Modifier la liste</h3>
+      <button class="btn btn--icon" data-modal-close aria-label="Fermer">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <form class="stack">
+      <div class="field">
+        <label class="label" for="list-label">Label</label>
+        <input class="input" id="list-label" value="Courses de la semaine" />
+      </div>
+      <div class="field">
+        <label class="label" for="list-budget">Budget (optionnel)</label>
+        <input class="input" id="list-budget" inputmode="decimal" value="120,00" />
+      </div>
+      <div class="row row--between row--wrap">
+        <button class="btn btn--danger" type="button" data-toast="Suppression impossible en maquette">Supprimer</button>
+        <button class="btn btn--primary" type="button" data-modal-close data-toast="Liste enregistrée">Enregistrer</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal" id="modal-aisle" role="dialog" aria-modal="true" aria-labelledby="modal-aisle-title">
+  <div class="modal__backdrop" data-modal-close></div>
+  <div class="modal__panel">
+    <div class="modal__head">
+      <h3 id="modal-aisle-title">Ajouter un rayon</h3>
+      <button class="btn btn--icon" data-modal-close aria-label="Fermer">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <form class="stack">
+      <div class="field">
+        <label class="label" for="aisle-label">Label du rayon</label>
+        <input class="input" id="aisle-label" placeholder="Ex : Fruits & légumes" />
+      </div>
+      <div class="field">
+        <span class="label">Couleur</span>
+        <div class="swatches" id="aisle-swatches"></div>
+      </div>
+      <div class="row row--between row--wrap">
+        <button class="btn btn--danger" type="button" data-modal-close>Supprimer</button>
+        <button class="btn btn--primary" type="button" data-modal-close data-toast="Rayon enregistré">Enregistrer</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal" id="modal-article" role="dialog" aria-modal="true" aria-labelledby="modal-article-title">
+  <div class="modal__backdrop" data-modal-close></div>
+  <div class="modal__panel">
+    <div class="modal__head">
+      <h3 id="modal-article-title">Ajouter un article</h3>
+      <button class="btn btn--icon" data-modal-close aria-label="Fermer">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <form class="stack">
+      <div class="field">
+        <label class="label" for="article-label">Label</label>
+        <input class="input" id="article-label" placeholder="Ex : Pommes Gala" />
+      </div>
+      <div class="form-grid">
+        <div class="field">
+          <label class="label" for="article-price">Prix</label>
+          <input class="input input--price" id="article-price" inputmode="decimal" placeholder="0,00" />
+        </div>
+        <div class="field">
+          <label class="label" for="article-aisle">Rayon</label>
+          <select class="select" id="article-aisle"></select>
+        </div>
+      </div>
+      <div class="row row--between row--wrap">
+        <button class="btn btn--danger" type="button" data-modal-close>Supprimer</button>
+        <button class="btn btn--primary" type="button" data-modal-close data-toast="Article enregistré">Enregistrer</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal" id="modal-unit" role="dialog" aria-modal="true" aria-labelledby="modal-unit-title">
+  <div class="modal__backdrop" data-modal-close></div>
+  <div class="modal__panel">
+    <div class="modal__head">
+      <h3 id="modal-unit-title">Ajouter une unité</h3>
+      <button class="btn btn--icon" data-modal-close aria-label="Fermer">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <form class="stack">
+      <div class="field">
+        <label class="label" for="unit-label">Label de l'unité</label>
+        <input class="input" id="unit-label" placeholder="Ex : Kg" />
+      </div>
+      <div class="row row--between row--wrap">
+        <button class="btn btn--danger" type="button" data-modal-close>Supprimer</button>
+        <button class="btn btn--primary" type="button" data-modal-close data-toast="Unité enregistrée">Enregistrer</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="mkbar toast" id="toast">
+  <span id="toast-text">—</span>
+</div>
+
+<script>
+"use strict";
+
+/* ------------------------------------------------------------------ data */
+const AISLES = [
+  { id: "a1", label: "Fruits & légumes", color: "#6f9e58" },
+  { id: "a2", label: "Viandes & poissons", color: "#c06a4a" },
+  { id: "a3", label: "Produits laitiers", color: "#6f8fb0" },
+  { id: "a4", label: "Épicerie salée", color: "#c9a227" },
+  { id: "a5", label: "Épicerie sucrée", color: "#c07a8e" },
+  { id: "a6", label: "Boissons", color: "#4f9d94" },
+  { id: "a7", label: "Entretien", color: "#8b8f98" },
+];
+const SWATCHES = ["#6f9e58", "#c06a4a", "#6f8fb0", "#c9a227", "#c07a8e", "#4f9d94", "#8b8f98", "#5b5b8f", "#b5643a", "#2f2f2f"];
+
+const UNITS = ["Unité", "Paquet", "Kg", "g", "Litre"];
+
+const ARTICLES = [
+  { id: "ar1", label: "Pommes Gala", aisleId: "a1", price: 2.49, lastPrice: 2.79 },
+  { id: "ar2", label: "Bananes", aisleId: "a1", price: 1.79, lastPrice: null },
+  { id: "ar3", label: "Saumon frais", aisleId: "a2", price: 8.9, lastPrice: 9.6 },
+  { id: "ar4", label: "Poulet fermier", aisleId: "a2", price: 6.45, lastPrice: null },
+  { id: "ar5", label: "Lait demi-écrémé", aisleId: "a3", price: 1.15, lastPrice: 1.25 },
+  { id: "ar6", label: "Yaourts nature x8", aisleId: "a3", price: 2.35, lastPrice: null },
+  { id: "ar7", label: "Œufs x12", aisleId: "a3", price: 3.45, lastPrice: null },
+  { id: "ar8", label: "Riz basmati 1 kg", aisleId: "a4", price: 3.2, lastPrice: null },
+  { id: "ar9", label: "Pâtes penne", aisleId: "a4", price: 1.45, lastPrice: null },
+  { id: "ar10", label: "Huile d'olive", aisleId: "a4", price: 6.2, lastPrice: 5.95 },
+  { id: "ar11", label: "Chocolat noir", aisleId: "a5", price: 1.95, lastPrice: null },
+  { id: "ar12", label: "Café en grains", aisleId: "a6", price: 5.6, lastPrice: 6.1 },
+  { id: "ar13", label: "Eau minérale 6×1,5 L", aisleId: "a6", price: 3.1, lastPrice: null },
+  { id: "ar14", label: "Lessive", aisleId: "a7", price: 7.8, lastPrice: 8.4 },
+];
+
+const LISTS = [
+  { id: "l1", label: "Courses de la semaine", budget: 120, updated: "Aujourd'hui, 09:20" },
+  { id: "l2", label: "Pique-nique", budget: 40, updated: "Hier", taken: 3, total: 8, spent: 22.1 },
+  { id: "l3", label: "Réserves placard", budget: 0, updated: "12 oct.", taken: 0, total: 6, spent: 0 },
+  { id: "l4", label: "Anniversaire Léa", budget: 60, updated: "8 oct.", taken: 9, total: 14, spent: 47.8 },
+];
+
+const DETAIL = {
+  id: "l1",
+  label: "Courses de la semaine",
+  budget: 120,
+  updated: "Dernière modification : aujourd'hui à 09:20",
+  items: [
+    { articleId: "ar1", qty: 6, unit: "Unité", checked: true, price: 2.49 },
+    { articleId: "ar2", qty: 1, unit: "Kg", checked: false, price: 1.79 },
+    { articleId: "ar3", qty: 2, unit: "Unité", checked: true, price: 8.9 },
+    { articleId: "ar4", qty: 1, unit: "Unité", checked: false, price: 6.45 },
+    { articleId: "ar5", qty: 2, unit: "Paquet", checked: true, price: 1.15 },
+    { articleId: "ar6", qty: 1, unit: "Paquet", checked: false, price: 2.35 },
+    { articleId: "ar7", qty: 1, unit: "Paquet", checked: false, price: 3.45 },
+    { articleId: "ar9", qty: 3, unit: "Paquet", checked: true, price: 1.45 },
+    { articleId: "ar11", qty: 2, unit: "Unité", checked: false, price: 1.95 },
+    { articleId: "ar12", qty: 1, unit: "Paquet", checked: true, price: 5.6 },
+    { articleId: "ar13", qty: 1, unit: "Paquet", checked: false, price: 3.1 },
+    { articleId: "ar14", qty: 1, unit: "Unité", checked: false, price: 7.8 },
+  ],
+};
+
+const state = {
+  theme: "foyer",
+  screen: "connexion",
+  tab: "compte",
+  sort: { col: "label", dir: "asc" },
+  query: "",
+  addAisle: null,
+  tempColor: SWATCHES[0],
+};
+
+/* --------------------------------------------------------------- helpers */
+const $ = (sel, root) => (root || document).querySelector(sel);
+const $$ = (sel, root) => Array.from((root || document).querySelectorAll(sel));
+const money = new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" });
+const euro = (n) => money.format(n);
+const article = (id) => ARTICLES.find((a) => a.id === id);
+const aisle = (id) => AISLES.find((a) => a.id === id);
+const NO_AISLE = { id: "", label: "Rayon indéfini", color: "transparent" };
+const aisleOf = (articleId) => {
+  const a = article(articleId);
+  return (a && aisle(a.aisleId)) || NO_AISLE;
+};
+const itemPrice = (item) => (item.price != null ? item.price : null);
+const formatPrice = (n) => (n != null ? n.toFixed(2).replace(".", ",") : "");
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+const ICON = {
+  gear: '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>',
+  up: '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg>',
+  down: '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>',
+};
+
+/* ---------------------------------------------------------------- render */
+function renderHero() {
+  const checked = DETAIL.items.filter((i) => i.checked);
+  const total = DETAIL.items.length;
+  const spent = checked.reduce((s, i) => s + (itemPrice(i) || 0) * i.qty, 0);
+  const remaining = Math.max(DETAIL.budget - spent, 0);
+  const pct = DETAIL.budget > 0 ? Math.min((spent / DETAIL.budget) * 100, 100) : 0;
+  $("#hero-label").textContent = DETAIL.label;
+  $("#hero-date").textContent = LISTS[0].updated;
+  $("#hero-taken").textContent = checked.length + " / " + total;
+  $("#hero-spent").textContent = euro(spent);
+  $("#hero-budget").textContent = euro(DETAIL.budget);
+  $("#hero-remaining").textContent = euro(remaining);
+  $("#hero-remaining-count").textContent = total - checked.length;
+  $("#hero-progress").style.width = pct.toFixed(0) + "%";
+}
+
+function renderLists() {
+  $("#lists-grid").innerHTML = LISTS.slice(1).map((l) => `
+    <article class="card mini">
+      <div class="row row--between">
+        <h3>${esc(l.label)}</h3>
+        <span class="muted mono text-xs">${esc(l.updated)}</span>
+      </div>
+      <dl class="mini__meta">
+        <dt>Articles</dt><dd>${l.taken} / ${l.total}</dd>
+        <dt>Budget</dt><dd>${l.budget > 0 ? euro(l.budget) : "—"}</dd>
+        <dt>Dépensé</dt><dd>${euro(l.spent)}</dd>
+      </dl>
+      <div class="btn-group mt-auto">
+        <button class="btn btn--sm" data-goto="liste">Voir la liste</button>
+        <button class="btn btn--sm" data-toast="Liste dupliquée">Dupliquer</button>
+      </div>
+    </article>`).join("");
+}
+
+function renderDetail() {
+  const byAisle = new Map();
+  for (const item of DETAIL.items) {
+    const a = aisleOf(item.articleId);
+    if (!byAisle.has(a.id)) byAisle.set(a.id, { aisle: a, items: [] });
+    byAisle.get(a.id).items.push(item);
+  }
+  const orderOf = (a) => { const i = AISLES.indexOf(a); return i === -1 ? AISLES.length : i; };
+  const groups = Array.from(byAisle.values()).sort((g1, g2) => orderOf(g1.aisle) - orderOf(g2.aisle));
+
+  $("#detail-label").textContent = DETAIL.label;
+  $("#detail-date").textContent = DETAIL.updated;
+
+  const host = $("#detail-groups");
+  if (groups.length === 0) {
+    host.innerHTML = '<p class="empty card card--flat">Aucun article pour l\'instant.</p>';
+  } else {
+    host.innerHTML = groups.map((g) => `
+      <div class="group">
+        <div class="group__head">
+          <span class="dot" style="background:${g.aisle.color}"></span>
+          <h4 class="grow">${esc(g.aisle.label)}</h4>
+          <span class="group__count">${g.items.length}</span>
+        </div>
+        <div class="stack mt-3">
+          ${g.items.map((item) => {
+            const a = article(item.articleId);
+            const applied = itemPrice(item);
+            const hasLast = a.lastPrice != null && a.lastPrice !== a.price;
+            const usingLast = a.lastPrice != null && applied === a.lastPrice;
+            return `
+              <div class="item${item.checked ? " is-checked" : ""}" data-item="${a.id}">
+                <input class="check" type="checkbox" ${item.checked ? "checked" : ""} aria-label="Marquer ${esc(a.label)} comme pris" data-check="${a.id}" />
+                <div class="grow">
+                  <p class="item__label">${esc(a.label)}</p>
+                  <div class="item__qtyrow">
+                    <div class="counter">
+                      <button type="button" data-qty-step="-1" data-id="${a.id}" aria-label="Diminuer la quantité de ${esc(a.label)}">−</button>
+                      <input class="counter__input" type="number" min="1" value="${item.qty}" data-qty-input="${a.id}" aria-label="Quantité de ${esc(a.label)}" />
+                      <button type="button" data-qty-step="1" data-id="${a.id}" aria-label="Augmenter la quantité de ${esc(a.label)}">+</button>
+                    </div>
+                    <span class="item__unit">${esc(item.unit)}</span>
+                  </div>
+                </div>
+                <div class="pricebox">
+                  <label class="price">
+                    <input class="input input--price input--sm" inputmode="decimal" value="${formatPrice(applied)}" data-price-input="${a.id}" placeholder="0,00" aria-label="Prix de ${esc(a.label)}" />
+                    <span aria-hidden="true">€</span>
+                  </label>
+                  ${hasLast ? `<button class="btn btn--sm btn--ghost" type="button" data-use-last="${a.id}">${usingLast ? "Prix actuel · " + euro(a.price) : "Ancien prix · " + euro(a.lastPrice)}</button>` : ""}
+                </div>
+                <button class="btn btn--icon btn--ghost" data-open-article="${a.id}" aria-label="Modifier ${esc(a.label)}">${ICON.gear}</button>
+              </div>`;
+          }).join("")}
+        </div>
+      </div>`).join("");
+  }
+  renderRecap();
+}
+
+function renderRecap() {
+  const checked = DETAIL.items.filter((i) => i.checked);
+  const total = DETAIL.items.length;
+  const spent = checked.reduce((s, i) => s + (itemPrice(i) || 0) * i.qty, 0);
+  const remaining = Math.max(DETAIL.budget - spent, 0);
+  const pct = DETAIL.budget > 0 ? Math.min((spent / DETAIL.budget) * 100, 100) : 0;
+
+  $("#recap-total").textContent = euro(spent);
+  $("#recap-progress").style.width = pct.toFixed(0) + "%";
+  $("#recap-budget").textContent = DETAIL.budget > 0 ? euro(DETAIL.budget) : "—";
+  $("#recap-remaining").textContent = euro(remaining);
+  $("#recap-taken").textContent = checked.length;
+  $("#recap-left").textContent = total - checked.length;
+
+  const counts = new Map();
+  for (const item of DETAIL.items) {
+    const a = aisleOf(item.articleId);
+    const entry = counts.get(a.id) || { aisle: a, done: 0, total: 0 };
+    entry.total += 1;
+    if (item.checked) entry.done += 1;
+    counts.set(a.id, entry);
+  }
+  const orderOf = (a) => { const i = AISLES.indexOf(a); return i === -1 ? AISLES.length : i; };
+  $("#recap-by-aisle").innerHTML = Array.from(counts.values())
+    .sort((c1, c2) => orderOf(c1.aisle) - orderOf(c2.aisle))
+    .map((c) => `<dt class="row row--tight"><span class="dot dot--sm" style="background:${c.aisle.color}"></span>${esc(c.aisle.label)}</dt><dd>${c.done}/${c.total}</dd>`)
+    .join("");
+}
+
+function renderAisles() {
+  $("#aisles-list").innerHTML = AISLES.map((a, i) => `
+    <div class="row row--between" data-aisle="${a.id}">
+      <div class="row">
+        <div class="reorder">
+          <button class="btn btn--icon btn--ghost" data-move="aisle" data-dir="-1" data-id="${a.id}" ${i === 0 ? "disabled" : ""} aria-label="Monter ${esc(a.label)}">${ICON.up}</button>
+          <button class="btn btn--icon btn--ghost" data-move="aisle" data-dir="1" data-id="${a.id}" ${i === AISLES.length - 1 ? "disabled" : ""} aria-label="Descendre ${esc(a.label)}">${ICON.down}</button>
+        </div>
+        <span class="dot" style="background:${a.color}"></span>
+        <span class="grow fw-bold">${esc(a.label)}</span>
+      </div>
+      <button class="btn btn--icon" data-modal-open="modal-aisle" aria-label="Modifier ${esc(a.label)}">${ICON.gear}</button>
+    </div>`).join("");
+}
+
+function renderUnits() {
+  $("#units-list").innerHTML = UNITS.map((u, i) => `
+    <div class="row row--between" data-unit="${esc(u)}">
+      <div class="row">
+        <div class="reorder">
+          <button class="btn btn--icon btn--ghost" data-move="unit" data-dir="-1" data-id="${esc(u)}" ${i === 0 ? "disabled" : ""} aria-label="Monter ${esc(u)}">${ICON.up}</button>
+          <button class="btn btn--icon btn--ghost" data-move="unit" data-dir="1" data-id="${esc(u)}" ${i === UNITS.length - 1 ? "disabled" : ""} aria-label="Descendre ${esc(u)}">${ICON.down}</button>
+        </div>
+        <span class="grow fw-bold">${esc(u)}</span>
+      </div>
+      <button class="btn btn--icon" data-modal-open="modal-unit" aria-label="Modifier ${esc(u)}">${ICON.gear}</button>
+    </div>`).join("");
+}
+
+function renderArticles() {
+  const q = state.query.trim().toLowerCase();
+  const rows = ARTICLES
+    .map((a) => ({ ...a, aisleLabel: aisle(a.aisleId) ? aisle(a.aisleId).label : "", aisleColor: aisle(a.aisleId) ? aisle(a.aisleId).color : "" }))
+    .filter((a) => a.label.toLowerCase().includes(q));
+
+  const { col, dir } = state.sort;
+  rows.sort((a, b) => {
+    let r = 0;
+    if (col === "label") r = a.label.localeCompare(b.label, "fr");
+    else if (col === "aisle") r = a.aisleLabel.localeCompare(b.aisleLabel, "fr");
+    else r = (a.price == null ? -Infinity : a.price) - (b.price == null ? -Infinity : b.price);
+    return dir === "asc" ? r : -r;
+  });
+
+  $("#articles-body").innerHTML = rows.map((a) => `
+    <tr>
+      <td class="fw-bold">${esc(a.label)}</td>
+      <td><span class="row row--tight"><span class="dot dot--sm" style="background:${a.aisleColor}"></span>${esc(a.aisleLabel)}</span></td>
+      <td class="mono fw-semi">${a.price != null ? euro(a.price) : "—"}</td>
+      <td class="cell-actions"><button class="btn btn--icon" data-open-article="${a.id}" aria-label="Modifier ${esc(a.label)}">${ICON.gear}</button></td>
+    </tr>`).join("");
+
+  $("#articles-empty").hidden = rows.length !== 0;
+
+  $$("[data-sort]").forEach((btn) => {
+    const on = btn.dataset.sort === col;
+    btn.classList.toggle("is-sorted", on);
+    const arrow = $("[data-arrow='" + btn.dataset.sort + "']", btn);
+    arrow.innerHTML = on ? ICON[dir === "asc" ? "up" : "down"] : '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 9l4-4 4 4M8 15l4 4 4-4"/></svg>';
+  });
+}
+
+function renderSelectors() {
+  const options = AISLES.map((a) => `<option value="${a.id}">${esc(a.label)}</option>`).join("");
+  $("#article-aisle").innerHTML = '<option value="">Aucun rayon</option>' + options;
+  $("#add-unit").innerHTML = UNITS.map((u) => `<option>${esc(u)}</option>`).join("");
+  $("#aisle-swatches").innerHTML = SWATCHES.map((c, i) => `<button class="swatch${i === 0 ? " is-selected" : ""}" type="button" data-swatch="${c}" style="background:${c}" aria-label="Couleur ${i + 1}"></button>`).join("");
+}
+
+function renderAddAisles() {
+  $("#add-aisles").innerHTML =
+    `<button type="button" class="chip${state.addAisle === null ? " is-active" : ""}" data-add-aisle="" aria-pressed="${state.addAisle === null}"><span class="dot" aria-hidden="true"></span>Aucun rayon</button>` +
+    AISLES.map((a) =>
+      `<button type="button" class="chip${state.addAisle === a.id ? " is-active" : ""}" data-add-aisle="${a.id}" aria-pressed="${state.addAisle === a.id}"><span class="dot" style="background:${a.color}"></span>${esc(a.label)}</button>`,
+    ).join("");
+}
+
+/* --------------------------------------------------------------- actions */
+function showScreen(name) {
+  state.screen = name;
+  $$(".screen").forEach((s) => (s.hidden = s.dataset.screen !== name));
+  $$("[data-screen-btn]").forEach((b) => b.classList.toggle("is-active", b.dataset.screenBtn === name));
+  const isApp = name !== "connexion";
+  $("#appbar").hidden = !isApp;
+  $$(".navlink").forEach((n) => n.classList.toggle("is-active", n.dataset.goto === (name === "liste" ? "accueil" : name)));
+  window.scrollTo({ top: 0, behavior: "auto" });
+}
+
+function showPanel(name) {
+  state.tab = name;
+  $$(".tab").forEach((t) => t.classList.toggle("is-active", t.dataset.tab === name));
+  $$(".panel").forEach((p) => p.classList.toggle("is-active", p.dataset.panel === name));
+}
+
+function openModal(id) { const m = document.getElementById(id); if (m) m.classList.add("is-open"); }
+function closeModals() { $$(".modal.is-open").forEach((m) => m.classList.remove("is-open")); }
+
+let toastTimer = null;
+function toast(msg) {
+  const el = $("#toast");
+  $("#toast-text").textContent = msg;
+  el.style.display = "flex";
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { el.style.display = "none"; }, 2200);
+}
+
+function move(kind, id, dir) {
+  const arr = kind === "aisle" ? AISLES : UNITS;
+  const i = arr.findIndex((x) => (kind === "aisle" ? x.id : x) === id);
+  const j = i + Number(dir);
+  if (i < 0 || j < 0 || j >= arr.length) return;
+  [arr[i], arr[j]] = [arr[j], arr[i]];
+  if (kind === "aisle") renderAisles(); else renderUnits();
+  renderDetail();
+}
+
+/* ------------------------------------------------------------- listeners */
+document.addEventListener("click", (e) => {
+  const t = e.target;
+
+  const themeBtn = t.closest("[data-theme-btn]");
+  if (themeBtn) {
+    state.theme = themeBtn.dataset.themeBtn;
+    document.documentElement.dataset.theme = state.theme;
+    $$("[data-theme-btn]").forEach((b) => b.classList.toggle("is-active", b === themeBtn));
+    return;
+  }
+
+  const screenBtn = t.closest("[data-screen-btn]");
+  if (screenBtn) { showScreen(screenBtn.dataset.screenBtn); return; }
+
+  const goto = t.closest("[data-goto]");
+  if (goto) { showScreen(goto.dataset.goto); return; }
+
+  const tab = t.closest("[data-tab]");
+  if (tab) { showPanel(tab.dataset.tab); return; }
+
+  const openBtn = t.closest("[data-modal-open]");
+  if (openBtn) { openModal(openBtn.dataset.modalOpen); return; }
+
+  const openArticle = t.closest("[data-open-article]");
+  if (openArticle) { openModal("modal-article"); return; }
+
+  const addAisleBtn = t.closest("[data-add-aisle]");
+  if (addAisleBtn) {
+    const v = addAisleBtn.dataset.addAisle;
+    state.addAisle = v === "" ? null : v;
+    renderAddAisles();
+    return;
+  }
+
+  const stepBtn = t.closest("[data-qty-step]");
+  if (stepBtn) {
+    const item = DETAIL.items.find((i) => i.articleId === stepBtn.dataset.id);
+    if (item) {
+      item.qty = Math.max(1, item.qty + Number(stepBtn.dataset.qtyStep));
+      renderDetail();
+      renderHero();
+    }
+    return;
+  }
+
+  const useLastBtn = t.closest("[data-use-last]");
+  if (useLastBtn) {
+    const item = DETAIL.items.find((i) => i.articleId === useLastBtn.dataset.useLast);
+    const a = item && article(item.articleId);
+    if (item && a) {
+      item.price = item.price === a.lastPrice ? a.price : a.lastPrice;
+      renderDetail();
+      renderHero();
+    }
+    return;
+  }
+
+  const toastBtn = t.closest("[data-toast]");
+  if (toastBtn) {
+    toast(toastBtn.dataset.toast);
+    if (toastBtn.closest("[data-modal-close]")) closeModals();
+    return;
+  }
+
+  if (t.closest("[data-modal-close]")) { closeModals(); return; }
+
+  const swatch = t.closest("[data-swatch]");
+  if (swatch) {
+    state.tempColor = swatch.dataset.swatch;
+    $$(".swatch").forEach((s) => s.classList.toggle("is-selected", s === swatch));
+    return;
+  }
+
+  const sortBtn = t.closest("[data-sort]");
+  if (sortBtn) {
+    const col = sortBtn.dataset.sort;
+    state.sort = state.sort.col === col
+      ? { col, dir: state.sort.dir === "asc" ? "desc" : "asc" }
+      : { col, dir: "asc" };
+    renderArticles();
+    return;
+  }
+
+  const moveBtn = t.closest("[data-move]");
+  if (moveBtn) { move(moveBtn.dataset.move, moveBtn.dataset.id, moveBtn.dataset.dir); return; }
+
+  if (t.closest("#recap-toggle")) {
+    $("#recap").classList.toggle("is-open");
+    return;
+  }
+});
+
+document.addEventListener("change", (e) => {
+  const check = e.target.closest("[data-check]");
+  if (check) {
+    const item = DETAIL.items.find((i) => i.articleId === check.dataset.check);
+    item.checked = check.checked;
+    renderDetail();
+    renderHero();
+    return;
+  }
+  const qtyInput = e.target.closest("[data-qty-input]");
+  if (qtyInput) {
+    const item = DETAIL.items.find((i) => i.articleId === qtyInput.dataset.qtyInput);
+    if (!item) return;
+    const value = Math.max(1, Math.floor(Number(qtyInput.value) || 1));
+    if (value !== item.qty) {
+      item.qty = value;
+      renderDetail();
+      renderHero();
+    } else {
+      qtyInput.value = item.qty;
+    }
+    return;
+  }
+  const priceInput = e.target.closest("[data-price-input]");
+  if (priceInput) {
+    const item = DETAIL.items.find((i) => i.articleId === priceInput.dataset.priceInput);
+    if (!item) return;
+    const raw = priceInput.value.trim().replace(",", ".");
+    const parsed = raw === "" ? null : Number(raw);
+    item.price = parsed != null && Number.isFinite(parsed) && parsed >= 0 ? parsed : null;
+    renderDetail();
+    renderHero();
+  }
+});
+
+$("#art-search").addEventListener("input", (e) => {
+  state.query = e.target.value;
+  renderArticles();
+});
+
+$("#btn-reset").addEventListener("click", () => {
+  DETAIL.items.forEach((i) => (i.checked = false));
+  renderDetail();
+  renderHero();
+});
+
+$("#btn-clear").addEventListener("click", () => {
+  DETAIL.items = [];
+  renderDetail();
+  renderHero();
+});
+
+const suggest = $("#add-suggest");
+$("#add-article").addEventListener("input", (e) => {
+  const q = e.target.value.trim().toLowerCase();
+  if (!q) { suggest.hidden = true; return; }
+  const hits = ARTICLES.filter((a) => a.label.toLowerCase().includes(q)).slice(0, 6);
+  suggest.innerHTML = hits.map((a) => `<li><button type="button" class="naked" data-pick="${a.id}">${esc(a.label)}<span class="muted">${aisle(a.aisleId) ? esc(aisle(a.aisleId).label) : ""}</span></button></li>`).join("")
+    + (hits.length === 0 ? `<li><button type="button" class="naked" data-create>+ Créer « ${esc(e.target.value.trim())} »</button></li>` : "");
+  suggest.hidden = false;
+});
+
+suggest.addEventListener("click", (e) => {
+  const pick = e.target.closest("[data-pick]");
+  const create = e.target.closest("[data-create]");
+  if (pick) {
+    const art = article(pick.dataset.pick);
+    $("#add-article").value = art.label;
+    state.addAisle = art.aisleId ?? null;
+    renderAddAisles();
+    suggest.hidden = true;
+  }
+  if (create) { suggest.hidden = true; toast("Nouvel article créé"); }
+});
+
+$("#add-form").addEventListener("submit", (e) => {
+  e.preventDefault();
+  const value = $("#add-article").value.trim();
+  if (!value) return;
+  let art = ARTICLES.find((a) => a.label.toLowerCase() === value.toLowerCase());
+  if (!art) {
+    art = { id: "ar" + (ARTICLES.length + 1), label: value, aisleId: state.addAisle, price: null, lastPrice: null };
+    ARTICLES.push(art);
+    renderArticles();
+  }
+  DETAIL.items.push({ articleId: art.id, qty: Math.max(1, Number($("#add-qty").value) || 1), unit: $("#add-unit").value, checked: false, price: art.price });
+  $("#add-article").value = "";
+  $("#add-qty").value = "1";
+  renderDetail();
+  renderHero();
+});
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") closeModals();
+});
+
+/* ------------------------------------------------------------------ init */
+document.documentElement.dataset.theme = state.theme;
+renderSelectors();
+renderAddAisles();
+renderHero();
+renderLists();
+renderDetail();
+renderAisles();
+renderUnits();
+renderArticles();
+showScreen("connexion");
+</script>
+</body>
+</html>

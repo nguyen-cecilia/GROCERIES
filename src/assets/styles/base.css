@@ -4,19 +4,27 @@
     }
 
     h1 {
-        @apply font-display text-3xl font-bold tracking-tight;
+        @apply font-display font-bold tracking-tight text-2xl/10;
     }
 
     h2 {
-        @apply font-display text-2xl font-bold tracking-tight;
+        @apply font-display font-bold tracking-tight text-xl/8;
     }
 
     h3 {
-        @apply font-display text-xl font-bold tracking-tight;
+        @apply font-display font-bold tracking-tight text-lg/6;
     }
 
     h4 {
-        @apply font-display text-md font-semibold leading-5;
+        @apply font-display font-bold tracking-tight text-md;
+    }
+
+    h5 {
+        @apply font-display font-bold tracking-tight text-base;
+    }
+
+    h6 {
+        @apply font-display text-sm tracking-wide;
     }
 
     table {

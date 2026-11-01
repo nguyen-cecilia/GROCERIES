@@ -1,15 +1,38 @@
 @if (authService.isAuthenticated()) {
-    <header class="border-b border-line px-6 py-4 lg:w-5xl lg:px-0 mx-auto flex items-center justify-center">
-        <a routerLink="/" class="w-full lg:w-5xl flex items-center gap-3">
-            <img src="/icons/icon-96x96.png" alt="Logo Groceries" class="size-12">
+    <header class="w-full border-b border-line px-6 py-4 lg:w-6xl lg:px-0 mx-auto flex items-center justify-between">
+        <a routerLink="/" class="flex items-center gap-3">
+            <img src="/icons/icon-96x96.png" alt="Logo Groceries" class="size-10">
             <h3 class="hidden lg:inline">Super Groceries</h3>
         </a>
-        <button app-button routerLink="/parametres" variant="outline" shape="round">
-            <svg lucideSettings [size]="24"></svg>
-        </button>
+        <div class="flex items-center gap-2">
+            <button
+                app-button
+                routerLink="/"
+                routerLinkActive="bg-ink! text-canvas!"
+                [routerLinkActiveOptions]="{exact: true}"
+                variant="ghost"
+            >
+                <svg lucideScrollText [size]="16"></svg>
+                <p class="hidden lg:inline">Listes</p>
+            </button>
+            <button
+                app-button
+                routerLink="/parametres"
+                routerLinkActive="bg-ink! text-canvas!"
+                [routerLinkActiveOptions]="{exact: true}"
+                variant="ghost"
+            >
+                <svg lucideSettings [size]="16"></svg>
+                <p class="hidden lg:inline">Paramètres</p>
+            </button>
+        </div>
+        <div class="flex items-center gap-2">
+            <div class="size-7 rounded-full bg-secondary font-bold text-sm flex justify-center items-center">C</div>
+            <p class="font-semibold text-sm">Cécilia</p>
+        </div>
     </header>
 }
 
-<main class="flex-1 w-full mx-auto lg:w-5xl [&_section]:py-4 [&_section]:px-6 lg:[&_section]:px-0">
+<main class="flex-1 w-full mx-auto lg:w-6xl [&_section]:py-4 [&_section]:px-6 lg:[&_section]:px-0">
     <router-outlet />
 </main>

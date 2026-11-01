@@ -1,14 +1,38 @@
 <app-modal
-    title="{{ this.modalService.aisle.editing() ? 'Modifier un rayon' : 'Ajouter un rayon' }}"
+    title="{{ this.modalService.aisle.editing() ? 'Modifier le rayon' : 'Ajouter un rayon' }}"
     [isOpen]="this.modalService.aisle.isOpen"
     [onClose]="() => this.modalService.aisle.close()"
 >
     <app-aisle-update [editing]="modalService.aisle.editing()" />
 </app-modal>
 
+<app-modal
+    title="{{ this.modalService.article.editing() ? 'Modifier l\'article' : 'Ajouter un article' }}"
+    [isOpen]="this.modalService.article.isOpen"
+    [onClose]="() => this.modalService.article.close()"
+>
+    <app-article-update />
+</app-modal>
+
+<app-modal
+    title="{{ this.modalService.quantityUnit.editing() ? 'Modifier l\'unité de quantité' : 'Ajouter une unité de quantité' }}"
+    [isOpen]="this.modalService.quantityUnit.isOpen"
+    [onClose]="() => this.modalService.quantityUnit.close()"
+>
+    <app-quantity-unit-update />
+</app-modal>
+
+<section class="flex items-center justify-between gap-3">
+    <h1>Paramètres</h1>
+
+    <button app-button variant="ghost" (click)="signOut()">
+        <svg lucideLogOut [size]="16"></svg>
+        Se déconnecter
+    </button>
+</section>
+
 <section class="grid grid-cols-1 lg:grid-cols-[25%_75%] items-start gap-6">
     <div class="flex flex-col gap-3">
-        <h1>Paramètres</h1>
         <button app-button
                 [variant]="activePanel() === 'account' ? 'tabActive' : 'tab'"
                 shape="bigPill"
@@ -38,7 +62,7 @@
                 role="tab" id="tab-articles" aria-controls="panel-articles"
                 [attr.aria-selected]="activePanel() === 'articles'"
                 (click)="select('articles')">
-            <div class="size-3 bg-tertiary rounded-full"></div>
+            <div class="size-3 bg-accent rounded-full"></div>
             Articles
         </button>
         <button app-button
@@ -49,13 +73,9 @@
             <div class="size-3 bg-primary rounded-full"></div>
             Unités de quantité
         </button>
-        <button app-button variant="secondary" shape="bigPill" class="mt-12" (click)="signOut()">
-            <svg lucideLogOut [size]="20"></svg>
-            Se déconnecter
-        </button>
     </div>
 
-    <div class="bg-surface rounded shadow-lg p-6 *:space-y-6">
+    <div class="bg-surface border border-line rounded shadow-lg py-4 px-6 *:space-y-6">
         @switch (activePanel()) {
             @case ('account') {
                 <div>
@@ -114,7 +134,7 @@
                 <div>
                     <div class="flex items-center justify-between gap-3">
                         <h2>Rayons</h2>
-                        <button app-button variant="tertiary" shape="bigPill" (click)="this.modalService.aisle.openCreate()">
+                        <button app-button variant="primary" shape="bigPill" (click)="this.modalService.aisle.openCreate()">
                             <svg lucidePlus [size]="20"></svg>
                             Ajouter
                         </button>
@@ -123,17 +143,17 @@
                     @if (aislesService.loading()) {
                         <p class="text-muted">Chargement…</p>
                     } @else if (aislesService.error()) {
-                        <p class="text-secondary" role="alert">{{ aislesService.error() }}</p>
+                        <p class="text-invalid" role="alert">{{ aislesService.error() }}</p>
                     } @else if (aislesService.aisles().length === 0) {
                         <p class="text-muted">Ajoute ton premier rayon !</p>
                     } @else {
                         <div class="space-y-3">
                             @for (aisle of aislesService.aisles(); track aisle.id; let i = $index, count = $count) {
-                                <div class="flex items-center gap-3 bg-deep py-2.5 px-4 rounded-sm">
+                                <div class="flex items-center gap-3 bg-deep/50 py-2.5 px-4 rounded-sm">
                                     <div class="flex flex-col">
                                         <button
                                             app-button
-                                            variant="ghostPrimary"
+                                            variant="ghost"
                                             shape="roundSmall"
                                             [disabled]="i === 0 || aislesService.reordering()"
                                             (click)="aislesService.move(aisle.id, 'up')"
@@ -143,7 +163,7 @@
                                         </button>
                                         <button
                                             app-button
-                                            variant="ghostPrimary"
+                                            variant="ghost"
                                             shape="roundSmall"
                                             [disabled]="i === count - 1 || aislesService.reordering()"
                                             (click)="aislesService.move(aisle.id, 'down')"
@@ -152,11 +172,10 @@
                                             <svg lucideChevronDown [size]="16"></svg>
                                         </button>
                                     </div>
-                                    <div class="size-4 rounded-full border" [style.background-color]="aisle.color"></div>
-                                    <p class="flex-1 text-md font-semibold">{{ aisle.label }}</p>
-                                    <button app-button variant="ghostPrimary" shape="round"
+                                    <app-badge-aisle color="#d5a332" label="Viandes & poissons" class="font-semibold text-md flex-1" />
+                                    <button app-button variant="outline" shape="rounded"
                                             (click)="modalService.aisle.openEdit(aisle)">
-                                        <svg lucideSettings [size]="16"></svg>
+                                        <svg lucideSlidersHorizontal [size]="16"></svg>
                                     </button>
                                 </div>
                             }
@@ -164,87 +183,165 @@
                     }
                 </div>
             }
+            @case ('articles') {
+                <div>
+                    <div class="flex items-center justify-between gap-3">
+                        <h2>Articles</h2>
+                        <button app-button variant="primary" shape="bigPill" (click)="this.modalService.article.openCreate()">
+                            <svg lucidePlus [size]="20"></svg>
+                            Ajouter
+                        </button>
+                    </div>
+
+                    <app-input-search></app-input-search>
+
+                    <!-- TODO: Ajouter un tri sur les colonnes -->
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>
+                                <button
+                                    app-button
+                                    variant="sortTable"
+                                >
+                                    Label
+                                    <svg lucideChevronDown [size]="14"></svg>
+                                </button>
+                            </th>
+                            <th>
+                                <button
+                                    app-button
+                                    variant="sortTable"
+                                >
+                                    Rayon
+                                    <svg lucideChevronsUpDown [size]="14"></svg>
+                                </button>
+                            </th>
+                            <th>
+                                <button
+                                    app-button
+                                    variant="sortTable"
+                                >
+                                    Prix
+                                    <svg lucideChevronsUpDown [size]="14"></svg>
+                                </button>
+                            </th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td class="font-bold text-md">Titre de l'article</td>
+                            <td>
+                                <app-badge-aisle color="#6C44A4" label="Fruits & légumes" />
+                            </td>
+                            <td class="font-display font-semibold text-md">6,12 €</td>
+                            <td class="flex items-center justify-end gap-2">
+                                <button app-button variant="outline" shape="rounded">
+                                    <svg lucideSlidersHorizontal [size]="16"></svg>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="font-bold text-md">Saumon</td>
+                            <td class="flex items-center gap-2">
+                                <app-badge-aisle color="#d5a332" label="Viandes & poissons" />
+                            </td>
+                            <td class="font-display font-semibold text-md">4,56 €</td>
+                            <td class="flex items-center justify-end gap-2">
+                                <button app-button variant="outline" shape="rounded">
+                                    <svg lucideSlidersHorizontal [size]="16"></svg>
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            }
             @case ('quantityUnits') {
                 <div>
                     <div class="flex items-center justify-between gap-3">
                         <h2>Unités de quantité</h2>
-                        <button app-button variant="tertiary" shape="bigPill">
+                        <button app-button variant="primary" shape="bigPill" (click)="this.modalService.quantityUnit.openCreate()">
                             <svg lucidePlus [size]="20"></svg>
                             Ajouter
                         </button>
                     </div>
 
                     <div class="space-y-3">
-                        <div class="flex items-center gap-3 bg-deep py-2.5 px-4 rounded-sm">
+                        <div class="flex items-center gap-3 bg-deep/50 py-2.5 px-4 rounded-sm">
+                            <div class="flex flex-col">
+                                <button
+                                    app-button
+                                    variant="ghost"
+                                    shape="roundSmall"
+                                    aria-label="Monter"
+                                >
+                                    <svg lucideChevronUp [size]="16"></svg>
+                                </button>
+                                <button
+                                    app-button
+                                    variant="ghost"
+                                    shape="roundSmall"
+                                    aria-label="Descendre"
+                                >
+                                    <svg lucideChevronDown [size]="16"></svg>
+                                </button>
+                            </div>
                             <p class="flex-1 text-md font-semibold">Unité</p>
-                            <button app-button variant="ghostPrimary" shape="round">
-                                <svg lucideSettings [size]="16"></svg>
+                            <button app-button variant="outline" shape="rounded">
+                                <svg lucideSlidersHorizontal [size]="16"></svg>
                             </button>
                         </div>
-                        <div class="flex items-center gap-3 bg-deep py-2.5 px-4 rounded-sm">
+                        <div class="flex items-center gap-3 bg-deep/50 py-2.5 px-4 rounded-sm">
+                            <div class="flex flex-col">
+                                <button
+                                    app-button
+                                    variant="ghost"
+                                    shape="roundSmall"
+                                    aria-label="Monter"
+                                >
+                                    <svg lucideChevronUp [size]="16"></svg>
+                                </button>
+                                <button
+                                    app-button
+                                    variant="ghost"
+                                    shape="roundSmall"
+                                    aria-label="Descendre"
+                                >
+                                    <svg lucideChevronDown [size]="16"></svg>
+                                </button>
+                            </div>
                             <p class="flex-1 text-md font-semibold">Paquet</p>
-                            <button app-button variant="ghostPrimary" shape="round">
-                                <svg lucideSettings [size]="16"></svg>
+                            <button app-button variant="outline" shape="rounded">
+                                <svg lucideSlidersHorizontal [size]="16"></svg>
                             </button>
                         </div>
-                        <div class="flex items-center gap-3 bg-deep py-2.5 px-4 rounded-sm">
+                        <div class="flex items-center gap-3 bg-deep/50 py-2.5 px-4 rounded-sm">
+                            <div class="flex flex-col">
+                                <button
+                                    app-button
+                                    variant="ghost"
+                                    shape="roundSmall"
+                                    aria-label="Monter"
+                                >
+                                    <svg lucideChevronUp [size]="16"></svg>
+                                </button>
+                                <button
+                                    app-button
+                                    variant="ghost"
+                                    shape="roundSmall"
+                                    aria-label="Descendre"
+                                >
+                                    <svg lucideChevronDown [size]="16"></svg>
+                                </button>
+                            </div>
                             <p class="flex-1 text-md font-semibold">kg</p>
-                            <button app-button variant="ghostPrimary" shape="round">
-                                <svg lucideSettings [size]="16"></svg>
+                            <button app-button variant="outline" shape="rounded">
+                                <svg lucideSlidersHorizontal [size]="16"></svg>
                             </button>
                         </div>
                     </div>
-                </div>
-            }
-            @default {
-                <div>
-                    <div class="flex items-center justify-between gap-3">
-                        <h2>Articles</h2>
-                        <button app-button variant="tertiary" shape="bigPill">
-                            <svg lucidePlus [size]="20"></svg>
-                            Ajouter
-                        </button>
-                    </div>
-
-                    <!-- TODO: Ajouter un tri sur les colonnes -->
-                    <table>
-                        <thead>
-                        <tr>
-                            <th>Label</th>
-                            <th>Rayon</th>
-                            <th>Prix</th>
-                            <th></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr>
-                            <td class="font-semibold text-md">Titre de l'article</td>
-                            <td class="flex items-center gap-2">
-                                <div class="size-3 bg-primary rounded-full"></div>
-                                <p>Fruits & légumes</p>
-                            </td>
-                            <td class="font-display font-semibold text-md">6,12 €</td>
-                            <td class="flex items-center justify-end gap-2">
-                                <button app-button variant="ghostPrimary" shape="round">
-                                    <svg lucideSettings [size]="16"></svg>
-                                </button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="font-semibold text-md">Saumon</td>
-                            <td class="flex items-center gap-2">
-                                <div class="size-3 bg-secondary rounded-full"></div>
-                                <p>Viandes & poissons</p>
-                            </td>
-                            <td class="font-display font-semibold text-md">4,56 €</td>
-                            <td class="flex items-center justify-end gap-2">
-                                <button app-button variant="ghostPrimary" shape="round">
-                                    <svg lucideSettings [size]="16"></svg>
-                                </button>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
                 </div>
             }
         }

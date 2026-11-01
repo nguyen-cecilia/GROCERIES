@@ -8,34 +8,53 @@
     strategy: "class";
 }
 
-@theme {
-    --color-primary: #c5e397;
-    --color-secondary: #c94b32;
-    --color-tertiary: #d5a332;
-    --color-ink: #2c3d2b;
-    --color-canvas: #FFFDF5;
-    --color-surface: #FFFFFF;
-    --color-deep: #efe4da;
-    --color-line: #d8ddd8;
-    --color-muted: #647762;
+@theme static {
+    /* Couleurs */
+    --color-canvas:  oklch(97.5% 0.012 85);
+    --color-surface: oklch(99.5% 0.008 85);
+    --color-deep:    oklch(93.5% 0.024 78);
 
+    --color-ink:   oklch(28% 0.035 55);
+    --color-muted: oklch(50% 0.03 60);
+    --color-line:  oklch(88% 0.02 80);
+
+    --color-primary: oklch(48% 0.15 300);
+    --color-primary-2: oklch(0.393 0.133 299.958);
+    --color-secondary: oklch(72% 0.12 70);
+
+    --color-accent:     oklch(91% 0.055 300);
+
+    --color-invalid: oklch(0.55 0.16 28.1);
+    --color-valid:   oklch(57% 0.12 148);
+
+    /* Typographies */
+    --font-display: 'Fraunces', Georgia, serif;
+    --font-sans:    'Work Sans', system-ui, sans-serif;
+
+    /* Textes */
     --text-xs: 11px;
-    --text-sm: 12px;
-    --text-base: 14px;
-    --text-md: 16px;
-    --text-lg: 20px;
-    --text-xl: 24px;
-    --text-2xl: 28px;
-    --text-3xl: 32px;
-    --text-4xl: 46px;
+    --text-sm: 12.5px;
+    --text-base: 15px;
+    --text-md: 17px;
+    --text-lg: 22px;
+    --text-xl: 28px;
+    --text-2xl: 36px;
+    --text-3xl: 52px;
 
-    --font-display: 'Sora', serif;
-    --font-sans: 'Manrope', sans-serif;
-
+    /* Rayons */
     --radius-*: initial;
-    --radius-xs: 5px;
-    --radius-sm: 10px;
-    --radius: 20px;
-    --radius-md: 30px;
+    --radius-xs: 8px;
+    --radius-sm: 11px;
+    --radius: 18px;
+    --radius-md: 28px;
     --radius-full: 9999px;
+
+    /* Ombres */
+    --shadow-2xs: 0 1px rgb(54 36 24 / 0.05);
+    --shadow-xs: 0 1px 2px 0 rgb(54 36 24 / 0.05);
+    --shadow-sm: 0 1px 3px 0 rgb(54 36 24 / 0.1), 0 1px 2px -1px rgb(54 36 24 / 0.1);
+    --shadow-md: 0 4px 6px -1px rgb(54 36 24 / 0.1), 0 2px 4px -2px rgb(54 36 24 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(54 36 24 / 0.1), 0 4px 6px -4px rgb(54 36 24 / 0.1);
+    --shadow-xl: 0 20px 25px -5px rgb(54 36 24 / 0.1), 0 8px 10px -6px rgb(54 36 24 / 0.1);
+    --shadow-2xl: 0 25px 50px -12px rgb(54 36 24 / 0.25);
 }

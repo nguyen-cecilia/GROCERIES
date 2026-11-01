@@ -4,10 +4,10 @@
     }
 
     label {
-        @apply block space-y-1;
+        @apply block space-y-1.5;
 
         > p {
-            @apply uppercase font-bold;
+            @apply uppercase font-bold text-muted text-sm tracking-wider;
         }
 
         input[type="text"],
@@ -34,6 +34,10 @@
         input[type="number"]::-webkit-outer-spin-button {
             -webkit-appearance: none;
             margin: 0;
+        }
+
+        input[type="checkbox"] {
+            @apply form-checkbox size-7 rounded border-2 text-primary cursor-pointer focus:ring-offset-0 focus:ring-3 focus:ring-primary/60;
         }
     }
 }

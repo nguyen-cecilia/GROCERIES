@@ -1,0 +1,32 @@
+<form class="space-y-6">
+    <label for="label">
+        <p>Label</p>
+        <input type="text" id="label" placeholder="Ex : Courses du samedi">
+    </label>
+
+    <div class="flex items-start gap-3 *:flex-1">
+        <app-select
+            label="Rayon"
+            placeholder="Aucun rayon"
+            [options]="[
+                {value: '', label: 'Aucun rayon'},
+                {value: '1', label: 'Fruits & légumes', color: '#212121'},
+                {value: '2', label: 'Poissons', color: '#555'},
+            ]"
+        />
+
+        <app-input-price id="article-price" label="Prix"/>
+    </div>
+
+    <div class="flex items-center justify-between gap-3">
+        <button app-button variant="invalid">
+            <svg lucideTrash [size]="16"></svg>
+            Supprimer
+        </button>
+
+        <button app-button class="ml-auto">
+            <svg lucideSave [size]="16"></svg>
+            Sauvegarder
+        </button>
+    </div>
+</form>
