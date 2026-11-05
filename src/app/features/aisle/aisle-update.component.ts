@@ -3,9 +3,15 @@ import { ButtonComponent } from '../../components/button/button.component';
 import { ColorPickerComponent } from '../../components/color-picker/color-picker.component';
 import { LucideSave, LucideTrash } from '@lucide/angular';
 import { Aisle } from './aisle.model';
-import { AISLE_COLORS, AisleService } from './aisle.service';
+import { AisleService } from './aisle.service';
 import { ModalService } from '../../components/modal/modal.service';
 import { form, FormField } from '@angular/forms/signals';
+import {
+    AISLE_COLOR_OPTIONS,
+    DEFAULT_AISLE_COLOR,
+    isAisleColorKey,
+    normalizeAisleColor,
+} from '../../core/aisle-colors';
 
 @Component({
     selector: 'app-aisle-update',
@@ -15,11 +21,11 @@ import { form, FormField } from '@angular/forms/signals';
 export class AisleUpdateComponent {
     readonly editing = input<Aisle | null>(null);
 
-    protected readonly colors = AISLE_COLORS;
     private readonly aisleService = inject(AisleService);
     private readonly modalService = inject(ModalService);
 
-    protected readonly model = signal({ label: '', color: AISLE_COLORS[0] });
+    protected readonly colorOptions = AISLE_COLOR_OPTIONS;
+    protected readonly model = signal({ label: '', color: DEFAULT_AISLE_COLOR });
     protected readonly form = form(this.model);
     protected readonly loading = signal(false);
     protected readonly savingError = signal<string | null>(null);
@@ -30,15 +36,21 @@ export class AisleUpdateComponent {
             if (this.modalService.aisle.isOpen()) {
                 this.model.set({
                     label: aisle?.label ?? '',
-                    color: aisle?.color ?? AISLE_COLORS[0],
+                    color: normalizeAisleColor(aisle?.color),
                 });
                 this.savingError.set(null);
             }
         });
     }
 
+    protected setColor(color: string): void {
+        if (isAisleColorKey(color)) {
+            this.model.update((m) => ({ ...m, color }));
+        }
+    }
+
     protected readonly canSubmit = computed(
-        () => this.model().label.trim() !== '' && this.model().color !== '',
+        () => this.model().label.trim() !== '' && this.model().color !== undefined,
     );
 
     async onSubmit(event: Event) {

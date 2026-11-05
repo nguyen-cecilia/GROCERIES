@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { aisleColorHex, AisleColorKey } from '../../core/aisle-colors';
 
 const DOT_SIZE = {
     sm: 'size-2.5',
@@ -16,7 +17,7 @@ export type DotSize = keyof typeof DOT_SIZE;
             <div
                 class="rounded-full border border-ink/50"
                 [class]="dotSize[size]"
-                [style.background-color]="color"
+                [style.background-color]="hex"
             ></div>
             <p>{{ this.label }}</p>
         </div>
@@ -26,8 +27,12 @@ export type DotSize = keyof typeof DOT_SIZE;
     },
 })
 export class BadgeAisleComponent {
-    @Input() color = '#666666';
+    @Input() color: AisleColorKey | null = null;
     @Input() label = 'Aucun rayon';
     @Input() size: DotSize = 'md';
     protected readonly dotSize = DOT_SIZE;
+
+    protected get hex(): string {
+        return aisleColorHex(this.color);
+    }
 }

@@ -1,8 +1,8 @@
 <form class="space-y-6" (submit)="onSubmit($event)" novalidate>
     <app-color-picker
-        [colors]="colors"
+        [options]="colorOptions"
         [value]="model().color"
-        (valueChange)="model.update((m) => ({ ...m, color: $event }))"
+        (valueChange)="setColor($event)"
     />
 
     <label for="label">

@@ -1,22 +1,9 @@
 import { Injectable, signal } from '@angular/core';
 import { supabase } from '../../core/supabase';
 import { Aisle } from './aisle.model';
+import { AisleColorKey, normalizeAisleColor } from '../../core/aisle-colors';
 
-export type AisleInput = { label: string; color: string };
-export const AISLE_COLORS = [
-    '#9b84b5',
-    '#6087be',
-    '#4bbcc0',
-    '#4f937f',
-    '#547951',
-    '#c5e397',
-    '#d5a332',
-    '#d57b32',
-    '#c94b32',
-    '#c47a86',
-    '#8a5a3b',
-    '#8b99a8',
-];
+export type AisleInput = { label: string; color: AisleColorKey };
 
 @Injectable({ providedIn: 'root' })
 export class AisleService {
@@ -40,7 +27,9 @@ export class AisleService {
             this.error.set('Impossible de charger les rayons.');
             return;
         }
-        this.aislesState.set(data ?? []);
+        this.aislesState.set(
+            (data ?? []).map((aisle) => ({ ...aisle, color: normalizeAisleColor(aisle.color) })),
+        );
     }
 
     async create(input: AisleInput) {
