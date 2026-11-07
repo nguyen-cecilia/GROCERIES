@@ -40,11 +40,11 @@
 
         & tbody {
             & tr:not(:last-child) {
-                @apply border-b border-line;
+                @apply border-b border-line max-md:pb-3;
             }
 
             & td {
-                @apply px-3 py-2;
+                @apply lg:px-3 py-1 lg:py-2;
             }
         }
     }

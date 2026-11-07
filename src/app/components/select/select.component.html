@@ -14,7 +14,7 @@
             [attr.aria-controls]="uid + '-listbox'"
             [attr.aria-activedescendant]="isOpen() && activeIndex() >= 0 ? optionId(activeIndex()) : null"
             [disabled]="disabled"
-            class="w-full bg-surface px-3.5 py-2 rounded-sm border border-line flex items-center justify-between gap-2 text-left cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+            class="w-full bg-surface px-3.5 py-2 rounded-sm border border-line flex items-center justify-between gap-2 text-left cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed focus:ring-3 focus:ring-primary/40 focus:border-muted/75"
             (click)="toggle()"
             (keydown)="onKeydown($event)"
         >

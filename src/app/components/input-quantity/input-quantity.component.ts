@@ -71,7 +71,7 @@ export class InputQuantityComponent {
     @Input() disabled = false;
     @Input() size: 'sm' | 'md' = 'md';
     protected readonly btn = { sm: 'size-7', md: 'size-9' };
-    protected readonly fld = { sm: 'h-7.5 w-10', md: 'h-9 w-11' };
+    protected readonly fld = { sm: 'h-7.5 w-8 lg:w-10', md: 'h-9 w-11' };
     protected readonly ico = { sm: '12', md: '16' };
 
     @Output() readonly valueChange = new EventEmitter<number>();

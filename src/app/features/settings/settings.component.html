@@ -22,17 +22,22 @@
     <app-quantity-unit-update />
 </app-modal>
 
-<section class="flex items-center justify-between gap-3">
+<section class="flex flex-col items-start lg:flex-row lg:items-center lg:justify-between gap-3">
     <h1>Paramètres</h1>
 
-    <button app-button variant="ghost" (click)="signOut()">
+    <button app-button variant="ghost" (click)="signOut()" class="self-end">
         <svg lucideLogOut [size]="16"></svg>
         Se déconnecter
     </button>
 </section>
 
 <section class="grid grid-cols-1 lg:grid-cols-[25%_75%] items-start gap-6">
-    <div class="flex flex-col gap-3">
+    <div
+        role="tablist"
+        aria-label="Paramètres"
+        class="flex gap-y-3 gap-x-1 overflow-x-auto overscroll-x-contain py-1 -my-1 -mx-6 px-6
+           lg:mx-0 lg:px-0 lg:my-0 lg:py-0 lg:flex-col lg:overflow-visible"
+    >
         <button app-button
                 [variant]="activePanel() === 'account' ? 'tabActive' : 'tab'"
                 shape="bigPill"
@@ -41,6 +46,7 @@
                 aria-controls="panel-account"
                 [attr.aria-selected]="activePanel() === 'account'"
                 (click)="select('account')"
+                class="shrink-0 whitespace-nowrap"
         >
             <div class="size-3 bg-primary rounded-full"></div>
             Compte
@@ -53,23 +59,32 @@
                 aria-controls="panel-aisles"
                 [attr.aria-selected]="activePanel() === 'aisles'"
                 (click)="select('aisles')"
+                class="shrink-0 whitespace-nowrap"
         >
             <div class="size-3 bg-secondary rounded-full"></div>
             Rayons
         </button>
         <button app-button
                 [variant]="activePanel() === 'articles' ? 'tabActive' : 'tab'" shape="bigPill"
-                role="tab" id="tab-articles" aria-controls="panel-articles"
+                role="tab"
+                id="tab-articles"
+                aria-controls="panel-articles"
                 [attr.aria-selected]="activePanel() === 'articles'"
-                (click)="select('articles')">
+                (click)="select('articles')"
+                class="shrink-0 whitespace-nowrap"
+        >
             <div class="size-3 bg-accent rounded-full"></div>
             Articles
         </button>
         <button app-button
                 [variant]="activePanel() === 'quantityUnits' ? 'tabActive' : 'tab'" shape="bigPill"
-                role="tab" id="tab-quantityUnits" aria-controls="panel-quantityUnits"
+                role="tab"
+                id="tab-quantityUnits"
+                aria-controls="panel-quantityUnits"
                 [attr.aria-selected]="activePanel() === 'quantityUnits'"
-                (click)="select('quantityUnits')">
+                (click)="select('quantityUnits')"
+                class="shrink-0 whitespace-nowrap"
+        >
             <div class="size-3 bg-primary rounded-full"></div>
             Unités de quantité
         </button>
@@ -81,34 +96,30 @@
                 <div>
                     <h2>Compte</h2>
 
-                    <form class="space-y-6" (submit)="onSubmit($event)" novalidate>
-                        <div class="flex items-start gap-6 *:flex-1">
-                            <label for="firstName">
-                                <p>Prénom</p>
-                                <input type="text" id="firstName" placeholder="Ex : Sara"
-                                       autocomplete="given-name" [formField]="accountForm.firstName">
-                            </label>
+                    <form class="grid grid-cols-1 lg:grid-cols-2 gap-x-6 gap-y-2" (submit)="onSubmit($event)" novalidate>
+                        <label for="firstName">
+                            <p>Prénom</p>
+                            <input type="text" id="firstName" placeholder="Ex : Sara"
+                                   autocomplete="given-name" [formField]="accountForm.firstName">
+                        </label>
 
-                            <label for="email">
-                                <p>Email</p>
-                                <input type="email" id="email" placeholder="butt@here.com"
-                                       autocomplete="email" [formField]="accountForm.email">
-                            </label>
-                        </div>
+                        <label for="email">
+                            <p>Email</p>
+                            <input type="email" id="email" placeholder="butt@here.com"
+                                   autocomplete="email" [formField]="accountForm.email">
+                        </label>
 
-                        <div class="flex items-start gap-6 *:flex-1">
-                            <label for="password">
-                                <p>Nouveau mot de passe</p>
-                                <input type="password" id="password"
-                                       autocomplete="new-password" [formField]="accountForm.password">
-                            </label>
+                        <label for="password">
+                            <p>Nouveau mot de passe</p>
+                            <input type="password" id="password"
+                                   autocomplete="new-password" [formField]="accountForm.password">
+                        </label>
 
-                            <label for="confirmPassword">
-                                <p>Confirmer le mot de passe</p>
-                                <input type="password" id="confirmPassword"
-                                       autocomplete="new-password" [formField]="accountForm.confirmPassword">
-                            </label>
-                        </div>
+                        <label for="confirmPassword">
+                            <p>Confirmer le mot de passe</p>
+                            <input type="password" id="confirmPassword"
+                                   autocomplete="new-password" [formField]="accountForm.confirmPassword">
+                        </label>
 
                         @if (accountModel().password && accountModel().password !== accountModel().confirmPassword) {
                             <p class="text-secondary">Les mots de passe ne correspondent pas.</p>
@@ -172,7 +183,7 @@
                                             <svg lucideChevronDown [size]="16"></svg>
                                         </button>
                                     </div>
-                                    <app-badge-aisle color="#d5a332" label="Viandes & poissons" class="font-semibold text-md flex-1" />
+                                    <app-badge-aisle color="red" label="Viandes & poissons" class="font-semibold text-md flex-1" />
                                     <button app-button variant="outline" shape="rounded"
                                             (click)="modalService.aisle.openEdit(aisle)">
                                         <svg lucideSlidersHorizontal [size]="16"></svg>
@@ -195,9 +206,33 @@
 
                     <app-input-search></app-input-search>
 
+                    <div class="lg:hidden flex items-center gap-2">
+                        <button
+                            app-button
+                            variant="outline"
+                        >
+                            <svg lucideChevronDown [size]="16"></svg>
+                            Label
+                        </button>
+                        <button
+                            app-button
+                            variant="outline"
+                        >
+                            <svg lucideChevronsUpDown [size]="16"></svg>
+                            Rayon
+                        </button>
+                        <button
+                            app-button
+                            variant="outline"
+                        >
+                            <svg lucideChevronsUpDown [size]="16"></svg>
+                            Prix
+                        </button>
+                    </div>
+
                     <!-- TODO: Ajouter un tri sur les colonnes -->
-                    <table>
-                        <thead>
+                    <table class="max-md:block">
+                        <thead class="max-md:hidden">
                         <tr>
                             <th>
                                 <button
@@ -229,26 +264,26 @@
                             <th></th>
                         </tr>
                         </thead>
-                        <tbody>
-                        <tr>
-                            <td class="font-bold text-md">Titre de l'article</td>
-                            <td>
-                                <app-badge-aisle color="#6C44A4" label="Fruits & légumes" />
+                        <tbody class="max-md:block max-md:space-y-3">
+                        <tr class="max-md:grid grid-cols-[1fr_auto_auto] [grid-template-areas:'label_label_price'_'aisle_aisle_action'] items-center gap-x-3">
+                            <td class="[grid-area:label] font-bold text-md">Titre de l'article</td>
+                            <td class="[grid-area:aisle]">
+                                <app-badge-aisle color="lime" label="Fruits & légumes" />
                             </td>
-                            <td class="font-display font-semibold text-md">6,12 €</td>
-                            <td class="flex items-center justify-end gap-2">
+                            <td class="[grid-area:price] font-display font-semibold text-md">6,12 €</td>
+                            <td class="[grid-area:action] flex items-center justify-end gap-2">
                                 <button app-button variant="outline" shape="rounded">
                                     <svg lucideSlidersHorizontal [size]="16"></svg>
                                 </button>
                             </td>
                         </tr>
-                        <tr>
-                            <td class="font-bold text-md">Saumon</td>
-                            <td class="flex items-center gap-2">
-                                <app-badge-aisle color="#d5a332" label="Viandes & poissons" />
+                        <tr class="max-md:grid grid-cols-[1fr_auto_auto] [grid-template-areas:'label_label_price'_'aisle_aisle_action'] items-center gap-x-3">
+                            <td class="[grid-area:label] font-bold text-md">Saumon</td>
+                            <td class="[grid-area:aisle]">
+                                <app-badge-aisle color="violet" label="Viandes & poissons" />
                             </td>
-                            <td class="font-display font-semibold text-md">4,56 €</td>
-                            <td class="flex items-center justify-end gap-2">
+                            <td class="[grid-area:price] font-display font-semibold text-md">4,56 €</td>
+                            <td class="[grid-area:action] flex items-center justify-end gap-2">
                                 <button app-button variant="outline" shape="rounded">
                                     <svg lucideSlidersHorizontal [size]="16"></svg>
                                 </button>

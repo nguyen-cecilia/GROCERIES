@@ -19,7 +19,7 @@ export type DotSize = keyof typeof DOT_SIZE;
                 [class]="dotSize[size]"
                 [style.background-color]="hex"
             ></div>
-            <p>{{ this.label }}</p>
+            <p class="whitespace-nowrap">{{ this.label }}</p>
         </div>
     `,
     host: {
