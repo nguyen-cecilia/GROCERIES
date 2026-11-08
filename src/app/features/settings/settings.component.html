@@ -92,6 +92,9 @@
 
     <div class="bg-surface border border-line rounded shadow-lg py-4 px-6 *:space-y-6">
         @switch (activePanel()) {
+            <!-- ------------------------------ -->
+            <!--            COMPTE              -->
+            <!-- ------------------------------ -->
             @case ('account') {
                 <div>
                     <h2>Compte</h2>
@@ -121,19 +124,11 @@
                                    autocomplete="new-password" [formField]="accountForm.confirmPassword">
                         </label>
 
-                        @if (accountModel().password && accountModel().password !== accountModel().confirmPassword) {
-                            <p class="text-secondary">Les mots de passe ne correspondent pas.</p>
-                        }
+                        <app-message variant="error" class="lg:col-span-2" [message]="passwordMismatch()" />
+                        <app-message variant="error" class="lg:col-span-2" [message]="error()" />
+                        <app-message variant="success" class="lg:col-span-2" [message]="success()" />
 
-                        @if (error()) {
-                            <p class="text-secondary" role="alert">{{ error() }}</p>
-                        }
-
-                        @if (savedMessage()) {
-                            <p class="text-primary">{{ savedMessage() }}</p>
-                        }
-
-                        <button app-button type="submit" shape="bigPill" class="ml-auto"
+                        <button app-button type="submit" shape="bigPill" class="col-span-2 ml-auto"
                                 [disabled]="!canSubmit() || loading()">
                             <svg lucideSave [size]="20"></svg>
                             {{ loading() ? 'Enregistrement…' : 'Sauvegarder' }}
@@ -141,6 +136,9 @@
                     </form>
                 </div>
             }
+            <!-- ------------------------------ -->
+            <!--             RAYONS             -->
+            <!-- ------------------------------ -->
             @case ('aisles') {
                 <div>
                     <div class="flex items-center justify-between gap-3">
@@ -152,11 +150,11 @@
                     </div>
 
                     @if (aislesService.loading()) {
-                        <p class="text-muted">Chargement…</p>
+                        <app-message variant="loading" [message]="messages.common.loading" />
                     } @else if (aislesService.error()) {
-                        <p class="text-invalid" role="alert">{{ aislesService.error() }}</p>
+                        <app-message variant="error" [message]="aislesService.error()" />
                     } @else if (aislesService.aisles().length === 0) {
-                        <p class="text-muted">Ajoute ton premier rayon !</p>
+                        <app-message variant="info" [message]="messages.aisle.empty" />
                     } @else {
                         <div class="space-y-3">
                             @for (aisle of aislesService.aisles(); track aisle.id; let i = $index, count = $count) {
@@ -183,7 +181,7 @@
                                             <svg lucideChevronDown [size]="16"></svg>
                                         </button>
                                     </div>
-                                    <app-badge-aisle color="red" label="Viandes & poissons" class="font-semibold text-md flex-1" />
+                                    <app-badge-aisle [color]="aisle.color" [label]="aisle.label" class="font-semibold text-md flex-1" />
                                     <button app-button variant="outline" shape="rounded"
                                             (click)="modalService.aisle.openEdit(aisle)">
                                         <svg lucideSlidersHorizontal [size]="16"></svg>
@@ -194,6 +192,9 @@
                     }
                 </div>
             }
+            <!-- ------------------------------ -->
+            <!--           ARTICLES             -->
+            <!-- ------------------------------ -->
             @case ('articles') {
                 <div>
                     <div class="flex items-center justify-between gap-3">
@@ -293,6 +294,9 @@
                     </table>
                 </div>
             }
+            <!-- ------------------------------ -->
+            <!--       UNITE DE QUANTITE        -->
+            <!-- ------------------------------ -->
             @case ('quantityUnits') {
                 <div>
                     <div class="flex items-center justify-between gap-3">
@@ -323,7 +327,10 @@
                                     <svg lucideChevronDown [size]="16"></svg>
                                 </button>
                             </div>
-                            <p class="flex-1 text-md font-semibold">Unité</p>
+                            <div class="flex-1 flex items-center gap-2">
+                                <p class="text-md font-semibold">Unité</p>
+                                <svg lucideStar [size]="16" class="text-secondary"></svg>
+                            </div>
                             <button app-button variant="outline" shape="rounded">
                                 <svg lucideSlidersHorizontal [size]="16"></svg>
                             </button>

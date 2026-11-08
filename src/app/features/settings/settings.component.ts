@@ -8,6 +8,7 @@ import {
     LucidePlus,
     LucideSave,
     LucideSlidersHorizontal,
+    LucideStar,
 } from '@lucide/angular';
 import { AuthService } from '../../core/auth.service';
 import { Router } from '@angular/router';
@@ -20,6 +21,8 @@ import { InputSearchComponent } from '../../components/input-search/input-search
 import { ArticleUpdateComponent } from '../article/article-update.component';
 import { BadgeAisleComponent } from '../../components/badge-aisle/badge-aisle.component';
 import { QuantityUnitUpdateComponent } from '../quantity-unit/quantity-unit-update.component';
+import { MESSAGES, supabaseMessage } from '../../core/messages';
+import { MessageComponent } from '../../components/message/message.component';
 
 type accountTabs = 'account' | 'aisles' | 'articles' | 'quantityUnits';
 
@@ -41,6 +44,8 @@ type accountTabs = 'account' | 'aisles' | 'articles' | 'quantityUnits';
         ArticleUpdateComponent,
         BadgeAisleComponent,
         QuantityUnitUpdateComponent,
+        LucideStar,
+        MessageComponent,
     ],
     templateUrl: './settings.component.html',
 })
@@ -60,9 +65,16 @@ export class SettingsComponent {
     });
     protected readonly accountForm = form(this.accountModel);
 
+    protected readonly messages = MESSAGES;
     protected readonly loading = signal(false);
-    protected readonly savedMessage = signal<string | null>(null);
+    protected readonly success = signal<string | null>(null);
     protected readonly error = signal<string | null>(null);
+    protected readonly passwordMismatch = computed(() => {
+        const { password, confirmPassword } = this.accountModel();
+        return password !== '' && password !== confirmPassword
+            ? MESSAGES.account.passwordMismatch
+            : null;
+    });
 
     protected readonly canSubmit = computed(() => {
         const { firstName, email, password, confirmPassword } = this.accountModel();
@@ -72,7 +84,7 @@ export class SettingsComponent {
     });
 
     constructor() {
-        this.aislesService.load();
+        void this.aislesService.load();
     }
 
     select(key: accountTabs): void {
@@ -85,7 +97,7 @@ export class SettingsComponent {
 
         this.loading.set(true);
         this.error.set(null);
-        this.savedMessage.set(null);
+        this.success.set(null);
 
         const user = this.auth.user();
         const firstName = this.accountModel().firstName.trim();
@@ -100,9 +112,9 @@ export class SettingsComponent {
 
         this.loading.set(false);
         if (error) {
-            // this.error.set(this.messageFor(error.code, error.message));
+            this.error.set(supabaseMessage(error.code, MESSAGES.account.saveFailed));
         } else {
-            this.savedMessage.set('Profil mis à jour.');
+            this.success.set(MESSAGES.account.saved);
             this.accountModel.update((m) => ({ ...m, password: '', confirmPassword: '' }));
         }
     }

@@ -12,10 +12,19 @@ import {
     isAisleColorKey,
     normalizeAisleColor,
 } from '../../core/aisle-colors';
+import { MESSAGES } from '../../core/messages';
+import { MessageComponent } from '../../components/message/message.component';
 
 @Component({
     selector: 'app-aisle-update',
-    imports: [ButtonComponent, ColorPickerComponent, LucideSave, LucideTrash, FormField],
+    imports: [
+        ButtonComponent,
+        ColorPickerComponent,
+        LucideSave,
+        LucideTrash,
+        FormField,
+        MessageComponent,
+    ],
     templateUrl: './aisle-update.component.html',
 })
 export class AisleUpdateComponent {
@@ -28,7 +37,7 @@ export class AisleUpdateComponent {
     protected readonly model = signal({ label: '', color: DEFAULT_AISLE_COLOR });
     protected readonly form = form(this.model);
     protected readonly loading = signal(false);
-    protected readonly savingError = signal<string | null>(null);
+    protected readonly error = signal<string | null>(null);
 
     constructor() {
         effect(() => {
@@ -38,7 +47,7 @@ export class AisleUpdateComponent {
                     label: aisle?.label ?? '',
                     color: normalizeAisleColor(aisle?.color),
                 });
-                this.savingError.set(null);
+                this.error.set(null);
             }
         });
     }
@@ -57,17 +66,17 @@ export class AisleUpdateComponent {
         event.preventDefault();
         if (this.loading()) return;
         this.loading.set(true);
-        this.savingError.set(null);
+        this.error.set(null);
 
         const input = { label: this.model().label, color: this.model().color };
         const aisle = this.editing();
-        const { error } = aisle
+        const { error: err } = aisle
             ? await this.aisleService.update(aisle.id, input)
             : await this.aisleService.create(input);
 
         this.loading.set(false);
-        if (error) {
-            this.savingError.set('Enregistrement impossible, réessaie.');
+        if (err) {
+            this.error.set(MESSAGES.aisle.saveFailed);
             return;
         }
         this.modalService.aisle.close();
@@ -83,6 +92,8 @@ export class AisleUpdateComponent {
         if (!error) {
             this.modalService.aisle.close();
             await this.aisleService.load();
+        } else {
+            this.error.set(MESSAGES.aisle.deleteFailed);
         }
     }
 }

@@ -15,7 +15,6 @@ export class ButtonComponent {
     @Input() variant:
         | 'primary'
         | 'secondary'
-        | 'tertiary'
         | 'outline'
         | 'ghost'
         | 'link'
@@ -30,14 +29,10 @@ export class ButtonComponent {
             'flex items-center gap-2 leading-4 transition-all cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0 hover:-translate-y-0.5';
 
         const variants = {
-            primary:
-                'bg-primary text-canvas hover:bg-primary-2 font-semibold justify-center shadow-xl',
-            secondary:
-                'bg-secondary text-canvas hover:bg-secondary/80 font-semibold justify-center shadow-xl',
-            tertiary: '',
-            outline:
-                'bg-surface border border-line font-semibold justify-center hover:border-ink/50 hover:bg-deep',
-            ghost: 'font-semibold text-muted hover:bg-deep hover:text-ink',
+            primary: 'bg-primary text-canvas hover:bg-primary-2 font-semibold justify-center shadow-xl',
+            secondary: 'bg-secondary text-canvas hover:bg-secondary/80 font-semibold justify-center shadow-xl',
+            outline: 'bg-surface border border-line font-semibold justify-center hover:border-ink/50 hover:bg-deep',
+            ghost: 'font-semibold text-muted hover:bg-deep hover:text-ink disabled:hover:bg-transparent',
             link: 'underline underline-offset-3 font-semibold',
             invalid: 'bg-surface text-invalid font-semibold border border-invalid/50 hover:bg-invalid hover:text-canvas hover:shadow-xl',
             tab: 'font-medium text-md hover:bg-deep',

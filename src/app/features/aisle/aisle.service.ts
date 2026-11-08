@@ -2,6 +2,7 @@ import { Injectable, signal } from '@angular/core';
 import { supabase } from '../../core/supabase';
 import { Aisle } from './aisle.model';
 import { AisleColorKey, normalizeAisleColor } from '../../core/aisle-colors';
+import { MESSAGES } from '../../core/messages';
 
 export type AisleInput = { label: string; color: AisleColorKey };
 
@@ -24,7 +25,7 @@ export class AisleService {
             .order('label');
         this.loading.set(false);
         if (error) {
-            this.error.set('Impossible de charger les rayons.');
+            this.error.set(MESSAGES.aisle.loadFailed);
             return;
         }
         this.aislesState.set(
@@ -33,20 +34,20 @@ export class AisleService {
     }
 
     async create(input: AisleInput) {
-        const nextPosition = this.aislesState()
-            .reduce((max, a) => Math.max(max, a.position), -1) + 1;
         return supabase.from('sg_aisle').insert({
             label: input.label.trim(),
             color: input.color,
-            position: nextPosition,
         });
     }
 
     update(id: string, input: AisleInput) {
-        return supabase.from('sg_aisle').update({
-            label: input.label.trim(),
-            color: input.color,
-        }).eq('id', id);
+        return supabase
+            .from('sg_aisle')
+            .update({
+                label: input.label.trim(),
+                color: input.color,
+            })
+            .eq('id', id);
     }
 
     remove(id: string) {
@@ -54,36 +55,27 @@ export class AisleService {
     }
 
     async move(id: string, direction: 'up' | 'down') {
-        if (this.reordering()) return;
+        if (this.reordering() || this.loading()) return;
 
         const ordered = [...this.aislesState()];
         const index = ordered.findIndex((a) => a.id === id);
         const target = direction === 'up' ? index - 1 : index + 1;
         if (index === -1 || target < 0 || target >= ordered.length) return;
 
+        const previous = this.aislesState();
         [ordered[index], ordered[target]] = [ordered[target], ordered[index]];
 
         this.reordering.set(true);
         this.aislesState.set(ordered.map((a, position) => ({ ...a, position })));
 
-        const ok = await this.persistOrder(ordered);
+        const { error } = await supabase.rpc('sg_reorder_aisles', {
+            p_ids: ordered.map((a) => a.id),
+        });
+
         this.reordering.set(false);
-        if (!ok) {
-            await this.load();
+        if (error) {
+            this.aislesState.set(previous);
+            this.error.set(MESSAGES.aisle.reorderFailed);
         }
-    }
-
-    private async persistOrder(ordered: Aisle[]): Promise<boolean> {
-        const updates = ordered
-            .map((a, position) => ({ id: a.id, position, current: a.position }))
-            .filter(({ position, current }) => position !== current);
-
-        const results = await Promise.all(
-            updates.map(({ id, position }) =>
-                supabase.from('sg_aisle').update({ position }).eq('id', id),
-            ),
-        );
-
-        return results.every(({ error }) => !error);
     }
 }

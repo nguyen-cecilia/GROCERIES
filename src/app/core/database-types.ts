@@ -4,7 +4,7 @@ export type Database = {
     // Allows to automatically instantiate createClient with right options
     // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
     __InternalSupabase: {
-        PostgrestVersion: '14.5';
+        PostgrestVersion: '14.17';
     };
     graphql_public: {
         Tables: {
@@ -44,7 +44,7 @@ export type Database = {
                     user_id: string;
                 };
                 Insert: {
-                    color: string;
+                    color?: string;
                     created_at?: string;
                     id?: string;
                     label: string;
@@ -188,22 +188,34 @@ export type Database = {
             };
             sg_quantity_unit: {
                 Row: {
+                    apply_quantity: boolean;
                     created_at: string;
                     id: string;
+                    is_default: boolean;
                     label: string;
+                    position: number;
                     updated_at: string;
+                    user_id: string;
                 };
                 Insert: {
+                    apply_quantity?: boolean;
                     created_at?: string;
                     id?: string;
+                    is_default?: boolean;
                     label: string;
+                    position?: number;
                     updated_at?: string;
+                    user_id?: string;
                 };
                 Update: {
+                    apply_quantity?: boolean;
                     created_at?: string;
                     id?: string;
+                    is_default?: boolean;
                     label?: string;
+                    position?: number;
                     updated_at?: string;
+                    user_id?: string;
                 };
                 Relationships: [];
             };
@@ -212,7 +224,7 @@ export type Database = {
             [_ in never]: never;
         };
         Functions: {
-            [_ in never]: never;
+            sg_reorder_aisles: { Args: { p_ids: string[] }; Returns: undefined };
         };
         Enums: {
             [_ in never]: never;

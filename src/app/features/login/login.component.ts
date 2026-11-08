@@ -3,6 +3,7 @@ import { ButtonComponent } from '../../components/button/button.component';
 import { form, FormField } from '@angular/forms/signals';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/auth.service';
+import { MESSAGES, supabaseMessage } from '../../core/messages';
 
 @Component({
     selector: 'app-login',
@@ -35,21 +36,9 @@ export class LoginComponent {
 
         this.loading.set(false);
         if (error) {
-            this.error.set(this.messageFor(error.code));
+            this.error.set(supabaseMessage(error.code, MESSAGES.auth.signInFailed));
         } else {
             await this.router.navigate(['/']);
-        }
-    }
-
-    // TODO: Refactoriser les messages d'erreur et de validation
-    private messageFor(code: string | undefined): string {
-        switch (code) {
-            case 'invalid_credentials':
-                return 'Email ou mot de passe incorrect.';
-            case 'email_not_confirmed':
-                return 'Vérifie ta boîte mail pour confirmer ton compte.';
-            default:
-                return 'Connexion impossible, réessaie.';
         }
     }
 }
