@@ -24,6 +24,14 @@ export const MESSAGES = {
         duplicateLabel: 'Un rayon porte déjà ce nom.',
         reorderFailed: 'Impossible de réordonner les rayons, réessaie.',
     },
+    quantityUnit: {
+        loadFailed: 'Impossible de charger les unités de quantité.',
+        saveFailed: "Impossible d'enregistrer l\'unité de quantité, réessaie.",
+        deleteFailed: 'Impossible de supprimer l\'unité de quantité, réessaie.',
+        empty: "Aucune unité pour l'instant. Ajoute la première.",
+        duplicateLabel: 'Une unité porte déjà ce nom.',
+        reorderFailed: 'Impossible de réordonner les unités, réessaie.',
+    },
 } as const;
 
 const SUPABASE_ERRORS: Record<string, string> = {

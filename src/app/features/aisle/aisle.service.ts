@@ -40,7 +40,7 @@ export class AisleService {
         });
     }
 
-    update(id: string, input: AisleInput) {
+    async update(id: string, input: AisleInput) {
         return supabase
             .from('sg_aisle')
             .update({
@@ -50,7 +50,7 @@ export class AisleService {
             .eq('id', id);
     }
 
-    remove(id: string) {
+    async remove(id: string) {
         return supabase.from('sg_aisle').delete().eq('id', id);
     }
 

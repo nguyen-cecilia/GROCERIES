@@ -191,7 +191,6 @@ export type Database = {
                     apply_quantity: boolean;
                     created_at: string;
                     id: string;
-                    is_default: boolean;
                     label: string;
                     position: number;
                     updated_at: string;
@@ -201,7 +200,6 @@ export type Database = {
                     apply_quantity?: boolean;
                     created_at?: string;
                     id?: string;
-                    is_default?: boolean;
                     label: string;
                     position?: number;
                     updated_at?: string;
@@ -211,7 +209,6 @@ export type Database = {
                     apply_quantity?: boolean;
                     created_at?: string;
                     id?: string;
-                    is_default?: boolean;
                     label?: string;
                     position?: number;
                     updated_at?: string;
@@ -225,6 +222,10 @@ export type Database = {
         };
         Functions: {
             sg_reorder_aisles: { Args: { p_ids: string[] }; Returns: undefined };
+            sg_reorder_quantity_units: {
+                Args: { p_ids: string[] };
+                Returns: undefined;
+            };
         };
         Enums: {
             [_ in never]: never;

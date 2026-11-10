@@ -1,12 +1,14 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { ButtonComponent } from '../../components/button/button.component';
 import {
+    LucideCalculator,
     LucideChevronDown,
     LucideChevronsUpDown,
     LucideChevronUp,
     LucideLogOut,
     LucidePlus,
     LucideSave,
+    LucideScale,
     LucideSlidersHorizontal,
     LucideStar,
 } from '@lucide/angular';
@@ -23,6 +25,7 @@ import { BadgeAisleComponent } from '../../components/badge-aisle/badge-aisle.co
 import { QuantityUnitUpdateComponent } from '../quantity-unit/quantity-unit-update.component';
 import { MESSAGES, supabaseMessage } from '../../core/messages';
 import { MessageComponent } from '../../components/message/message.component';
+import { QuantityUnitService } from '../quantity-unit/quantity-unit.service';
 
 type accountTabs = 'account' | 'aisles' | 'articles' | 'quantityUnits';
 
@@ -45,6 +48,8 @@ type accountTabs = 'account' | 'aisles' | 'articles' | 'quantityUnits';
         BadgeAisleComponent,
         QuantityUnitUpdateComponent,
         LucideStar,
+        LucideCalculator,
+        LucideScale,
         MessageComponent,
     ],
     templateUrl: './settings.component.html',
@@ -52,7 +57,8 @@ type accountTabs = 'account' | 'aisles' | 'articles' | 'quantityUnits';
 export class SettingsComponent {
     private readonly auth = inject(AuthService);
     private readonly router = inject(Router);
-    protected readonly aislesService = inject(AisleService);
+    protected readonly aisleService = inject(AisleService);
+    protected readonly quantityUnitService = inject(QuantityUnitService);
     protected modalService = inject(ModalService);
 
     readonly activePanel = signal<accountTabs>('account');
@@ -84,7 +90,8 @@ export class SettingsComponent {
     });
 
     constructor() {
-        void this.aislesService.load();
+        void this.aisleService.load();
+        void this.quantityUnitService.load();
     }
 
     select(key: accountTabs): void {

@@ -1,19 +1,19 @@
-<form class="space-y-6">
+<form class="space-y-6" (submit)="onSubmit($event)" novalidate>
     <label for="label">
         <p>Label</p>
-        <input type="text" id="label" placeholder="Ex : kg">
+        <input type="text" id="label" placeholder="Ex : kg" [formField]="form.label">
     </label>
 
     <label for="applyQuantity" class="flex items-center gap-3 cursor-pointer">
         <input
             type="checkbox"
             id="applyQuantity"
+            [formField]="form.apply_quantity"
         >
         <div>
             <p>Prendre en compte la quantité</p>
             <p class="text-muted text-sm">
-                <!-- TODO: Afficher le bon texte -->
-                @if (true) {
+                @if (model().apply_quantity) {
                     Le prix saisi est multiplié par la quantité (ex : 2 × 1,25&nbsp;€ = 2,50&nbsp;€)
                 } @else {
                     Le prix saisi est pour la quantité donnée (ex : 2 kg à 1,25&nbsp;€)
@@ -22,13 +22,17 @@
         </div>
     </label>
 
-    <div class="flex items-center justify-between gap-3">
-        <button app-button variant="invalid">
-            <svg lucideTrash [size]="16"></svg>
-            Supprimer
-        </button>
+    <app-message variant="error" [message]="error()"/>
 
-        <button app-button class="ml-auto">
+    <div class="flex items-center justify-between gap-3">
+        @if (editing()) {
+            <button app-button variant="invalid" (click)="onDelete()">
+                <svg lucideTrash [size]="16"></svg>
+                Supprimer
+            </button>
+        }
+
+        <button app-button type="submit" [disabled]="!canSubmit() || loading()" class="ml-auto">
             <svg lucideSave [size]="16"></svg>
             Sauvegarder
         </button>
