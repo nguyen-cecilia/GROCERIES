@@ -21,7 +21,7 @@ export const AISLE_PALETTE: Record<AisleColorKey, string> = {
 };
 
 export const DEFAULT_AISLE_COLOR: AisleColorKey = 'violet';
-export const AISLE_COLOR_FALLBACK = '#666666'; // « Aucun rayon »
+export const AISLE_COLOR_FALLBACK = '#9b9b9b';
 
 export function isAisleColorKey(value: string): value is AisleColorKey {
     return (AISLE_COLORS as readonly string[]).includes(value);

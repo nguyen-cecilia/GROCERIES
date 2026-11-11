@@ -1,30 +1,46 @@
-<form class="space-y-6">
+<form class="space-y-6" (submit)="onSubmit($event)" novalidate>
     <label for="label">
         <p>Label</p>
-        <input type="text" id="label" placeholder="Ex : Courses du samedi">
+        <input type="text" id="label" placeholder="Ex : Courses du samedi" [formField]="form.label">
     </label>
 
-    <div class="flex items-start gap-3 *:flex-1">
+    <div class="grid grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:grid-cols-[minmax(0,3fr)_minmax(0,1fr)] items-start gap-x-3 gap-y-2">
         <app-select
             label="Rayon"
             placeholder="Aucun rayon"
-            [options]="[
-                {value: '', label: 'Aucun rayon'},
-                {value: '1', label: 'Fruits & légumes', color: '#212121'},
-                {value: '2', label: 'Poissons', color: '#555'},
-            ]"
+            [options]="aisleOptions()"
+            [formField]="form.aisle_id"
         />
 
-        <app-input-price id="article-price" label="Prix"/>
+        <app-input-price id="article-price" label="Prix" [formField]="form.price"/>
+
+        @if (lastPrice() !== null) {
+            <div class="col-span-2 flex justify-end">
+                <button
+                    app-button
+                    variant="link"
+                    class="text-sm"
+                    title="Utiliser le dernier prix"
+                    [disabled]="lastPrice() === model().price"
+                    (click)="applyLastPrice()"
+                >
+                    dernier prix : {{ lastPrice() | currency:'EUR' }}
+                </button>
+            </div>
+        }
     </div>
 
-    <div class="flex items-center justify-between gap-3">
-        <button app-button variant="invalid">
-            <svg lucideTrash [size]="16"></svg>
-            Supprimer
-        </button>
+    <app-message variant="error" [message]="error()"/>
 
-        <button app-button class="ml-auto">
+    <div class="flex items-center justify-between gap-3">
+        @if (editing()) {
+            <button app-button variant="invalid" (click)="onDelete()">
+                <svg lucideTrash [size]="16"></svg>
+                Supprimer
+            </button>
+        }
+
+        <button app-button type="submit" [disabled]="!canSubmit() || loading()" class="ml-auto">
             <svg lucideSave [size]="16"></svg>
             Sauvegarder
         </button>

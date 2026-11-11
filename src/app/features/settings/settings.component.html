@@ -11,7 +11,7 @@
     [isOpen]="this.modalService.article.isOpen"
     [onClose]="() => this.modalService.article.close()"
 >
-    <app-article-update />
+    <app-article-update [editing]="modalService.article.editing()" />
 </app-modal>
 
 <app-modal
@@ -205,93 +205,145 @@
                         </button>
                     </div>
 
-                    <app-input-search></app-input-search>
+                    @if (aisleService.loading()) {
+                        <app-message variant="loading" [message]="messages.common.loading" />
+                    } @else if (aisleService.error()) {
+                        <app-message variant="error" [message]="aisleService.error()" />
+                    } @else if (aisleService.aisles().length === 0) {
+                        <app-message variant="info" [message]="messages.aisle.empty" />
+                    } @else {
+                        <app-input-search
+                            placeholder="Label, rayon ou prix"
+                            [value]="search()"
+                            (valueChange)="search.set($event)"
+                        />
 
-                    <div class="lg:hidden flex items-center gap-2">
-                        <button
-                            app-button
-                            variant="outline"
-                        >
-                            <svg lucideChevronDown [size]="16"></svg>
-                            Label
-                        </button>
-                        <button
-                            app-button
-                            variant="outline"
-                        >
-                            <svg lucideChevronsUpDown [size]="16"></svg>
-                            Rayon
-                        </button>
-                        <button
-                            app-button
-                            variant="outline"
-                        >
-                            <svg lucideChevronsUpDown [size]="16"></svg>
-                            Prix
-                        </button>
-                    </div>
+                        <div class="lg:hidden flex items-center gap-2">
+                            <button app-button variant="outline" (click)="toggleSort('label')">
+                                Label
+                                @if (sort().key === 'label') {
+                                    @if (sort().dir === 'asc') {
+                                        <svg lucideChevronUp [size]="16"></svg>
+                                    } @else {
+                                        <svg lucideChevronDown [size]="16"></svg>
+                                    }
+                                } @else {
+                                    <svg lucideChevronsUpDown [size]="16"></svg>
+                                }
+                            </button>
 
-                    <!-- TODO: Ajouter un tri sur les colonnes -->
-                    <table class="max-md:block">
-                        <thead class="max-md:hidden">
-                        <tr>
-                            <th>
-                                <button
-                                    app-button
-                                    variant="sortTable"
-                                >
-                                    Label
-                                    <svg lucideChevronDown [size]="14"></svg>
-                                </button>
-                            </th>
-                            <th>
-                                <button
-                                    app-button
-                                    variant="sortTable"
-                                >
-                                    Rayon
-                                    <svg lucideChevronsUpDown [size]="14"></svg>
-                                </button>
-                            </th>
-                            <th>
-                                <button
-                                    app-button
-                                    variant="sortTable"
-                                >
-                                    Prix
-                                    <svg lucideChevronsUpDown [size]="14"></svg>
-                                </button>
-                            </th>
-                            <th></th>
-                        </tr>
-                        </thead>
-                        <tbody class="max-md:block max-md:space-y-3">
-                        <tr class="max-md:grid grid-cols-[1fr_auto_auto] [grid-template-areas:'label_label_price'_'aisle_aisle_action'] items-center gap-x-3">
-                            <td class="[grid-area:label] font-bold text-md">Titre de l'article</td>
-                            <td class="[grid-area:aisle]">
-                                <app-badge-aisle color="lime" label="Fruits & légumes" />
-                            </td>
-                            <td class="[grid-area:price] font-display font-semibold text-md">6,12 €</td>
-                            <td class="[grid-area:action] flex items-center justify-end gap-2">
-                                <button app-button variant="outline" shape="rounded">
-                                    <svg lucideSlidersHorizontal [size]="16"></svg>
-                                </button>
-                            </td>
-                        </tr>
-                        <tr class="max-md:grid grid-cols-[1fr_auto_auto] [grid-template-areas:'label_label_price'_'aisle_aisle_action'] items-center gap-x-3">
-                            <td class="[grid-area:label] font-bold text-md">Saumon</td>
-                            <td class="[grid-area:aisle]">
-                                <app-badge-aisle color="violet" label="Viandes & poissons" />
-                            </td>
-                            <td class="[grid-area:price] font-display font-semibold text-md">4,56 €</td>
-                            <td class="[grid-area:action] flex items-center justify-end gap-2">
-                                <button app-button variant="outline" shape="rounded">
-                                    <svg lucideSlidersHorizontal [size]="16"></svg>
-                                </button>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
+                            <button app-button variant="outline" (click)="toggleSort('aisle')">
+                                Rayon
+                                @if (sort().key === 'aisle') {
+                                    @if (sort().dir === 'asc') {
+                                        <svg lucideChevronUp [size]="16"></svg>
+                                    } @else {
+                                        <svg lucideChevronDown [size]="16"></svg>
+                                    }
+                                } @else {
+                                    <svg lucideChevronsUpDown [size]="16"></svg>
+                                }
+                            </button>
+
+                            <button app-button variant="outline" (click)="toggleSort('price')">
+                                Prix
+                                @if (sort().key === 'price') {
+                                    @if (sort().dir === 'asc') {
+                                        <svg lucideChevronUp [size]="16"></svg>
+                                    } @else {
+                                        <svg lucideChevronDown [size]="16"></svg>
+                                    }
+                                } @else {
+                                    <svg lucideChevronsUpDown [size]="16"></svg>
+                                }
+                            </button>
+                        </div>
+
+                        @if (filteredArticles().length) {
+                            <table class="max-md:block">
+                                <thead class="max-md:hidden">
+                                <tr>
+                                    <th [attr.aria-sort]="ariaSort('label')">
+                                        <button app-button variant="sortTable" (click)="toggleSort('label')">
+                                            Label
+                                            @if (sort().key === 'label') {
+                                                @if (sort().dir === 'asc') {
+                                                    <svg lucideChevronUp [size]="14"></svg>
+                                                } @else {
+                                                    <svg lucideChevronDown [size]="14"></svg>
+                                                }
+                                            } @else {
+                                                <svg lucideChevronsUpDown [size]="14"></svg>
+                                            }
+                                        </button>
+                                    </th>
+                                    <th [attr.aria-sort]="ariaSort('aisle')">
+                                        <button app-button variant="sortTable" (click)="toggleSort('aisle')">
+                                            Rayon
+                                            @if (sort().key === 'aisle') {
+                                                @if (sort().dir === 'asc') {
+                                                    <svg lucideChevronUp [size]="14"></svg>
+                                                } @else {
+                                                    <svg lucideChevronDown [size]="14"></svg>
+                                                }
+                                            } @else {
+                                                <svg lucideChevronsUpDown [size]="14"></svg>
+                                            }
+                                        </button>
+                                    </th>
+                                    <th [attr.aria-sort]="ariaSort('price')">
+                                        <button app-button variant="sortTable" (click)="toggleSort('price')">
+                                            Prix
+                                            @if (sort().key === 'price') {
+                                                @if (sort().dir === 'asc') {
+                                                    <svg lucideChevronUp [size]="14"></svg>
+                                                } @else {
+                                                    <svg lucideChevronDown [size]="14"></svg>
+                                                }
+                                            } @else {
+                                                <svg lucideChevronsUpDown [size]="14"></svg>
+                                            }
+                                        </button>
+                                    </th>
+                                    <th></th>
+                                </tr>
+                                </thead>
+                                <tbody class="max-md:block max-md:space-y-3">
+                                    @for (article of filteredArticles(); track article.id) {
+                                        <tr class="max-md:grid grid-cols-[1fr_auto_auto] [grid-template-areas:'label_label_price'_'aisle_aisle_action'] items-center gap-x-3">
+                                            <td class="[grid-area:label] font-bold text-md">{{ article.label }}</td>
+                                            <td class="[grid-area:aisle]">
+                                                <app-badge-aisle
+                                                    [color]="article.aisle?.color ?? null"
+                                                    [label]="article.aisle?.label ?? 'Aucun rayon'"
+                                                />
+                                            </td>
+                                            <td class="[grid-area:price] font-display font-semibold text-md">
+                                                {{ article.price|currency:'EUR' }}
+                                                @if (article.last_price !== null && article.last_price !== article.price && article.price) {
+                                                    <div class="text-muted text-xs font-normal flex items-center gap-1">
+                                                        @if (article.last_price > article.price) {
+                                                            <svg lucideTrendingDown [size]="12"></svg>
+                                                        } @else {
+                                                            <svg lucideTrendingUp [size]="12"></svg>
+                                                        }
+                                                        {{ article.last_price | currency:'EUR' }}
+                                                    </div>
+                                                }
+                                            </td>
+                                            <td class="[grid-area:action] flex items-center justify-end gap-2">
+                                                <button app-button variant="outline" shape="rounded" (click)="modalService.article.openEdit(article)">
+                                                    <svg lucideSlidersHorizontal [size]="16"></svg>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        } @else {
+                            <app-message variant="info" [message]="messages.common.noResults" />
+                        }
+                    }
                 </div>
             }
             <!-- ------------------------------ -->

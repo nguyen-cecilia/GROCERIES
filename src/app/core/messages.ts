@@ -3,6 +3,7 @@ export const MESSAGES = {
         loading: 'Chargement…',
         saveFailed: 'Enregistrement impossible, réessaie.',
         deleteFailed: 'Suppression impossible, réessaie.',
+        noResults: 'Aucun résultat pour cette recherche.',
     },
     auth: {
         signInFailed: 'Connexion impossible, réessaie.',
@@ -24,10 +25,17 @@ export const MESSAGES = {
         duplicateLabel: 'Un rayon porte déjà ce nom.',
         reorderFailed: 'Impossible de réordonner les rayons, réessaie.',
     },
+    article: {
+        loadFailed: 'Impossible de charger les articles.',
+        saveFailed: "Impossible d'enregistrer l'article, réessaie.",
+        deleteFailed: "Impossible de supprimer l'article, réessaie.",
+        empty: "Aucun article pour l'instant. Ajoute le premier.",
+        duplicateLabel: 'Un article porte déjà ce nom.',
+    },
     quantityUnit: {
         loadFailed: 'Impossible de charger les unités de quantité.',
         saveFailed: "Impossible d'enregistrer l\'unité de quantité, réessaie.",
-        deleteFailed: 'Impossible de supprimer l\'unité de quantité, réessaie.',
+        deleteFailed: "Impossible de supprimer l'unité de quantité, réessaie.",
         empty: "Aucune unité pour l'instant. Ajoute la première.",
         duplicateLabel: 'Une unité porte déjà ce nom.',
         reorderFailed: 'Impossible de réordonner les unités, réessaie.',

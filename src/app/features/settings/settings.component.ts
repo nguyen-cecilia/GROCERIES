@@ -11,6 +11,8 @@ import {
     LucideScale,
     LucideSlidersHorizontal,
     LucideStar,
+    LucideTrendingDown,
+    LucideTrendingUp,
 } from '@lucide/angular';
 import { AuthService } from '../../core/auth.service';
 import { Router } from '@angular/router';
@@ -26,8 +28,15 @@ import { QuantityUnitUpdateComponent } from '../quantity-unit/quantity-unit-upda
 import { MESSAGES, supabaseMessage } from '../../core/messages';
 import { MessageComponent } from '../../components/message/message.component';
 import { QuantityUnitService } from '../quantity-unit/quantity-unit.service';
+import { ArticleService } from '../article/article.service';
+import { CurrencyPipe } from '@angular/common';
+import { Article } from '../article/article.model';
+import { Aisle } from '../aisle/aisle.model';
 
-type accountTabs = 'account' | 'aisles' | 'articles' | 'quantityUnits';
+type AccountTabs = 'account' | 'aisles' | 'articles' | 'quantityUnits';
+type SortKey = 'label' | 'aisle' | 'price';
+type SortDir = 'asc' | 'desc';
+type ArticleWithAisle = Article & { aisle: Aisle | null };
 
 @Component({
     selector: 'app-settings',
@@ -51,6 +60,9 @@ type accountTabs = 'account' | 'aisles' | 'articles' | 'quantityUnits';
         LucideCalculator,
         LucideScale,
         MessageComponent,
+        CurrencyPipe,
+        LucideTrendingDown,
+        LucideTrendingUp,
     ],
     templateUrl: './settings.component.html',
 })
@@ -59,9 +71,10 @@ export class SettingsComponent {
     private readonly router = inject(Router);
     protected readonly aisleService = inject(AisleService);
     protected readonly quantityUnitService = inject(QuantityUnitService);
+    protected readonly articleService = inject(ArticleService);
     protected modalService = inject(ModalService);
 
-    readonly activePanel = signal<accountTabs>('account');
+    readonly activePanel = signal<AccountTabs>('account');
 
     protected readonly accountModel = signal({
         firstName: this.auth.user()?.user_metadata['firstName'] ?? '',
@@ -72,6 +85,7 @@ export class SettingsComponent {
     protected readonly accountForm = form(this.accountModel);
 
     protected readonly messages = MESSAGES;
+    protected readonly search = signal('');
     protected readonly loading = signal(false);
     protected readonly success = signal<string | null>(null);
     protected readonly error = signal<string | null>(null);
@@ -81,6 +95,10 @@ export class SettingsComponent {
             ? MESSAGES.account.passwordMismatch
             : null;
     });
+    protected readonly sort = signal<{ key: SortKey; dir: SortDir }>({
+        key: 'label',
+        dir: 'asc',
+    });
 
     protected readonly canSubmit = computed(() => {
         const { firstName, email, password, confirmPassword } = this.accountModel();
@@ -89,12 +107,58 @@ export class SettingsComponent {
         return firstName.trim() !== '' && email.trim() !== '' && passwordOk;
     });
 
+    protected toggleSort(key: SortKey): void {
+        const current = this.sort();
+        this.sort.set(
+            current.key === key
+                ? { key, dir: current.dir === 'asc' ? 'desc' : 'asc' }
+                : { key, dir: 'asc' },
+        );
+    }
+
+    protected ariaSort(key: SortKey): 'ascending' | 'descending' | 'none' {
+        const { key: active, dir } = this.sort();
+        if (active !== key) return 'none';
+        return dir === 'asc' ? 'ascending' : 'descending';
+    }
+
+    protected readonly articles = computed(() => {
+        const byId = new Map(this.aisleService.aisles().map((a) => [a.id, a]));
+        return this.articleService.articles().map((article) => ({
+            ...article,
+            aisle: article.aisle_id ? (byId.get(article.aisle_id) ?? null) : null,
+        }));
+    });
+
+    protected readonly filteredArticles = computed(() => {
+        const raw = this.search().trim();
+        const query = this.normalizeSearch(raw);
+        const price = this.parsePrice(raw);
+        const { key, dir } = this.sort();
+
+        const visible = this.articles().filter((article) => {
+            if (!query) return true;
+
+            const matchesText =
+                this.normalizeSearch(article.label).includes(query) ||
+                this.normalizeSearch(article.aisle?.label ?? '').includes(query);
+
+            if (matchesText) return true;
+            if (price === null || article.price === null) return false;
+
+            return Math.round(article.price * 100) === Math.round(price * 100);
+        });
+
+        return [...visible].sort((a, b) => this.compareArticles(a, b, key, dir));
+    });
+
     constructor() {
         void this.aisleService.load();
+        void this.articleService.load();
         void this.quantityUnitService.load();
     }
 
-    select(key: accountTabs): void {
+    select(key: AccountTabs): void {
         this.activePanel.set(key);
     }
 
@@ -129,5 +193,51 @@ export class SettingsComponent {
     async signOut() {
         await this.auth.signOut();
         await this.router.navigate(['/connexion']);
+    }
+
+    private normalizeSearch(value: string): string {
+        return value
+            .normalize('NFD')
+            .replace(/\p{Diacritic}/gu, '')
+            .toLowerCase();
+    }
+
+    private parsePrice(raw: string): number | null {
+        const cleaned = raw.replace(/[\s€]/g, '').replace(',', '.');
+        if (!/^\d+(\.\d+)?$/.test(cleaned)) return null;
+
+        const value = Number(cleaned);
+        return Number.isFinite(value) ? value : null;
+    }
+
+    private compareArticles(
+        a: ArticleWithAisle,
+        b: ArticleWithAisle,
+        key: SortKey,
+        dir: SortDir,
+    ): number {
+        const factor = dir === 'asc' ? 1 : -1;
+
+        switch (key) {
+            case 'label':
+                return factor * a.label.localeCompare(b.label, 'fr', { sensitivity: 'base' });
+
+            case 'aisle': {
+                const left = a.aisle?.label ?? null;
+                const right = b.aisle?.label ?? null;
+                if (left === null || right === null) return this.nullsLast(left, right);
+                return factor * left.localeCompare(right, 'fr', { sensitivity: 'base' });
+            }
+
+            case 'price': {
+                if (a.price === null || b.price === null) return this.nullsLast(a.price, b.price);
+                return factor * (a.price - b.price);
+            }
+        }
+    }
+
+    private nullsLast(a: unknown, b: unknown): number {
+        if (a === null && b === null) return 0;
+        return a === null ? 1 : -1;
     }
 }

@@ -1,25 +1,29 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, model } from '@angular/core';
+import type { FormValueControl } from '@angular/forms/signals';
 
 @Component({
     selector: 'app-input-price',
-    imports: [],
     template: `
-        <label for="{{ this.id }}">
-            @if (this.label) {
+        <label [attr.for]="id">
+            @if (label) {
                 <p>{{ label }}</p>
             }
             <div class="relative">
                 <input
                     type="number"
-                    id="{{ this.id }}"
+                    [id]="id"
                     inputmode="decimal"
                     placeholder="0.00"
                     min="0"
+                    step="0.01"
                     class="font-bold text-right pr-6"
+                    [value]="value() ?? ''"
+                    (input)="onInput($event)"
                 />
                 <span
                     class="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none font-bold text-muted"
-                    >{{ this.symbol }}</span
+                >
+                    {{ symbol }}</span
                 >
             </div>
         </label>
@@ -28,8 +32,15 @@ import { Component, Input } from '@angular/core';
         class: 'block',
     },
 })
-export class InputPriceComponent {
+export class InputPriceComponent implements FormValueControl<number | null> {
+    readonly value = model<number | null>(null);
+
     @Input() id = 'price';
     @Input() symbol = '€';
     @Input() label = '';
+
+    protected onInput(event: Event): void {
+        const parsed = (event.target as HTMLInputElement).valueAsNumber;
+        this.value.set(Number.isFinite(parsed) ? parsed : null);
+    }
 }

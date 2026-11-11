@@ -1,13 +1,15 @@
 import {
     Component,
+    DOCUMENT,
     ElementRef,
     inject,
+    Input,
+    input,
+    model,
     signal,
     viewChild,
-    Input,
-    Output,
-    EventEmitter,
 } from '@angular/core';
+import type { FormValueControl } from '@angular/forms/signals';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 
 export interface SelectOption {
@@ -25,44 +27,58 @@ export interface SelectOption {
         '(document:click)': 'onDocumentClick($event)',
     },
 })
-export class SelectComponent {
+export class SelectComponent implements FormValueControl<string | null> {
     private static seq = 0;
+    private static readonly PANEL_GAP = 4;
+    private static readonly PANEL_MAX_HEIGHT = 240;
+
     private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+    private readonly document = inject(DOCUMENT);
 
     protected readonly uid = `select-${SelectComponent.seq++}`;
     protected readonly optionId = (i: number) => `${this.uid}-opt-${i}`;
 
+    readonly value = model<string | null>(null);
+
     @Input({ required: true }) options: SelectOption[] = [];
-    @Input() value: string | null = null;
     @Input() label = '';
     @Input() placeholder = 'Sélectionner...';
-    @Input() disabled = false;
 
-    @Output() readonly valueChange = new EventEmitter<string>();
+    readonly disabled = input(false);
 
     readonly isOpen = signal(false);
     readonly activeIndex = signal(-1);
 
+    protected readonly panelStyle = signal<Record<string, string>>({
+        position: 'fixed',
+        top: '0px',
+        left: '0px',
+        width: '0px',
+        maxHeight: '0px',
+        visibility: 'hidden',
+    });
+
     private readonly trigger = viewChild<ElementRef<HTMLButtonElement>>('trigger');
     private readonly listbox = viewChild<ElementRef<HTMLElement>>('listbox');
+    private stopWatchingViewport?: () => void;
 
     get selected(): SelectOption | null {
-        return this.options.find((o) => o.value === this.value) ?? null;
+        return this.options.find((o) => o.value === this.value()) ?? null;
     }
 
     toggle(): void {
-        if (this.disabled) return;
+        if (this.disabled()) return;
         this.isOpen() ? this.close() : this.openPanel();
     }
 
     choose(option: SelectOption): void {
-        this.valueChange.emit(option.value);
+        this.value.set(option.value);
         this.close();
     }
 
     onDocumentClick(event: MouseEvent): void {
         if (this.isOpen() && !this.host.nativeElement.contains(event.target as Node)) {
-            this.isOpen.set(false);
+            this.close(false);
         }
     }
 
@@ -104,29 +120,97 @@ export class SelectComponent {
                 }
                 break;
             case 'Tab':
-                this.isOpen.set(false);
+                this.close(false);
                 break;
         }
     }
 
     private openPanel(): void {
-        const index = this.options.findIndex((o) => o.value === this.value);
+        const index = this.options.findIndex((o) => o.value === this.value());
         this.activeIndex.set(index >= 0 ? index : 0);
         this.isOpen.set(true);
-        this.scrollActiveIntoView();
+
+        setTimeout(() => {
+            this.positionPanel();
+            this.scrollActiveIntoView();
+        });
+
+        this.watchViewport();
     }
 
-    private close(): void {
+    private close(restoreFocus = true): void {
+        if (!this.isOpen()) return;
         this.isOpen.set(false);
         this.activeIndex.set(-1);
-        this.trigger()?.nativeElement.focus();
+        this.stopWatchingViewport?.();
+        this.stopWatchingViewport = undefined;
+        if (restoreFocus) this.trigger()?.nativeElement.focus();
+    }
+
+    private positionPanel(): void {
+        const trigger = this.trigger()?.nativeElement;
+        const panel = this.listbox()?.nativeElement;
+        const view = this.document.defaultView;
+        if (!trigger || !panel || !view) return;
+
+        const rect = trigger.getBoundingClientRect();
+        const gap = SelectComponent.PANEL_GAP;
+        const spaceBelow = view.innerHeight - rect.bottom - gap;
+        const spaceAbove = rect.top - gap;
+        const contentHeight = panel.scrollHeight;
+
+        const openUp =
+            spaceBelow < Math.min(SelectComponent.PANEL_MAX_HEIGHT, contentHeight) &&
+            spaceAbove > spaceBelow;
+
+        const available = Math.max(0, openUp ? spaceAbove : spaceBelow);
+        const maxHeight = Math.min(SelectComponent.PANEL_MAX_HEIGHT, available);
+
+        this.panelStyle.set({
+            position: 'fixed',
+            left: `${Math.round(rect.left)}px`,
+            width: `${Math.round(rect.width)}px`,
+            maxHeight: `${Math.round(maxHeight)}px`,
+            ...(openUp
+                ? {
+                    bottom: `${Math.round(view.innerHeight - rect.top + gap)}px`,
+                    top: 'auto',
+                }
+                : {
+                    top: `${Math.round(rect.bottom + gap)}px`,
+                    bottom: 'auto',
+                }),
+        });
+    }
+
+    /** Repositionne le panneau si la modale (ou la page) défile. */
+    private watchViewport(): void {
+        this.stopWatchingViewport?.();
+        const view = this.document.defaultView;
+        if (!view) return;
+
+        const reposition = () => this.positionPanel();
+        view.addEventListener('scroll', reposition, true);
+        view.addEventListener('resize', reposition);
+
+        this.stopWatchingViewport = () => {
+            view.removeEventListener('scroll', reposition, true);
+            view.removeEventListener('resize', reposition);
+        };
     }
 
     private scrollActiveIntoView(): void {
-        setTimeout(() => {
-            const item = this.listbox()?.nativeElement.children[this.activeIndex()] as
-                HTMLElement | undefined;
-            item?.scrollIntoView({ block: 'nearest' });
-        });
+        const listbox = this.listbox()?.nativeElement;
+        const item = listbox?.children[this.activeIndex()] as HTMLElement | undefined;
+        if (!listbox || !item) return;
+
+        const top = item.offsetTop;
+        const bottom = top + item.offsetHeight;
+
+        if (top < listbox.scrollTop) {
+            listbox.scrollTop = top;
+        } else if (bottom > listbox.scrollTop + listbox.clientHeight) {
+            listbox.scrollTop = bottom - listbox.clientHeight;
+        }
     }
 }
