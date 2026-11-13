@@ -221,6 +221,10 @@ export type Database = {
             [_ in never]: never;
         };
         Functions: {
+            sg_duplicate_groceries_list: {
+                Args: { p_list_id: string };
+                Returns: string;
+            };
             sg_reorder_aisles: { Args: { p_ids: string[] }; Returns: undefined };
             sg_reorder_quantity_units: {
                 Args: { p_ids: string[] };

@@ -40,6 +40,14 @@ export const MESSAGES = {
         duplicateLabel: 'Une unité porte déjà ce nom.',
         reorderFailed: 'Impossible de réordonner les unités, réessaie.',
     },
+    groceriesList: {
+        loadFailed: 'Impossible de charger la liste.',
+        saveFailed: "Impossible d'enregistrer la liste, réessaie.",
+        deleteFailed: "Impossible de supprimer la liste, réessaie.",
+        empty: "Aucune liste pour l'instant. Ajoute la première.",
+        duplicateLabel: 'Une liste porte déjà ce nom.',
+        duplicateFailed: 'Impossible de dupliquer la liste, réessaie.',
+    },
 } as const;
 
 const SUPABASE_ERRORS: Record<string, string> = {

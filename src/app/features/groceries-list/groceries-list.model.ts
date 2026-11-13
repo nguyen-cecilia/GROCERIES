@@ -1,9 +1,16 @@
-import { Database } from '../../core/database-types';
+import type { Database } from '../../core/database-types';
+import type { Article } from '../article/article.model';
+import type { Aisle } from '../aisle/aisle.model';
 
+export type GroceriesList = Database['public']['Tables']['sg_groceries_list']['Row'];
 export type GroceriesListItem = Database['public']['Tables']['sg_groceries_list_item']['Row'];
+export type QuantityUnit = Database['public']['Tables']['sg_quantity_unit']['Row'];
 
-export type GroceriesList = Database['public']['Tables']['sg_groceries_list']['Row'] & {
-    items: GroceriesListItem[];
+export type GroceriesListItemView = GroceriesListItem & {
+    article: Article | null;
+    aisle: Aisle | null;
 };
 
-export type QuantityUnit = Database['public']['Tables']['sg_quantity_unit']['Row'];
+export type GroceriesListWithItems = GroceriesList & {
+    items: GroceriesListItemView[];
+};
