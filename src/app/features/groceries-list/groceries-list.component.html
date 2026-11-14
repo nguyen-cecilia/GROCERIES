@@ -3,7 +3,7 @@
     [isOpen]="this.modalService.groceriesList.isOpen"
     [onClose]="() => this.modalService.groceriesList.close()"
 >
-    <app-groceries-list-update />
+    <app-groceries-list-update [editing]="modalService.groceriesList.editing()" />
 </app-modal>
 
 <app-modal
@@ -21,167 +21,188 @@
     </button>
 </section>
 
-<section class="space-y-6">
-    <div
-        class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3"
-    >
-        <div>
-            <h1>Courses du samedi</h1>
-            <p class="text-muted text-sm">Dernière modification : mer. 23 sept. à 9h45</p>
+@if (groceriesListService.loading() && !list()) {
+    <app-message variant="loading" [message]="messages.common.loading" />
+} @else if (groceriesListService.error()) {
+    <app-message variant="error" [message]="groceriesListService.error()" />
+} @else if (list(); as list) {
+    <app-message variant="error" [message]="error()" />
+
+    <section class="space-y-6">
+        <div
+            class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3"
+        >
+            <div>
+                <h1>{{ list.label }}</h1>
+                <p class="text-muted text-sm">Dernière modification : <span class="lowercase">{{ formatDate(list.updated_at, true) }}</span></p>
+            </div>
+            <div class="max-md:self-end flex flex-wrap items-center gap-2">
+                <button app-button variant="outline" (click)="modalService.groceriesList.openEdit(list)">
+                    <svg lucidePencil [size]="16"></svg>
+                    Gérer
+                </button>
+
+                <button
+                    app-button
+                    variant="outline"
+                    [disabled]="!hasChecked() || resetting()"
+                    (click)="resetItems()"
+                >
+                    <svg lucideRotateCcw [size]="16"></svg>
+                    Réinitialiser
+                </button>
+
+                @if (confirmingClear()) {
+                    <button
+                        app-button
+                        variant="invalid"
+                        [disabled]="clearing()"
+                        (click)="clearItems()"
+                    >
+                        <svg lucideBrushCleaning [size]="16"></svg>
+                        Confirmer
+                    </button>
+                    <button
+                        app-button
+                        variant="ghost"
+                        [disabled]="clearing()"
+                        (click)="confirmingClear.set(false)"
+                    >
+                        <svg lucideX [size]="16"></svg>
+                        Annuler
+                    </button>
+                } @else {
+                    <button
+                        app-button
+                        variant="invalid"
+                        [disabled]="!hasItems()"
+                        (click)="confirmingClear.set(true)"
+                    >
+                        <svg lucideBrushCleaning [size]="16"></svg>
+                        Vider
+                    </button>
+                }
+            </div>
         </div>
-        <div class="max-md:self-end flex flex-wrap items-center gap-2">
-            <button app-button variant="outline">
-                <svg lucidePencil [size]="16"></svg>
-                Gérer
-            </button>
 
-            <button app-button variant="outline">
-                <svg lucideRotateCcw [size]="16"></svg>
-                Réinitialiser
-            </button>
-
-            <button app-button variant="invalid">
-                <svg lucideBrushCleaning [size]="16"></svg>
-                Vider
-            </button>
-        </div>
-    </div>
-
-    <div class="bg-surface shadow-lg rounded py-4 px-6 border border-line space-y-3">
-        <div class="grid grid-cols-[auto_auto_auto] lg:flex items-start gap-4">
-            <label for="label" class="col-span-3 flex-1">
-                <p>Ajouter un article</p>
-                <input type="text" id="label" placeholder="Ex : oeufs, lait, pain..." class="w-full">
-            </label>
-            <label for="quantity" class="col-span-2">
-                <p>Quantité</p>
-                <input type="number" id="quantity" placeholder="1">
-            </label>
-            <label for="unit">
-                <p class="h-4.5"></p>
-                <app-select
-                    placeholder="Unité"
-                    class="min-w-30"
-                    [options]="[
-                        {value: '', label: 'paquet'},
-                        {value: '1', label: 'pièce'},
-                        {value: '2', label: 'kg'},
-                    ]"
-                />
-            </label>
-            <button app-button shape="bigPill" class="hidden lg:flex mt-7">
+        <div class="bg-surface shadow-lg rounded py-4 px-6 border border-line space-y-3">
+            <div class="grid grid-cols-[auto_auto_auto] lg:flex items-start gap-4">
+                <label for="label" class="col-span-3 flex-1">
+                    <p>Ajouter un article</p>
+                    <input type="text" id="label" placeholder="Ex : oeufs, lait, pain..." class="w-full">
+                </label>
+                <label for="quantity" class="col-span-2">
+                    <p>Quantité</p>
+                    <input type="number" id="quantity" placeholder="1">
+                </label>
+                <label for="unit">
+                    <p class="h-4.5"></p>
+                    <app-select
+                        placeholder="Unité"
+                        class="min-w-30"
+                        [options]="[
+                            {value: '', label: 'paquet'},
+                            {value: '1', label: 'pièce'},
+                            {value: '2', label: 'kg'},
+                        ]"
+                    />
+                </label>
+                <button app-button shape="bigPill" class="hidden lg:flex mt-7">
+                    <svg lucidePlus [size]="16"></svg>
+                    Ajouter
+                </button>
+            </div>
+            <div class="space-y-1">
+                <p class="text-sm text-muted uppercase font-bold tracking-wider">Rayon</p>
+                <div class="flex flex-wrap items-center gap-3">
+                    <div
+                        class="rounded-full cursor-pointer px-4 py-2 border border-ink hover:border-ink flex items-center gap-2 transition-all bg-ink text-canvas">
+                        <div class="size-3.5 rounded-full bg-primary border"></div>
+                        <p class="font-semibold">Fruits & légumes</p>
+                    </div>
+                    <div
+                        class="rounded-full cursor-pointer px-4 py-2 border border-line hover:border-ink flex items-center gap-2 transition-all">
+                        <div class="size-3.5 rounded-full bg-secondary border"></div>
+                        <p class="font-semibold">Viandes & poissons</p>
+                    </div>
+                </div>
+            </div>
+            <button app-button class="justify-self-end lg:hidden">
                 <svg lucidePlus [size]="16"></svg>
                 Ajouter
             </button>
         </div>
-        <div class="space-y-1">
-            <p class="text-sm text-muted uppercase font-bold tracking-wider">Rayon</p>
-            <div class="flex flex-wrap items-center gap-3">
-                <div
-                    class="rounded-full cursor-pointer px-4 py-2 border border-ink hover:border-ink flex items-center gap-2 transition-all bg-ink text-canvas">
-                    <div class="size-3.5 rounded-full bg-primary border"></div>
-                    <p class="font-semibold">Fruits & légumes</p>
-                </div>
-                <div
-                    class="rounded-full cursor-pointer px-4 py-2 border border-line hover:border-ink flex items-center gap-2 transition-all">
-                    <div class="size-3.5 rounded-full bg-secondary border"></div>
-                    <p class="font-semibold">Viandes & poissons</p>
-                </div>
-            </div>
-        </div>
-        <button app-button class="justify-self-end lg:hidden">
-            <svg lucidePlus [size]="16"></svg>
-            Ajouter
-        </button>
-    </div>
-</section>
+    </section>
+} @else {
+    <app-message variant="info" [message]="messages.groceriesList.notFound" />
+}
 
 <section class="mb-20 flex items-start gap-6">
     <div class="mb-25 lg:mb-0 flex-1 space-y-2">
-        <div class="border-b-2 border-ink pb-1.5 flex items-center justify-between gap-3">
-            <app-badge-aisle class="font-display text-md font-bold" />
-            <div class="font-semibold size-7 bg-deep rounded-full flex justify-center items-center">15</div>
-        </div>
-        <label for="done-1"
-               class="grid grid-cols-[auto_minmax(0,1fr)_auto] [grid-template-areas:'check_label_action'_'check_quantity_price'] items-center gap-x-4 gap-y-1 px-3 py-2 rounded cursor-pointer bg-surface border border-line transition-all hover:border-ink/50 has-checked:bg-canvas has-checked:border-transparent group
-               lg:grid-cols-[auto_minmax(0,1fr)_auto_auto] lg:[grid-template-areas:'check_label_price_action'_'check_quantity_price_action']"
-        >
-            <input type="checkbox" id="done-1"
-                   class="[grid-area:check] form-checkbox size-9 rounded-full border-2 text-primary cursor-pointer focus:ring-offset-0 focus:ring-3 focus:ring-primary/60"
-                   checked>
-            <div class="[grid-area:label] font-semibold text-md group-has-checked:line-through group-has-checked:text-muted">Carotte</div>
-            <div class="[grid-area:quantity] self-start flex items-center gap-2">
-                <app-input-quantity
-                    id="quantity"
-                    size="sm"
+        @for (group of groups(); track group.key) {
+            <div class="border-b-2 border-ink pb-1.5 flex items-center justify-between gap-3">
+                <app-badge-aisle
+                    [color]="group.color"
+                    [label]="group.label"
+                    class="font-display text-md font-bold"
                 />
-                <p class="text-muted">kg</p>
+                <div class="font-semibold size-7 bg-deep rounded-full flex justify-center items-center">
+                    {{ group.total }}
+                </div>
             </div>
-            <div class="[grid-area:price] mb-0 flex flex-col items-end gap-1">
-                <app-input-price class="w-24 lg:w-30"/>
-                <button app-button variant="link" class="self-end text-sm">dernier 1,79 €</button>
-            </div>
-            <button app-button variant="ghost" shape="rounded" class="[grid-area:action] justify-self-end">
-                <svg lucideSlidersHorizontal [size]="16"></svg>
-            </button>
-        </label>
-        <label for="done-2"
-               class="grid grid-cols-[auto_minmax(0,1fr)_auto] [grid-template-areas:'check_label_action'_'check_quantity_price'] items-center gap-x-4 gap-y-1 px-3 py-2 rounded cursor-pointer bg-surface border border-line transition-all hover:border-ink/50 has-checked:bg-canvas has-checked:border-transparent group
-               lg:grid-cols-[auto_minmax(0,1fr)_auto_auto] lg:[grid-template-areas:'check_label_price_action'_'check_quantity_price_action']"
-        >
-            <input type="checkbox" id="done-2"
-                   class="[grid-area:check] form-checkbox size-9 rounded-full border-2 text-primary cursor-pointer focus:ring-offset-0 focus:ring-3 focus:ring-primary/60"
-            >
-            <div class="[grid-area:label] font-semibold text-md group-has-checked:line-through group-has-checked:text-muted">Pomme</div>
-            <div class="[grid-area:quantity] self-start flex items-center gap-2">
-                <app-input-quantity
-                    id="quantity"
-                    size="sm"
-                />
-                <p class="text-muted">paquet</p>
-            </div>
-            <div class="[grid-area:price] mb-0 flex flex-col items-end gap-1">
-                <app-input-price class="w-24 lg:w-30"/>
-                <button app-button variant="link" class="self-end text-sm">dernier 1,79 €</button>
-            </div>
-            <button app-button variant="ghost" shape="rounded" class="[grid-area:action] justify-self-end">
-                <svg lucideSlidersHorizontal [size]="16"></svg>
-            </button>
-        </label>
-        <div class="mt-8 border-b-2 border-ink pb-1.5 flex items-center justify-between gap-3">
-            <app-badge-aisle color="violet" label="Viandes & poissons" class="font-display text-md font-bold" />
-            <div class="font-semibold size-7 bg-deep rounded-full flex justify-center items-center">5</div>
-        </div>
-        <label for="done-3"
-               class="grid grid-cols-[auto_minmax(0,1fr)_auto] [grid-template-areas:'check_label_action'_'check_quantity_price'] items-center gap-x-4 gap-y-1 px-3 py-2 rounded cursor-pointer bg-surface border border-line transition-all hover:border-ink/50 has-checked:bg-canvas has-checked:border-transparent group
-               lg:grid-cols-[auto_minmax(0,1fr)_auto_auto] lg:[grid-template-areas:'check_label_price_action'_'check_quantity_price_action']"
-        >
-            <input type="checkbox" id="done-3"
-                   class="[grid-area:check] form-checkbox size-9 rounded-full border-2 text-primary cursor-pointer focus:ring-offset-0 focus:ring-3 focus:ring-primary/60"
-            >
-            <div class="[grid-area:label] font-semibold text-md group-has-checked:line-through group-has-checked:text-muted">Poulet</div>
-            <div class="[grid-area:quantity] self-start flex items-center gap-2">
-                <app-input-quantity
-                    id="quantity"
-                    size="sm"
-                />
-                <p class="text-muted">g</p>
-            </div>
-            <div class="[grid-area:price] mb-0 flex flex-col items-end gap-1">
-                <app-input-price class="w-24 lg:w-30"/>
-                <button app-button variant="link" class="self-end text-sm">dernier 1,79 €</button>
-            </div>
-            <button app-button variant="ghost" shape="rounded" class="[grid-area:action] justify-self-end">
-                <svg lucideSlidersHorizontal [size]="16"></svg>
-            </button>
-        </label>
+            @for (item of group.items; track item.id) {
+                <label
+                    [for]="'item-' + item.id"
+                    class="grid grid-cols-[auto_minmax(0,1fr)_auto] [grid-template-areas:'check_label_action'_'check_quantity_price'] items-center gap-x-4 gap-y-1 px-3 py-2 rounded cursor-pointer bg-surface border border-line transition-all hover:border-ink/50 has-checked:bg-canvas has-checked:border-transparent group lg:grid-cols-[auto_minmax(0,1fr)_auto_auto] lg:[grid-template-areas:'check_label_price_action'_'check_quantity_price_action']"
+                >
+                    <input
+                        type="checkbox"
+                        [id]="'item-' + item.id"
+                        class="[grid-area:check] form-checkbox size-9 rounded-full border-2 text-primary cursor-pointer focus:ring-offset-0 focus:ring-3 focus:ring-primary/60"
+                        [checked]="item.checked"
+                    >
+                    <div class="[grid-area:label] font-semibold text-md group-has-checked:line-through group-has-checked:text-muted">
+                        {{ item.article?.label }}
+                    </div>
+                    <div class="[grid-area:quantity] self-start flex items-center gap-2">
+                        <app-input-quantity
+                            [id]="'qty-' + item.id"
+                            [value]="item.quantity"
+                            size="sm"
+                        />
+                        @if (item.quantityUnit; as unit) {
+                            <p class="text-muted">{{ unit.label }}</p>
+                        }
+                    </div>
+                    <div class="[grid-area:price] mb-0 flex flex-col items-end gap-1">
+                        <app-input-price
+                            [id]="'price-' + item.id"
+                            [value]="item.article?.price ?? null"
+                            class="w-24 lg:w-30"
+                        />
+                        @if (item.article?.last_price; as last) {
+                            <button app-button variant="link" class="self-end text-sm">
+                                dernier {{ last|currency:'EUR' }}
+                            </button>
+                        }
+                    </div>
+                    <button app-button variant="ghost" shape="rounded" class="[grid-area:action] justify-self-end">
+                        <svg lucideSlidersHorizontal [size]="16"></svg>
+                    </button>
+                </label>
+            }
+        } @empty {
+            <app-message variant="info" [message]="messages.groceriesList.noArticle" />
+        }
     </div>
 
     <div
         class="fixed translate-y-68 bottom-0 left-0 right-0 w-full rounded-t-md rounded-b-none transition-all lg:translate-y-0 lg:static lg:block lg:w-1/3 bg-surface shadow-lg lg:rounded py-4 px-6 border border-line space-y-5 lg:space-y-3">
         <div class="flex items-start justify-between gap-3">
             <div>
-                <p class="text-3xl lg:text-4xl font-extrabold font-display">18,56 €</p>
+                <p class="text-3xl lg:text-4xl font-extrabold font-display">
+                    {{ totals().spent|currency:'EUR' }}
+                </p>
                 <p class="text-muted uppercase text-sm font-bold">total dépensé</p>
             </div>
 
@@ -190,31 +211,27 @@
             </button>
         </div>
         <div class="w-full h-3 rounded-full bg-deep border border-line">
-            <div class="w-1/3 h-full rounded-full bg-primary"></div>
+            <div class="h-full rounded-full bg-primary" [style.width.%]="totals().progress * 100"></div>
         </div>
         <div class="grid grid-cols-2 items-center gap-y-1 gap-x-6 *:odd:text-sm *:odd:text-muted *:even:font-bold *:even:text-right">
             <p>Budget</p>
-            <p>60,00 €</p>
+            <p>{{ totals().budget|currency:'EUR' }}</p>
 
             <p>À prévoir</p>
-            <p>42,67 €</p>
+            <p>{{ totals().planned|currency:'EUR' }}</p>
 
             <p>Articles pris</p>
-            <p>2</p>
+            <p>{{ totals().checked }}</p>
 
             <p>Articles restants</p>
-            <p>13</p>
+            <p>{{ totals().remaining }}</p>
         </div>
         <hr class="border-t-2 border-dashed border-line">
         <div class="grid grid-cols-[auto_auto] items-center gap-y-1 gap-x-3 *:even:font-bold *:even:text-right">
-            <app-badge-aisle color="amber" size="sm" label="Viandes & poissons" />
-            <p>0/3</p>
-
-            <app-badge-aisle color="lime" size="sm" label="Fruits & légumes" />
-            <p>3/5</p>
-
-            <app-badge-aisle color="blue" size="sm" label="Hygiène" />
-            <p class="text-muted/75">4/4</p>
+            @for (group of groups(); track group.key) {
+                <app-badge-aisle [color]="group.color" size="sm" [label]="group.label" />
+                <p [class.text-muted/75]="group.checked == group.total">{{ group.checked }}/{{ group.total }}</p>
+            }
         </div>
     </div>
 </section>

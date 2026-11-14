@@ -25,8 +25,6 @@
         </button>
     </div>
 
-    <app-message variant="error" [message]="error()" />
-
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         @if (groceriesListService.loading()) {
             <app-message variant="loading" class="lg:col-span-3" [message]="messages.common.loading" />
@@ -66,8 +64,8 @@
                     <button
                         app-button
                         variant="outline"
-                        [disabled]="duplicating() === last.id"
-                        (click)="duplicate(last)"
+                        [disabled]="groceriesListService.duplicating() === last.id"
+                        (click)="groceriesListService.duplicate(last.id)"
                     >
                         <svg lucideCopy [size]="16"></svg>
                         <span class="hidden lg:inline">Dupliquer</span>
@@ -113,7 +111,7 @@
     <h2>Historique</h2>
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
         @for (list of history(); track list.id) {
-            <div class="bg-surface shadow-lg border border-line rounded py-4 px-6 space-y-3">
+            <div class="bg-surface shadow-lg border border-line rounded py-4 px-6 flex flex-col gap-3">
                 <div class="flex justify-between items-center lg:items-start gap-3">
                     <h3 class="line-clamp-2">{{ list.label }}</h3>
                     <p class="font-mono text-muted text-sm/4 whitespace-nowrap">{{ list.lastUpdate }}</p>
@@ -128,12 +126,12 @@
                     <p>Dépensé</p>
                     <p>{{ list.spent|currency:'EUR'}}</p>
                 </div>
-                <div class="flex justify-end items-center gap-3">
+                <div class="mt-auto flex justify-end items-center gap-3">
                     <button
                         app-button
                         variant="outline"
-                        [disabled]="duplicating() === list.id"
-                        (click)="duplicate(list)"
+                        [disabled]="groceriesListService.duplicating() === list.id"
+                        (click)="groceriesListService.duplicate(list.id)"
                     >
                         <svg lucideCopy [size]="16"></svg>
                         <span class="hidden lg:inline">Dupliquer</span>

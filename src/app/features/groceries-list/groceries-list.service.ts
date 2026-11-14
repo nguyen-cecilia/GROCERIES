@@ -9,6 +9,7 @@ import { supabase } from '../../core/supabase';
 import { MESSAGES } from '../../core/messages';
 import { ArticleService } from '../article/article.service';
 import { AisleService } from '../aisle/aisle.service';
+import { QuantityUnitService } from '../quantity-unit/quantity-unit.service';
 
 export type ListInput = { label: string; budget: number };
 
@@ -16,6 +17,7 @@ export type ListInput = { label: string; budget: number };
 export class GroceriesListService {
     private readonly articleService = inject(ArticleService);
     private readonly aisleService = inject(AisleService);
+    private readonly quantityUnitService = inject(QuantityUnitService);
 
     private readonly listsState = signal<GroceriesList[]>([]);
     private readonly itemsState = signal<GroceriesListItem[]>([]);
@@ -23,11 +25,13 @@ export class GroceriesListService {
     readonly lists = this.listsState.asReadonly();
     readonly items = this.itemsState.asReadonly();
     readonly loading = signal(false);
+    readonly duplicating = signal<string | null>(null);
     readonly error = signal<string | null>(null);
 
     readonly listsWithItems = computed<GroceriesListWithItems[]>(() => {
         const articles = new Map(this.articleService.articles().map((a) => [a.id, a]));
         const aisles = new Map(this.aisleService.aisles().map((a) => [a.id, a]));
+        const units = new Map(this.quantityUnitService.quantityUnits().map((u) => [u.id, u]));
 
         const byList = new Map<string, GroceriesListItemView[]>();
 
@@ -37,6 +41,9 @@ export class GroceriesListService {
                 ...item,
                 article,
                 aisle: article?.aisle_id ? (aisles.get(article.aisle_id) ?? null) : null,
+                quantityUnit: item.quantity_unit_id
+                    ? (units.get(item.quantity_unit_id) ?? null)
+                    : null,
             };
 
             const bucket = byList.get(item.list_id) ?? [];
@@ -73,8 +80,25 @@ export class GroceriesListService {
         this.itemsState.set(items.data ?? []);
     }
 
-    async duplicate(id: string) {
-        return supabase.rpc('sg_duplicate_groceries_list', { p_list_id: id });
+    async duplicate(id: string): Promise<string | null> {
+        if (this.duplicating()) return null;
+
+        this.duplicating.set(id);
+        this.error.set(null);
+
+        const { data, error } = await supabase.rpc('sg_duplicate_groceries_list', {
+            p_list_id: id,
+        });
+
+        this.duplicating.set(null);
+
+        if (error || !data) {
+            this.error.set(MESSAGES.groceriesList.duplicateFailed);
+            return null;
+        }
+
+        await this.load();
+        return data;
     }
 
     async create(input: ListInput) {
@@ -96,6 +120,17 @@ export class GroceriesListService {
 
     async remove(id: string) {
         return supabase.from('sg_groceries_list').delete().eq('id', id);
+    }
+
+    async resetItems(listId: string) {
+        return supabase
+            .from('sg_groceries_list_item')
+            .update({ checked: false })
+            .eq('list_id', listId);
+    }
+
+    async clearItems(listId: string) {
+        return supabase.from('sg_groceries_list_item').delete().eq('list_id', listId);
     }
 
     checkedCount(list: GroceriesListWithItems): number {

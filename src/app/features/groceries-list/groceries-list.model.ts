@@ -9,6 +9,7 @@ export type QuantityUnit = Database['public']['Tables']['sg_quantity_unit']['Row
 export type GroceriesListItemView = GroceriesListItem & {
     article: Article | null;
     aisle: Aisle | null;
+    quantityUnit: QuantityUnit | null;
 };
 
 export type GroceriesListWithItems = GroceriesList & {

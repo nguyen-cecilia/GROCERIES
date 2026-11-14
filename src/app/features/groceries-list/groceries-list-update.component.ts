@@ -1,6 +1,6 @@
 import { Component, computed, effect, inject, input, signal } from '@angular/core';
 import { ButtonComponent } from '../../components/button/button.component';
-import { LucideSave, LucideTrash } from '@lucide/angular';
+import { LucideCopy, LucideSave, LucideTrash } from '@lucide/angular';
 import { GroceriesList } from './groceries-list.model';
 import { ModalService } from '../../components/modal/modal.service';
 import { GroceriesListService } from './groceries-list.service';
@@ -8,6 +8,7 @@ import { form, FormField } from '@angular/forms/signals';
 import { MESSAGES } from '../../core/messages';
 import { MessageComponent } from '../../components/message/message.component';
 import { InputPriceComponent } from '../../components/input-price/input-price.component';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-groceries-list-update',
@@ -18,14 +19,17 @@ import { InputPriceComponent } from '../../components/input-price/input-price.co
         MessageComponent,
         FormField,
         InputPriceComponent,
+        LucideCopy,
     ],
     templateUrl: './groceries-list-update.component.html',
 })
 export class GroceriesListUpdateComponent {
     readonly editing = input<GroceriesList | null>(null);
 
-    private readonly groceriesListService = inject(GroceriesListService);
     private readonly modalService = inject(ModalService);
+    private readonly router = inject(Router);
+
+    protected readonly groceriesListService = inject(GroceriesListService);
 
     protected readonly model = signal({ label: '', budget: 0 });
     protected readonly form = form(this.model);
@@ -70,6 +74,16 @@ export class GroceriesListUpdateComponent {
         await this.groceriesListService.load();
     }
 
+    protected async onDuplicate(): Promise<void> {
+        const list = this.editing();
+        if (!list) return;
+
+        const newId = await this.groceriesListService.duplicate(list.id);
+        if (!newId) return;
+
+        await this.router.navigate(['/liste-de-course', newId]);
+    }
+
     async onDelete() {
         const list = this.editing();
         if (!list || this.loading()) return;
@@ -79,6 +93,7 @@ export class GroceriesListUpdateComponent {
         if (!error) {
             this.modalService.groceriesList.close();
             await this.groceriesListService.load();
+            await this.router.navigateByUrl('/');
         } else {
             this.error.set(MESSAGES.groceriesList.deleteFailed);
         }

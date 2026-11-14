@@ -47,6 +47,10 @@ export const MESSAGES = {
         empty: "Aucune liste pour l'instant. Ajoute la première.",
         duplicateLabel: 'Une liste porte déjà ce nom.',
         duplicateFailed: 'Impossible de dupliquer la liste, réessaie.',
+        noArticle: 'Aucun article trouvé dans cette liste.',
+        notFound: "La liste n'existe pas ou a été supprimée.",
+        resetFailed: 'Impossible de réinitialiser la liste, réessaie.',
+        clearFailed: 'Impossible de vider la liste, réessaie.',
     },
 } as const;
 

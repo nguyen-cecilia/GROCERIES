@@ -31,10 +31,10 @@ export class ButtonComponent {
         const variants = {
             primary: 'bg-primary text-canvas hover:bg-primary-2 font-semibold justify-center shadow-xl',
             secondary: 'bg-secondary text-canvas hover:bg-secondary/80 font-semibold justify-center shadow-xl',
-            outline: 'bg-surface border border-line font-semibold justify-center hover:border-ink/50 hover:bg-deep',
+            outline: 'bg-surface border border-line font-semibold justify-center hover:border-ink/50 hover:bg-deep disabled:hover:bg-surface disabled:hover:border-line',
             ghost: 'font-semibold text-muted hover:bg-deep hover:text-ink disabled:hover:bg-transparent',
             link: 'underline underline-offset-3 font-semibold',
-            invalid: 'bg-surface text-invalid font-semibold border border-invalid/50 hover:bg-invalid hover:text-canvas hover:shadow-xl',
+            invalid: 'bg-surface text-invalid font-semibold border border-invalid/50 hover:bg-invalid hover:text-canvas hover:shadow-xl disabled:hover:bg-surface disabled:hover:text-invalid disabled:hover:shadow-none',
             tab: 'font-medium text-md hover:bg-deep',
             tabActive: 'font-semibold text-md bg-ink text-canvas shadow-lg hover:bg-ink',
             sortTable: 'p-0! uppercase hover:text-ink',

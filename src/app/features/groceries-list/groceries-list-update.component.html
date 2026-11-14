@@ -18,9 +18,23 @@
             </button>
         }
 
-        <button app-button type="submit" [disabled]="!canSubmit() || loading()" class="ml-auto">
-            <svg lucideSave [size]="16"></svg>
-            Sauvegarder
-        </button>
+        <div class="flex items-center gap-3">
+            @if (editing(); as list) {
+                <button
+                    app-button
+                    variant="outline"
+                    [disabled]="groceriesListService.duplicating() === list.id"
+                    (click)="onDuplicate()"
+                >
+                    <svg lucideCopy [size]="16"></svg>
+                    Dupliquer
+                </button>
+            }
+
+            <button app-button type="submit" [disabled]="!canSubmit() || loading()">
+                <svg lucideSave [size]="16"></svg>
+                Sauvegarder
+            </button>
+        </div>
     </div>
 </form>

@@ -52,9 +52,6 @@ export class DashboardComponent {
 
     protected readonly messages = MESSAGES;
 
-    protected readonly duplicating = signal<string | null>(null);
-    protected readonly error = signal<string | null>(null);
-
     protected readonly views = computed<ListView[]>(() =>
         this.groceriesListService.listsWithItems().map((list) => ({
             ...list,
@@ -98,23 +95,5 @@ export class DashboardComponent {
         void this.groceriesListService.load();
         void this.articleService.load();
         void this.aisleService.load();
-    }
-
-    protected async duplicate(list: GroceriesListWithItems): Promise<void> {
-        if (this.duplicating()) return;
-
-        this.duplicating.set(list.id);
-        this.error.set(null);
-
-        const { error: err } = await this.groceriesListService.duplicate(list.id);
-
-        this.duplicating.set(null);
-
-        if (err) {
-            this.error.set(MESSAGES.groceriesList.duplicateFailed);
-            return;
-        }
-
-        await this.groceriesListService.load();
     }
 }
