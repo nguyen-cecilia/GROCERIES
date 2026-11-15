@@ -41,3 +41,13 @@
 <main class="flex-1 w-full mx-auto lg:w-6xl [&_section]:py-4 [&_section]:px-6 lg:[&_section]:px-0">
     <router-outlet />
 </main>
+
+@if (hasUpdate()) {
+    <div class="fixed bottom-0 left-0 right-0 z-30 rounded mx-5 mb-5 bg-primary/50 backdrop-blur-md shadow-lg shadow-muted/20 pl-5 pr-3 border border-primary/25 py-3 flex items-center justify-between gap-3">
+        <p class="font-semibold max-md:text-sm">Une mise à jour est disponible.</p>
+        <button app-button variant="secondary" (click)="applyUpdate()">
+            <svg lucideRotateCcw [size]="16"></svg>
+            Rafraîchir
+        </button>
+    </div>
+}
