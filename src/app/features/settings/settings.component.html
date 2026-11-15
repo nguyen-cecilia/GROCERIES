@@ -128,7 +128,7 @@
                         <app-message variant="error" class="lg:col-span-2" [message]="error()" />
                         <app-message variant="success" class="lg:col-span-2" [message]="success()" />
 
-                        <button app-button type="submit" shape="bigPill" class="col-span-2 ml-auto"
+                        <button app-button type="submit" shape="bigPill" class="lg:col-span-2 ml-auto"
                                 [disabled]="!canSubmit() || loading()">
                             <svg lucideSave [size]="20"></svg>
                             {{ loading() ? 'Enregistrement…' : 'Sauvegarder' }}
@@ -141,7 +141,7 @@
             <!-- ------------------------------ -->
             @case ('aisles') {
                 <div>
-                    <div class="flex items-center justify-between gap-3">
+                    <div class="flex items-start lg:items-center justify-between gap-3">
                         <h2>Rayons</h2>
                         <button app-button variant="primary" shape="bigPill" (click)="this.modalService.aisle.openCreate()">
                             <svg lucidePlus [size]="20"></svg>
@@ -181,7 +181,7 @@
                                             <svg lucideChevronDown [size]="16"></svg>
                                         </button>
                                     </div>
-                                    <app-badge-aisle [color]="aisle.color" [label]="aisle.label" class="font-semibold text-md flex-1" />
+                                    <app-badge-aisle [color]="aisle.color" [label]="aisle.label" class="font-semibold lg:text-md flex-1" />
                                     <button app-button variant="outline" shape="rounded"
                                             (click)="modalService.aisle.openEdit(aisle)">
                                         <svg lucideSlidersHorizontal [size]="16"></svg>
@@ -197,7 +197,7 @@
             <!-- ------------------------------ -->
             @case ('articles') {
                 <div>
-                    <div class="flex items-center justify-between gap-3">
+                    <div class="flex items-start lg:items-center justify-between gap-3">
                         <h2>Articles</h2>
                         <button app-button variant="primary" shape="bigPill" (click)="this.modalService.article.openCreate()">
                             <svg lucidePlus [size]="20"></svg>
@@ -351,7 +351,7 @@
             <!-- ------------------------------ -->
             @case ('quantityUnits') {
                 <div>
-                    <div class="flex items-center justify-between gap-3">
+                    <div class="flex items-start lg:items-center justify-between gap-3">
                         <h2>Unités de quantité</h2>
                         <button app-button variant="primary" shape="bigPill" (click)="this.modalService.quantityUnit.openCreate()">
                             <svg lucidePlus [size]="20"></svg>
@@ -398,7 +398,7 @@
                                                 <svg lucideStar [size]="16" class="text-secondary"></svg>
                                             }
                                         </div>
-                                        <p class="flex items-center gap-1.5 text-sm text-muted">
+                                        <p class="flex items-center gap-1.5 text-sm/4 text-muted">
                                             @if (unit.apply_quantity) {
                                                 <svg lucideCalculator [size]="14" class="shrink-0" aria-hidden="true" />
                                                 Prix multiplié par la quantité

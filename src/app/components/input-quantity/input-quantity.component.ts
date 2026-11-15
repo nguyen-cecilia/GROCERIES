@@ -82,7 +82,7 @@ export class InputQuantityComponent implements FormValueControl<number> {
     @Input() size: 'sm' | 'md' = 'md';
     @Input() radius: 'sm' | 'full' = 'full';
     protected readonly btn = { sm: 'size-7', md: 'size-9' };
-    protected readonly fld = { sm: 'h-7.5 w-8 lg:w-10', md: 'h-9.5 w-12' };
+    protected readonly fld = { sm: 'h-7.5 w-6.5 lg:w-10', md: 'h-9.5 w-10 lg:w-12' };
     protected readonly ico = { sm: '12', md: '16' };
     protected readonly rds = { sm: 'rounded-sm', full: 'rounded-full' };
 

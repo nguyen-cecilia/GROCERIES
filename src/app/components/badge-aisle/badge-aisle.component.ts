@@ -13,15 +13,15 @@ export type DotSize = keyof typeof DOT_SIZE;
     selector: 'app-badge-aisle',
     imports: [],
     template: `
-        <div class="flex items-center gap-2">
+        <div class="flex min-w-0 items-center gap-2">
             <div [class]="dotClass" [style.background-color]="hex"></div>
-            <p class="whitespace-nowrap truncate" [class.text-muted]="!color && !inverted">
+            <p class="min-w-0 truncate" [class.text-muted]="!color && !inverted">
                 {{ label }}
             </p>
         </div>
     `,
     host: {
-        class: 'block',
+        class: 'block min-w-0',
     },
 })
 export class BadgeAisleComponent {
@@ -37,6 +37,6 @@ export class BadgeAisleComponent {
 
     protected get dotClass(): string {
         const border = this.inverted ? 'border-canvas' : 'border-ink/50';
-        return `${DOT_SIZE[this.size]} rounded-full border ${border}`;
+        return `${DOT_SIZE[this.size]} shrink-0 rounded-full border ${border}`;
     }
 }

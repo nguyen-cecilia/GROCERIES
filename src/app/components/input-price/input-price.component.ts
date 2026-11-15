@@ -17,6 +17,7 @@ import type { FormValueControl } from '@angular/forms/signals';
                     min="0"
                     step="0.01"
                     class="font-bold text-right pr-6"
+                    [class]="fld[size]"
                     [value]="value() ?? ''"
                     (input)="onInput($event)"
                     (change)="commit()"
@@ -41,6 +42,8 @@ export class InputPriceComponent implements FormValueControl<number | null> {
     @Input() id = 'price';
     @Input() symbol = '€';
     @Input() label = '';
+    @Input() size: 'sm' | 'md' = 'md';
+    protected readonly fld = { sm: 'max-md:py-1!', md: ''};
 
     protected onInput(event: Event): void {
         const parsed = (event.target as HTMLInputElement).valueAsNumber;

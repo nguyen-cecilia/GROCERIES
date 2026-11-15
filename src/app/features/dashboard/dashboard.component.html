@@ -33,10 +33,10 @@
         } @else if (lastList(); as last) {
             <div class="lg:col-span-2 bg-surface shadow-lg rounded border border-line py-4 px-6 flex flex-col gap-3">
                 <div class="flex items-center justify-between gap-3">
-                    <div class="text-sm bg-secondary font-bold rounded-full px-2 py-0.5">Dernière modifiée</div>
-                    <p class="font-mono text-muted">{{ last.lastUpdate }}</p>
+                    <div class="text-sm bg-secondary font-bold rounded-full px-2 py-0.5 whitespace-nowrap">Dernière modifiée</div>
+                    <p class="max-md:text-sm font-mono text-muted text-right">{{ last.lastUpdate }}</p>
                 </div>
-                <h2 class="line-clamp-2">{{ last.label }}</h2>
+                <h2 class="line-clamp-2 cursor-pointer" [routerLink]="['liste-de-course', last.id]">{{ last.label }}</h2>
                 <div class="w-full h-3 bg-deep rounded-full">
                     <div class="h-full rounded-full bg-primary" [style.width.%]="last.progress * 100"></div>
                 </div>
@@ -107,41 +107,43 @@
     </div>
 </section>
 
-<section class="space-y-4 mb-10">
-    <h2>Historique</h2>
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
-        @for (list of history(); track list.id) {
-            <div class="bg-surface shadow-lg border border-line rounded py-4 px-6 flex flex-col gap-3">
-                <div class="flex justify-between items-center lg:items-start gap-3">
-                    <h3 class="line-clamp-2">{{ list.label }}</h3>
-                    <p class="font-mono text-muted text-sm/4 whitespace-nowrap">{{ list.lastUpdate }}</p>
-                </div>
-                <div class="grid grid-cols-2 items-center gap-y-1 gap-x-6 *:odd:text-sm *:odd:text-muted *:even:font-bold *:even:text-right">
-                    <p>Articles</p>
-                    <p>{{ list.checked }} / {{ list.total }}</p>
+@if (!groceriesListService.loading()) {
+    <section class="space-y-4 mb-10">
+        <h2>Historique</h2>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-y-6 lg:gap-3">
+            @for (list of history(); track list.id) {
+                <div class="bg-surface shadow-lg border border-line rounded py-4 px-6 flex flex-col gap-3">
+                    <div class="flex justify-between items-center lg:items-start gap-3">
+                        <h3 class="line-clamp-2 cursor-pointer" [routerLink]="['liste-de-course', list.id]">{{ list.label }}</h3>
+                        <p class="font-mono text-muted text-sm/4 whitespace-nowrap text-right">{{ list.lastUpdate }}</p>
+                    </div>
+                    <div class="grid grid-cols-2 items-center gap-y-1 gap-x-6 *:odd:text-sm *:odd:text-muted *:even:font-bold *:even:text-right">
+                        <p>Articles</p>
+                        <p>{{ list.checked }} / {{ list.total }}</p>
 
-                    <p>Budget</p>
-                    <p>{{ list.budget|currency:'EUR' }}</p>
+                        <p>Budget</p>
+                        <p>{{ list.budget|currency:'EUR' }}</p>
 
-                    <p>Dépensé</p>
-                    <p>{{ list.spent|currency:'EUR'}}</p>
+                        <p>Dépensé</p>
+                        <p>{{ list.spent|currency:'EUR'}}</p>
+                    </div>
+                    <div class="mt-auto flex justify-end items-center gap-3">
+                        <button
+                            app-button
+                            variant="outline"
+                            [disabled]="groceriesListService.duplicating() === list.id"
+                            (click)="groceriesListService.duplicate(list.id)"
+                        >
+                            <svg lucideCopy [size]="16"></svg>
+                            <span class="hidden lg:inline">Dupliquer</span>
+                        </button>
+                        <button app-button [routerLink]="['liste-de-course', list.id]">
+                            Voir la liste
+                            <svg lucideArrowRight [size]="16"></svg>
+                        </button>
+                    </div>
                 </div>
-                <div class="mt-auto flex justify-end items-center gap-3">
-                    <button
-                        app-button
-                        variant="outline"
-                        [disabled]="groceriesListService.duplicating() === list.id"
-                        (click)="groceriesListService.duplicate(list.id)"
-                    >
-                        <svg lucideCopy [size]="16"></svg>
-                        <span class="hidden lg:inline">Dupliquer</span>
-                    </button>
-                    <button app-button [routerLink]="['liste-de-course', list.id]">
-                        Voir la liste
-                        <svg lucideArrowRight [size]="16"></svg>
-                    </button>
-                </div>
-            </div>
-        }
-    </div>
-</section>
+            }
+        </div>
+    </section>
+}

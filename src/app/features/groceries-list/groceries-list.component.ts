@@ -98,6 +98,7 @@ export class GroceriesListComponent {
     protected readonly adding = signal(false);
     protected readonly resetting = signal(false);
     protected readonly clearing = signal(false);
+    protected readonly openingTotals = signal(false);
     protected readonly confirmingClear = signal(false);
     protected readonly error = signal<string | null>(null);
 
@@ -287,7 +288,7 @@ export class GroceriesListComponent {
 
     protected badgeAisleClass(choice: AisleChoice): string {
         const base =
-            'rounded-full cursor-pointer px-4 py-2 border flex items-center gap-2 transition-all';
+            'rounded-full cursor-pointer px-2.5 lg:px-4 py-1.5 lg:py-2 border flex items-center gap-2 transition-all';
         return this.model().aisle_id === choice.id
             ? `${base} border-ink bg-ink text-canvas`
             : `${base} border-line bg-surface hover:border-ink`;
@@ -331,6 +332,10 @@ export class GroceriesListComponent {
             quantity: 1,
             quantity_unit_id: this.quantityUnitService.quantityUnits()[0]?.id ?? '',
         });
+    }
+
+    protected toggleTotals(): void {
+        this.openingTotals.update((open) => !open);
     }
 
     protected async toggleChecked(item: GroceriesListItemView, event: Event): Promise<void> {
