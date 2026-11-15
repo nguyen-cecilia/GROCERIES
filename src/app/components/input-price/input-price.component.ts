@@ -1,4 +1,4 @@
-import { Component, Input, model } from '@angular/core';
+import { Component, Input, model, output } from '@angular/core';
 import type { FormValueControl } from '@angular/forms/signals';
 
 @Component({
@@ -19,6 +19,7 @@ import type { FormValueControl } from '@angular/forms/signals';
                     class="font-bold text-right pr-6"
                     [value]="value() ?? ''"
                     (input)="onInput($event)"
+                    (change)="commit()"
                 />
                 <span
                     class="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none font-bold text-muted"
@@ -35,6 +36,8 @@ import type { FormValueControl } from '@angular/forms/signals';
 export class InputPriceComponent implements FormValueControl<number | null> {
     readonly value = model<number | null>(null);
 
+    readonly committed = output<number | null>();
+
     @Input() id = 'price';
     @Input() symbol = '€';
     @Input() label = '';
@@ -42,5 +45,9 @@ export class InputPriceComponent implements FormValueControl<number | null> {
     protected onInput(event: Event): void {
         const parsed = (event.target as HTMLInputElement).valueAsNumber;
         this.value.set(Number.isFinite(parsed) ? parsed : null);
+    }
+
+    protected commit(): void {
+        this.committed.emit(this.value());
     }
 }

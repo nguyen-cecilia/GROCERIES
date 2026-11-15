@@ -7,11 +7,11 @@
 </app-modal>
 
 <app-modal
-    title="Modifier l'article"
-    [isOpen]="this.modalService.article.isOpen"
-    [onClose]="() => this.modalService.article.close()"
+    title="Modifier l'item"
+    [isOpen]="this.modalService.listItem.isOpen"
+    [onClose]="() => this.modalService.listItem.close()"
 >
-    <app-article-update />
+    <app-groceries-list-item-update [editing]="modalService.listItem.editing()" />
 </app-modal>
 
 <section class="flex justify-between items-center gap-3">
@@ -189,6 +189,7 @@
                         [id]="'item-' + item.id"
                         class="[grid-area:check] form-checkbox size-9 rounded-full border-2 text-primary cursor-pointer focus:ring-offset-0 focus:ring-3 focus:ring-primary/60"
                         [checked]="item.checked"
+                        (change)="toggleChecked(item, $event)"
                     >
                     <div class="[grid-area:label] font-semibold text-md group-has-checked:line-through group-has-checked:text-muted">
                         {{ item.article?.label }}
@@ -197,7 +198,10 @@
                         <app-input-quantity
                             [id]="'qty-' + item.id"
                             [value]="item.quantity"
+                            [precision]="0"
+                            [min]="1"
                             size="sm"
+                            (valueChange)="setItemQuantity(item, $event)"
                         />
                         @if (item.quantityUnit; as unit) {
                             <p class="text-muted">{{ unit.label }}</p>
@@ -208,14 +212,27 @@
                             [id]="'price-' + item.id"
                             [value]="item.article?.price ?? null"
                             class="w-24 lg:w-30"
+                            (committed)="setItemPrice(item, $event)"
                         />
-                        @if (item.article?.last_price; as last) {
-                            <button app-button variant="link" class="self-end text-sm">
-                                dernier {{ last|currency:'EUR' }}
+                        @if (item.article?.last_price !== null && item.article?.last_price !== undefined) {
+                            <button
+                                app-button
+                                type="button"
+                                variant="link"
+                                class="self-end text-sm"
+                                (click)="applyLastPrice(item)"
+                            >
+                                dernier {{ item.article?.last_price|currency:'EUR' }}
                             </button>
                         }
                     </div>
-                    <button app-button variant="ghost" shape="rounded" class="[grid-area:action] justify-self-end">
+                    <button
+                        app-button
+                        variant="ghost"
+                        shape="rounded"
+                        class="[grid-area:action] justify-self-end"
+                        (click)="modalService.listItem.openEdit(item)"
+                    >
                         <svg lucideSlidersHorizontal [size]="16"></svg>
                     </button>
                 </label>

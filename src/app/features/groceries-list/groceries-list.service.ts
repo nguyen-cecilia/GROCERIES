@@ -22,6 +22,14 @@ export type AddItemInput = {
     quantityUnitId: string | null;
 };
 
+export type UpdateItemInput = {
+    label: string;
+    aisleId: string | null;
+    price: number | null;
+    quantity: number;
+    quantityUnitId: string | null;
+};
+
 @Injectable({ providedIn: 'root' })
 export class GroceriesListService {
     private readonly articleService = inject(ArticleService);
@@ -188,6 +196,111 @@ export class GroceriesListService {
         if (error) return { error: MESSAGES.groceriesList.addFailed };
 
         await Promise.all([this.articleService.load(), this.load()]);
+        return { error: null };
+    }
+
+    async updateItem(itemId: string, input: UpdateItemInput): Promise<{ error: string | null }> {
+        const item = this.itemsState().find((i) => i.id === itemId);
+        if (!item) return { error: MESSAGES.groceriesList.saveItemFailed };
+
+        const label = input.label.trim();
+        if (!label) return { error: null };
+
+        let articleId = item.article_id;
+
+        if (articleId) {
+            const { error } = await this.articleService.update(articleId, {
+                label,
+                aisle_id: input.aisleId,
+                price: input.price,
+            });
+            if (error) return { error: MESSAGES.article.saveFailed };
+        } else {
+            const { data, error } = await this.articleService.create({
+                label,
+                aisle_id: input.aisleId,
+                price: input.price,
+            });
+            if (error || !data) return { error: MESSAGES.article.saveFailed };
+            articleId = data.id;
+        }
+
+        const { error } = await supabase
+            .from('sg_groceries_list_item')
+            .update({
+                article_id: articleId,
+                quantity: input.quantity,
+                quantity_unit_id: input.quantityUnitId,
+            })
+            .eq('id', itemId);
+
+        if (error) return { error: MESSAGES.groceriesList.saveItemFailed };
+
+        await Promise.all([this.articleService.load(), this.load()]);
+        return { error: null };
+    }
+
+    async removeItem(itemId: string): Promise<{ error: string | null }> {
+        const { error } = await supabase
+            .from('sg_groceries_list_item')
+            .delete()
+            .eq('id', itemId);
+
+        if (error) return { error: MESSAGES.groceriesList.deleteItemFailed };
+
+        await this.load();
+        return { error: null };
+    }
+
+    async setItemChecked(itemId: string, checked: boolean): Promise<{ error: string | null }> {
+        this.itemsState.update((items) =>
+            items.map((item) => (item.id === itemId ? { ...item, checked } : item)),
+        );
+
+        const { error } = await supabase
+            .from('sg_groceries_list_item')
+            .update({ checked })
+            .eq('id', itemId);
+
+        if (error) {
+            await this.load();
+            return { error: MESSAGES.groceriesList.saveItemFailed };
+        }
+
+        return { error: null };
+    }
+
+    async setItemQuantity(itemId: string, quantity: number): Promise<{ error: string | null }> {
+        this.itemsState.update((items) =>
+            items.map((item) => (item.id === itemId ? { ...item, quantity } : item)),
+        );
+
+        const { error } = await supabase
+            .from('sg_groceries_list_item')
+            .update({ quantity })
+            .eq('id', itemId);
+
+        if (error) {
+            await this.load();
+            return { error: MESSAGES.groceriesList.saveItemFailed };
+        }
+
+        return { error: null };
+    }
+
+    async setArticlePrice(articleId: string, price: number | null): Promise<{ error: string | null }> {
+        const article = this.articleService.articles().find((a) => a.id === articleId);
+        if (!article) return { error: MESSAGES.article.saveFailed };
+
+        const { error } = await this.articleService.update(articleId, {
+            label: article.label,
+            aisle_id: article.aisle_id,
+            price,
+        });
+
+        if (error) return { error: MESSAGES.article.saveFailed };
+
+        await this.articleService.load();
         return { error: null };
     }
 

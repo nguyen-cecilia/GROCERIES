@@ -1,5 +1,13 @@
-import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import {
+    Component,
+    ElementRef,
+    input,
+    Input,
+    model,
+    ViewChild,
+} from '@angular/core';
 import { LucideMinus, LucidePlus } from '@lucide/angular';
+import { FormValueControl } from '@angular/forms/signals';
 
 @Component({
     selector: 'app-input-quantity',
@@ -21,7 +29,7 @@ import { LucideMinus, LucidePlus } from '@lucide/angular';
                     aria-label="Diminuer la quantité"
                     class="grid place-items-center cursor-pointer text-ink transition-colors hover:bg-deep disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent"
                     [class]="btn[size]"
-                    [disabled]="disabled || value <= buttonMin"
+                    [disabled]="disabled() || value() <= buttonMin"
                     (click)="decrement()"
                 >
                     <svg lucideMinus [size]="ico[size]"></svg>
@@ -36,8 +44,8 @@ import { LucideMinus, LucidePlus } from '@lucide/angular';
                     [attr.aria-label]="label || 'Quantité'"
                     class="border-0 bg-transparent p-0 text-center font-semibold tabular-nums text-ink focus:outline-none focus:ring-0"
                     [class]="fld[size]"
-                    [value]="format(value)"
-                    [disabled]="disabled"
+                    [value]="format(value())"
+                    [disabled]="disabled()"
                     (change)="commit($event)"
                     (blur)="commit($event)"
                     (keydown)="onKeydown($event)"
@@ -48,7 +56,7 @@ import { LucideMinus, LucidePlus } from '@lucide/angular';
                     aria-label="Augmenter la quantité"
                     class="grid place-items-center cursor-pointer text-ink transition-colors hover:bg-deep disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent"
                     [class]="btn[size]"
-                    [disabled]="disabled || value >= max"
+                    [disabled]="disabled() || value() >= upper"
                     (click)="increment()"
                 >
                     <svg lucidePlus [size]="ico[size]"></svg>
@@ -60,24 +68,23 @@ import { LucideMinus, LucidePlus } from '@lucide/angular';
         class: 'block',
     },
 })
-export class InputQuantityComponent {
-    @Input() value = 1;
-    @Input() min = 0.01;
+export class InputQuantityComponent implements FormValueControl<number> {
+    readonly value = model(1);
+    readonly disabled = input(false);
+    readonly min = input<number | undefined>(undefined);
+    readonly max = input<number | undefined>(undefined);
+
     @Input() buttonMin = 1;
-    @Input() max = 9999;
     @Input() step = 1;
     @Input() precision = 3;
     @Input() label = '';
     @Input() id = 'quantity';
-    @Input() disabled = false;
     @Input() size: 'sm' | 'md' = 'md';
     @Input() radius: 'sm' | 'full' = 'full';
     protected readonly btn = { sm: 'size-7', md: 'size-9' };
-    protected readonly fld = { sm: 'h-7.5 w-8 lg:w-10', md: 'h-10 w-12' };
+    protected readonly fld = { sm: 'h-7.5 w-8 lg:w-10', md: 'h-9.5 w-12' };
     protected readonly ico = { sm: '12', md: '16' };
     protected readonly rds = { sm: 'rounded-sm', full: 'rounded-full' };
-
-    @Output() readonly valueChange = new EventEmitter<number>();
 
     @ViewChild('field') private field?: ElementRef<HTMLInputElement>;
 
@@ -113,9 +120,17 @@ export class InputQuantityComponent {
         return String(n);
     }
 
+    protected get lower(): number {
+        return this.min() ?? 0.01;
+    }
+
+    protected get upper(): number {
+        return this.max() ?? 9999;
+    }
+
     private stepBy(direction: 1 | -1): void {
         const input = this.field?.nativeElement;
-        const base = input ? this.readValue(input) : this.value;
+        const base = input ? this.readValue(input) : this.value();
 
         const next =
             direction < 0
@@ -132,12 +147,12 @@ export class InputQuantityComponent {
         const raw = input.value.trim().replace(/\s/g, '').replace(',', '.');
         const parsed = raw === '' ? NaN : Number(raw);
 
-        if (!Number.isFinite(parsed) || parsed <= 0) return this.normalize(this.value);
+        if (!Number.isFinite(parsed) || parsed <= 0) return this.normalize(this.value());
         return this.normalize(parsed);
     }
 
     private normalize(n: number): number {
-        return Math.min(this.max, Math.max(this.min, this.round(n)));
+        return Math.min(this.upper, Math.max(this.lower, this.round(n)));
     }
 
     private round(n: number): number {
@@ -146,6 +161,6 @@ export class InputQuantityComponent {
     }
 
     private emit(next: number): void {
-        if (next !== this.value) this.valueChange.emit(next);
+        if (next !== this.value()) this.value.set(next);
     }
 }

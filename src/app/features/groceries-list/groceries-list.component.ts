@@ -17,7 +17,6 @@ import { SelectComponent, SelectOption } from '../../components/select/select.co
 import { GroceriesListUpdateComponent } from './groceries-list-update.component';
 import { ModalComponent } from '../../components/modal/modal.component';
 import { ModalService } from '../../components/modal/modal.service';
-import { ArticleUpdateComponent } from '../article/article-update.component';
 import { QuantityUnitService } from '../quantity-unit/quantity-unit.service';
 import { GroceriesListService } from './groceries-list.service';
 import { ArticleService } from '../article/article.service';
@@ -29,6 +28,7 @@ import { MessageComponent } from '../../components/message/message.component';
 import { formatDate } from '../../core/utils';
 import { CurrencyPipe } from '@angular/common';
 import { AutocompleteOption, InputAutocompleteComponent } from '../../components/input-autocomplete/input-autocomplete.component';
+import { GroceriesListItemUpdateComponent } from './groceries-list-item-update.component';
 
 type ItemGroup = {
     key: string;
@@ -70,11 +70,11 @@ type AisleChoice = {
         SelectComponent,
         GroceriesListUpdateComponent,
         ModalComponent,
-        ArticleUpdateComponent,
         MessageComponent,
         CurrencyPipe,
         LucideX,
         InputAutocompleteComponent,
+        GroceriesListItemUpdateComponent,
     ],
     templateUrl: './groceries-list.component.html',
 })
@@ -286,7 +286,8 @@ export class GroceriesListComponent {
     }
 
     protected badgeAisleClass(choice: AisleChoice): string {
-        const base = 'rounded-full cursor-pointer px-4 py-2 border flex items-center gap-2 transition-all';
+        const base =
+            'rounded-full cursor-pointer px-4 py-2 border flex items-center gap-2 transition-all';
         return this.model().aisle_id === choice.id
             ? `${base} border-ink bg-ink text-canvas`
             : `${base} border-line bg-surface hover:border-ink`;
@@ -330,6 +331,31 @@ export class GroceriesListComponent {
             quantity: 1,
             quantity_unit_id: this.quantityUnitService.quantityUnits()[0]?.id ?? '',
         });
+    }
+
+    protected async toggleChecked(item: GroceriesListItemView, event: Event): Promise<void> {
+        const checked = (event.target as HTMLInputElement).checked;
+        const { error } = await this.groceriesListService.setItemChecked(item.id, checked);
+        if (error) this.error.set(error);
+    }
+
+    protected async setItemQuantity(item: GroceriesListItemView, quantity: number): Promise<void> {
+        if (quantity === item.quantity) return;
+        const { error } = await this.groceriesListService.setItemQuantity(item.id, quantity);
+        if (error) this.error.set(error);
+    }
+
+    protected async setItemPrice(item: GroceriesListItemView, price: number | null): Promise<void> {
+        const article = item.article;
+        if (!article || price === article.price) return;
+        const { error } = await this.groceriesListService.setArticlePrice(article.id, price);
+        if (error) this.error.set(error);
+    }
+
+    protected async applyLastPrice(item: GroceriesListItemView): Promise<void> {
+        const lastPrice = item.article?.last_price ?? null;
+        if (lastPrice === null) return;
+        await this.setItemPrice(item, lastPrice);
     }
 
     private sortItems(items: GroceriesListItemView[]): GroceriesListItemView[] {

@@ -43,7 +43,7 @@ export const MESSAGES = {
     groceriesList: {
         loadFailed: 'Impossible de charger la liste.',
         saveFailed: "Impossible d'enregistrer la liste, réessaie.",
-        deleteFailed: "Impossible de supprimer la liste, réessaie.",
+        deleteFailed: 'Impossible de supprimer la liste, réessaie.',
         empty: "Aucune liste pour l'instant. Ajoute la première.",
         duplicateLabel: 'Une liste porte déjà ce nom.',
         duplicateFailed: 'Impossible de dupliquer la liste, réessaie.',
@@ -52,6 +52,8 @@ export const MESSAGES = {
         resetFailed: 'Impossible de réinitialiser la liste, réessaie.',
         clearFailed: 'Impossible de vider la liste, réessaie.',
         addFailed: "Impossible d'ajouter l'article, réessaie.",
+        saveItemFailed: "Impossible d'enregistrer l'article de la liste, réessaie.",
+        deleteItemFailed: "Impossible de retirer l'article de la liste, réessaie.",
     },
 } as const;
 
