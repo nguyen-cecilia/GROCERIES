@@ -1,8 +1,10 @@
 import {
+    afterNextRender,
     Component,
     DOCUMENT,
     ElementRef,
     inject,
+    Injector,
     Input,
     input,
     model,
@@ -11,6 +13,7 @@ import {
 } from '@angular/core';
 import type { FormValueControl } from '@angular/forms/signals';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
+import { FloatingPanel, hiddenPanelStyle } from '../floating-panel/floating-panel';
 
 export interface SelectOption {
     value: string;
@@ -29,11 +32,17 @@ export interface SelectOption {
 })
 export class SelectComponent implements FormValueControl<string | null> {
     private static seq = 0;
-    private static readonly PANEL_GAP = 4;
-    private static readonly PANEL_MAX_HEIGHT = 240;
 
     private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly document = inject(DOCUMENT);
+    private readonly injector = inject(Injector);
+
+    private readonly floating = new FloatingPanel(
+        this.document.defaultView!,
+        () => this.trigger()?.nativeElement ?? null,
+        () => this.listbox()?.nativeElement ?? null,
+        (style) => this.panelStyle.set({ ...style, visibility: 'visible' }),
+    );
 
     protected readonly uid = `select-${SelectComponent.seq++}`;
     protected readonly optionId = (i: number) => `${this.uid}-opt-${i}`;
@@ -48,19 +57,10 @@ export class SelectComponent implements FormValueControl<string | null> {
 
     readonly isOpen = signal(false);
     readonly activeIndex = signal(-1);
-
-    protected readonly panelStyle = signal<Record<string, string>>({
-        position: 'fixed',
-        top: '0px',
-        left: '0px',
-        width: '0px',
-        maxHeight: '0px',
-        visibility: 'hidden',
-    });
+    protected readonly panelStyle = signal(hiddenPanelStyle());
 
     private readonly trigger = viewChild<ElementRef<HTMLButtonElement>>('trigger');
     private readonly listbox = viewChild<ElementRef<HTMLElement>>('listbox');
-    private stopWatchingViewport?: () => void;
 
     get selected(): SelectOption | null {
         return this.options.find((o) => o.value === this.value()) ?? null;
@@ -130,73 +130,22 @@ export class SelectComponent implements FormValueControl<string | null> {
         this.activeIndex.set(index >= 0 ? index : 0);
         this.isOpen.set(true);
 
-        setTimeout(() => {
-            this.positionPanel();
-            this.scrollActiveIntoView();
-        });
-
-        this.watchViewport();
+        afterNextRender(
+            () => {
+                if (!this.isOpen()) return;
+                this.floating.attach();
+            },
+            { injector: this.injector },
+        );
     }
 
     private close(restoreFocus = true): void {
         if (!this.isOpen()) return;
         this.isOpen.set(false);
         this.activeIndex.set(-1);
-        this.stopWatchingViewport?.();
-        this.stopWatchingViewport = undefined;
+        this.floating.detach();
+        this.panelStyle.set(hiddenPanelStyle());
         if (restoreFocus) this.trigger()?.nativeElement.focus();
-    }
-
-    private positionPanel(): void {
-        const trigger = this.trigger()?.nativeElement;
-        const panel = this.listbox()?.nativeElement;
-        const view = this.document.defaultView;
-        if (!trigger || !panel || !view) return;
-
-        const rect = trigger.getBoundingClientRect();
-        const gap = SelectComponent.PANEL_GAP;
-        const spaceBelow = view.innerHeight - rect.bottom - gap;
-        const spaceAbove = rect.top - gap;
-        const contentHeight = panel.scrollHeight;
-
-        const openUp =
-            spaceBelow < Math.min(SelectComponent.PANEL_MAX_HEIGHT, contentHeight) &&
-            spaceAbove > spaceBelow;
-
-        const available = Math.max(0, openUp ? spaceAbove : spaceBelow);
-        const maxHeight = Math.min(SelectComponent.PANEL_MAX_HEIGHT, available);
-
-        this.panelStyle.set({
-            position: 'fixed',
-            left: `${Math.round(rect.left)}px`,
-            width: `${Math.round(rect.width)}px`,
-            maxHeight: `${Math.round(maxHeight)}px`,
-            ...(openUp
-                ? {
-                    bottom: `${Math.round(view.innerHeight - rect.top + gap)}px`,
-                    top: 'auto',
-                }
-                : {
-                    top: `${Math.round(rect.bottom + gap)}px`,
-                    bottom: 'auto',
-                }),
-        });
-    }
-
-    /** Repositionne le panneau si la modale (ou la page) défile. */
-    private watchViewport(): void {
-        this.stopWatchingViewport?.();
-        const view = this.document.defaultView;
-        if (!view) return;
-
-        const reposition = () => this.positionPanel();
-        view.addEventListener('scroll', reposition, true);
-        view.addEventListener('resize', reposition);
-
-        this.stopWatchingViewport = () => {
-            view.removeEventListener('scroll', reposition, true);
-            view.removeEventListener('resize', reposition);
-        };
     }
 
     private scrollActiveIntoView(): void {

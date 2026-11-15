@@ -10,8 +10,17 @@ import { MESSAGES } from '../../core/messages';
 import { ArticleService } from '../article/article.service';
 import { AisleService } from '../aisle/aisle.service';
 import { QuantityUnitService } from '../quantity-unit/quantity-unit.service';
+import { Article } from '../article/article.model';
+import { normalizeLabel } from '../../core/utils';
 
 export type ListInput = { label: string; budget: number };
+
+export type AddItemInput = {
+    label: string;
+    aisleId: string | null;
+    quantity: number;
+    quantityUnitId: string | null;
+};
 
 @Injectable({ providedIn: 'root' })
 export class GroceriesListService {
@@ -131,6 +140,61 @@ export class GroceriesListService {
 
     async clearItems(listId: string) {
         return supabase.from('sg_groceries_list_item').delete().eq('list_id', listId);
+    }
+
+    async addItem(listId: string, input: AddItemInput): Promise<{ error: string | null }> {
+        const label = input.label.trim();
+        if (!label) return { error: null };
+
+        const existing = this.findArticle(label);
+        let articleId: string;
+
+        if (existing) {
+            articleId = existing.id;
+
+            if (existing.aisle_id !== input.aisleId) {
+                await this.articleService.update(existing.id, {
+                    label: existing.label,
+                    aisle_id: input.aisleId,
+                    price: existing.price,
+                });
+            }
+        } else {
+            const { data, error } = await this.articleService.create({
+                label,
+                aisle_id: input.aisleId,
+                price: null,
+            });
+            if (error || !data) return { error: MESSAGES.groceriesList.addFailed };
+            articleId = data.id;
+        }
+
+        const inList = this.itemsState().find(
+            (item) => item.list_id === listId && item.article_id === articleId,
+        );
+
+        const { error } = inList
+            ? await supabase
+                  .from('sg_groceries_list_item')
+                  .update({ quantity: inList.quantity + input.quantity })
+                  .eq('id', inList.id)
+            : await supabase.from('sg_groceries_list_item').insert({
+                  list_id: listId,
+                  article_id: articleId,
+                  quantity: input.quantity,
+                  quantity_unit_id: input.quantityUnitId,
+              });
+
+        if (error) return { error: MESSAGES.groceriesList.addFailed };
+
+        await Promise.all([this.articleService.load(), this.load()]);
+        return { error: null };
+    }
+
+    findArticle(label: string): Article | null {
+        const key = normalizeLabel(label);
+        if (!key) return null;
+        return this.articleService.articles().find((a) => normalizeLabel(a.label) === key) ?? null;
     }
 
     checkedCount(list: GroceriesListWithItems): number {

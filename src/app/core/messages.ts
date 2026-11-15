@@ -51,6 +51,7 @@ export const MESSAGES = {
         notFound: "La liste n'existe pas ou a été supprimée.",
         resetFailed: 'Impossible de réinitialiser la liste, réessaie.',
         clearFailed: 'Impossible de vider la liste, réessaie.',
+        addFailed: "Impossible d'ajouter l'article, réessaie.",
     },
 } as const;
 

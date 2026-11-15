@@ -13,7 +13,7 @@ import {
 } from '../groceries-list/groceries-list.model';
 import { ArticleService } from '../article/article.service';
 import { AisleService } from '../aisle/aisle.service';
-import { formatDate } from '../../core/date';
+import { formatDate } from '../../core/utils';
 import { MESSAGES } from '../../core/messages';
 import { MessageComponent } from '../../components/message/message.component';
 import { CurrencyPipe } from '@angular/common';

@@ -5,7 +5,7 @@ import { LucideMinus, LucidePlus } from '@lucide/angular';
     selector: 'app-input-quantity',
     imports: [LucideMinus, LucidePlus],
     template: `
-        <div class="space-y-1">
+        <div class="space-y-1.5">
             @if (label) {
                 <p class="uppercase font-bold text-muted text-sm tracking-wider">{{ label }}</p>
             }
@@ -13,7 +13,8 @@ import { LucideMinus, LucidePlus } from '@lucide/angular';
             <div
                 role="group"
                 [attr.aria-label]="label || 'Quantité'"
-                class="inline-flex items-center overflow-hidden rounded-full border border-line bg-surface has-focus:border-muted/75 has-focus:ring-3 has-focus:ring-primary/40"
+                class="inline-flex items-center overflow-hidden border border-line bg-surface has-focus:border-muted/75 has-focus:ring-3 has-focus:ring-primary/40"
+                [class]="rds[radius]"
             >
                 <button
                     type="button"
@@ -70,9 +71,11 @@ export class InputQuantityComponent {
     @Input() id = 'quantity';
     @Input() disabled = false;
     @Input() size: 'sm' | 'md' = 'md';
+    @Input() radius: 'sm' | 'full' = 'full';
     protected readonly btn = { sm: 'size-7', md: 'size-9' };
-    protected readonly fld = { sm: 'h-7.5 w-8 lg:w-10', md: 'h-9 w-11' };
+    protected readonly fld = { sm: 'h-7.5 w-8 lg:w-10', md: 'h-10 w-12' };
     protected readonly ico = { sm: '12', md: '16' };
+    protected readonly rds = { sm: 'rounded-sm', full: 'rounded-full' };
 
     @Output() readonly valueChange = new EventEmitter<number>();
 

@@ -85,29 +85,47 @@
             </div>
         </div>
 
-        <div class="bg-surface shadow-lg rounded py-4 px-6 border border-line space-y-3">
+        <form
+            class="bg-surface shadow-lg rounded py-4 px-6 border border-line space-y-3"
+            (submit)="addItem($event)"
+            novalidate
+        >
             <div class="grid grid-cols-[auto_auto_auto] lg:flex items-start gap-4">
-                <label for="label" class="col-span-3 flex-1">
-                    <p>Ajouter un article</p>
-                    <input type="text" id="label" placeholder="Ex : oeufs, lait, pain..." class="w-full">
-                </label>
-                <label for="quantity" class="col-span-2">
-                    <p>Quantité</p>
-                    <input type="number" id="quantity" placeholder="1">
-                </label>
-                <label for="unit">
-                    <p class="h-4.5"></p>
-                    <app-select
-                        placeholder="Unité"
-                        class="min-w-30"
-                        [options]="[
-                            {value: '', label: 'paquet'},
-                            {value: '1', label: 'pièce'},
-                            {value: '2', label: 'kg'},
-                        ]"
-                    />
-                </label>
-                <button app-button shape="bigPill" class="hidden lg:flex mt-7">
+                <app-input-autocomplete
+                    id="label"
+                    label="Ajouter un article"
+                    placeholder="Ex : oeufs, lait, pain..."
+                    class="col-span-3 flex-1"
+                    [options]="articleOptions()"
+                    [creatable]="true"
+                    [value]="model().label"
+                    (valueChange)="setLabel($event)"
+                    (cleared)="resetItemForm()"
+                />
+                <app-input-quantity
+                    label="Quantité"
+                    [value]="model().quantity"
+                    [precision]="0"
+                    [min]="1"
+                    (valueChange)="setQuantity($event)"
+                    radius="sm"
+                    class="col-span-2"
+                />
+                <app-select
+                    label="Unité"
+                    placeholder="Aucune unité"
+                    class="min-w-30"
+                    [options]="unitOptions()"
+                    [value]="model().quantity_unit_id"
+                    (valueChange)="setUnit($event)"
+                />
+                <button
+                    app-button
+                    type="submit"
+                    shape="bigPill"
+                    class="hidden lg:flex mt-7"
+                    [disabled]="!canSubmit() || adding()"
+                >
                     <svg lucidePlus [size]="16"></svg>
                     Ajouter
                 </button>
@@ -115,23 +133,34 @@
             <div class="space-y-1">
                 <p class="text-sm text-muted uppercase font-bold tracking-wider">Rayon</p>
                 <div class="flex flex-wrap items-center gap-3">
-                    <div
-                        class="rounded-full cursor-pointer px-4 py-2 border border-ink hover:border-ink flex items-center gap-2 transition-all bg-ink text-canvas">
-                        <div class="size-3.5 rounded-full bg-primary border"></div>
-                        <p class="font-semibold">Fruits & légumes</p>
-                    </div>
-                    <div
-                        class="rounded-full cursor-pointer px-4 py-2 border border-line hover:border-ink flex items-center gap-2 transition-all">
-                        <div class="size-3.5 rounded-full bg-secondary border"></div>
-                        <p class="font-semibold">Viandes & poissons</p>
-                    </div>
+                    @for (choice of aisleChoices(); track choice.id) {
+                        <button
+                            type="button"
+                            [class]="badgeAisleClass(choice)"
+                            [attr.aria-pressed]="model().aisle_id === choice.id"
+                            (click)="toggleAisle(choice.id)"
+                        >
+                            <app-badge-aisle
+                                [color]="choice.color"
+                                [label]="choice.label"
+                                [inverted]="model().aisle_id === choice.id"
+                                class="font-semibold text-base"
+                            />
+                        </button>
+                    }
                 </div>
             </div>
-            <button app-button class="justify-self-end lg:hidden">
+            <button
+                app-button
+                type="submit"
+                shape="bigPill"
+                class="justify-self-end lg:hidden"
+                [disabled]="!canSubmit() || adding()"
+            >
                 <svg lucidePlus [size]="16"></svg>
                 Ajouter
             </button>
-        </div>
+        </form>
     </section>
 } @else {
     <app-message variant="info" [message]="messages.groceriesList.notFound" />

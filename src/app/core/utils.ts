@@ -1,3 +1,15 @@
+/* TEXT */
+export function normalizeLabel(value: string): string {
+    return value
+        .replace(/œ/g, 'oe')
+        .normalize('NFD')
+        .replace(/\p{Diacritic}/gu, '')
+        .toLocaleLowerCase('fr')
+        .trim()
+        .replace(/\s+/g, ' ');
+}
+
+/* DATE */
 function formatTime(date: Date): string {
     return new Intl.DateTimeFormat('fr-FR', {
         hour: '2-digit',

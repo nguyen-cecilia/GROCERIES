@@ -26,11 +26,15 @@ export class ArticleService {
     }
 
     async create(input: ArticleInput) {
-        return supabase.from('sg_article').insert({
-            label: input.label.trim(),
-            aisle_id: input.aisle_id,
-            price: input.price,
-        });
+        return supabase
+            .from('sg_article')
+            .insert({
+                label: input.label.trim(),
+                aisle_id: input.aisle_id,
+                price: input.price,
+            })
+            .select()
+            .single();
     }
 
     async update(id: string, input: ArticleInput) {

@@ -13,7 +13,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { BadgeAisleComponent } from '../../components/badge-aisle/badge-aisle.component';
 import { InputPriceComponent } from '../../components/input-price/input-price.component';
 import { InputQuantityComponent } from '../../components/input-quantity/input-quantity.component';
-import { SelectComponent } from '../../components/select/select.component';
+import { SelectComponent, SelectOption } from '../../components/select/select.component';
 import { GroceriesListUpdateComponent } from './groceries-list-update.component';
 import { ModalComponent } from '../../components/modal/modal.component';
 import { ModalService } from '../../components/modal/modal.service';
@@ -24,10 +24,11 @@ import { ArticleService } from '../article/article.service';
 import { AisleService } from '../aisle/aisle.service';
 import { MESSAGES } from '../../core/messages';
 import { GroceriesListItemView, GroceriesListWithItems } from './groceries-list.model';
-import { AisleColorKey } from '../../core/aisle-colors';
+import { aisleColorHex, AisleColorKey } from '../../core/aisle-colors';
 import { MessageComponent } from '../../components/message/message.component';
-import { formatDate } from '../../core/date';
+import { formatDate } from '../../core/utils';
 import { CurrencyPipe } from '@angular/common';
+import { AutocompleteOption, InputAutocompleteComponent } from '../../components/input-autocomplete/input-autocomplete.component';
 
 type ItemGroup = {
     key: string;
@@ -36,6 +37,19 @@ type ItemGroup = {
     items: GroceriesListItemView[];
     checked: number;
     total: number;
+};
+
+type AddItemModel = {
+    label: string;
+    aisle_id: string;
+    quantity: number;
+    quantity_unit_id: string;
+};
+
+type AisleChoice = {
+    id: string;
+    label: string;
+    color: AisleColorKey | null;
 };
 
 @Component({
@@ -60,6 +74,7 @@ type ItemGroup = {
         MessageComponent,
         CurrencyPipe,
         LucideX,
+        InputAutocompleteComponent,
     ],
     templateUrl: './groceries-list.component.html',
 })
@@ -74,6 +89,13 @@ export class GroceriesListComponent {
     protected readonly messages = MESSAGES;
     protected readonly formatDate = formatDate;
 
+    protected readonly model = signal<AddItemModel>({
+        label: '',
+        aisle_id: '',
+        quantity: 1,
+        quantity_unit_id: this.quantityUnitService.quantityUnits()[0]?.id ?? '',
+    });
+    protected readonly adding = signal(false);
     protected readonly resetting = signal(false);
     protected readonly clearing = signal(false);
     protected readonly confirmingClear = signal(false);
@@ -129,6 +151,38 @@ export class GroceriesListComponent {
         return groups;
     });
 
+    protected readonly articleOptions = computed<AutocompleteOption[]>(() => {
+        const aisles = new Map(this.aisleService.aisles().map((a) => [a.id, a]));
+
+        return this.articleService.articles().map((article) => {
+            const aisle = article.aisle_id ? aisles.get(article.aisle_id) : undefined;
+
+            return {
+                value: article.label,
+                hint: aisle?.label,
+                hintColor: aisle ? aisleColorHex(aisle.color) : undefined,
+            };
+        });
+    });
+
+    protected readonly unitOptions = computed<SelectOption[]>(() => [
+        ...this.quantityUnitService.quantityUnits().map((u) => ({
+            value: u.id,
+            label: u.label,
+        })),
+    ]);
+
+    protected readonly aisleChoices = computed<AisleChoice[]>(() => [
+        { id: '', label: 'Aucun rayon', color: null },
+        ...this.aisleService.aisles().map((aisle) => ({
+            id: aisle.id,
+            label: aisle.label,
+            color: aisle.color,
+        })),
+    ]);
+
+    protected readonly canSubmit = computed(() => this.model().label.trim() !== '');
+
     protected readonly totals = computed(() => {
         const list = this.list();
         const items = list?.items ?? [];
@@ -159,7 +213,16 @@ export class GroceriesListComponent {
         void this.groceriesListService.load();
         void this.articleService.load();
         void this.aisleService.load();
-        void this.quantityUnitService.load();
+        void this.quantityUnitService.load().then(() => {
+            this.model.update((m) =>
+                m.quantity_unit_id
+                    ? m
+                    : {
+                          ...m,
+                          quantity_unit_id: this.quantityUnitService.quantityUnits()[0]?.id ?? '',
+                      },
+            );
+        });
     }
 
     protected async resetItems(): Promise<void> {
@@ -199,6 +262,74 @@ export class GroceriesListComponent {
         }
 
         await this.groceriesListService.load();
+    }
+
+    protected setLabel(label: string): void {
+        const match = this.groceriesListService.findArticle(label);
+        this.model.update((m) => ({
+            ...m,
+            label,
+            aisle_id: match ? (match.aisle_id ?? '') : label.trim() ? m.aisle_id : '',
+        }));
+    }
+
+    protected setUnit(unitId: string | null): void {
+        this.model.update((m) => ({ ...m, quantity_unit_id: unitId ?? '' }));
+    }
+
+    protected setQuantity(quantity: number): void {
+        this.model.update((m) => ({ ...m, quantity }));
+    }
+
+    protected toggleAisle(aisleId: string): void {
+        this.model.update((m) => ({ ...m, aisle_id: m.aisle_id === aisleId ? '' : aisleId }));
+    }
+
+    protected badgeAisleClass(choice: AisleChoice): string {
+        const base = 'rounded-full cursor-pointer px-4 py-2 border flex items-center gap-2 transition-all';
+        return this.model().aisle_id === choice.id
+            ? `${base} border-ink bg-ink text-canvas`
+            : `${base} border-line bg-surface hover:border-ink`;
+    }
+
+    protected async addItem(event: Event): Promise<void> {
+        event.preventDefault();
+        const list = this.list();
+        if (!list || this.adding()) return;
+
+        this.adding.set(true);
+        this.error.set(null);
+
+        const { label, aisle_id, quantity, quantity_unit_id } = this.model();
+        const { error } = await this.groceriesListService.addItem(list.id, {
+            label,
+            aisleId: aisle_id === '' ? null : aisle_id,
+            quantity,
+            quantityUnitId: quantity_unit_id === '' ? null : quantity_unit_id,
+        });
+
+        this.adding.set(false);
+
+        if (error) {
+            this.error.set(error);
+            return;
+        }
+
+        this.model.set({
+            label: '',
+            aisle_id: '',
+            quantity: 1,
+            quantity_unit_id: this.quantityUnitService.quantityUnits()[0]?.id ?? '',
+        });
+    }
+
+    protected resetItemForm(): void {
+        this.model.set({
+            label: '',
+            aisle_id: '',
+            quantity: 1,
+            quantity_unit_id: this.quantityUnitService.quantityUnits()[0]?.id ?? '',
+        });
     }
 
     private sortItems(items: GroceriesListItemView[]): GroceriesListItemView[] {

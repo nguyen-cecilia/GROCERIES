@@ -32,6 +32,7 @@ import { ArticleService } from '../article/article.service';
 import { CurrencyPipe } from '@angular/common';
 import { Article } from '../article/article.model';
 import { Aisle } from '../aisle/aisle.model';
+import { normalizeLabel } from '../../core/utils';
 
 type AccountTabs = 'account' | 'aisles' | 'articles' | 'quantityUnits';
 type SortKey = 'label' | 'aisle' | 'price';
@@ -132,7 +133,7 @@ export class SettingsComponent {
 
     protected readonly filteredArticles = computed(() => {
         const raw = this.search().trim();
-        const query = this.normalizeSearch(raw);
+        const query = normalizeLabel(raw);
         const price = this.parsePrice(raw);
         const { key, dir } = this.sort();
 
@@ -140,8 +141,8 @@ export class SettingsComponent {
             if (!query) return true;
 
             const matchesText =
-                this.normalizeSearch(article.label).includes(query) ||
-                this.normalizeSearch(article.aisle?.label ?? '').includes(query);
+                normalizeLabel(article.label).includes(query) ||
+                normalizeLabel(article.aisle?.label ?? '').includes(query);
 
             if (matchesText) return true;
             if (price === null || article.price === null) return false;
@@ -193,13 +194,6 @@ export class SettingsComponent {
     async signOut() {
         await this.auth.signOut();
         await this.router.navigate(['/connexion']);
-    }
-
-    private normalizeSearch(value: string): string {
-        return value
-            .normalize('NFD')
-            .replace(/\p{Diacritic}/gu, '')
-            .toLowerCase();
     }
 
     private parsePrice(raw: string): number | null {

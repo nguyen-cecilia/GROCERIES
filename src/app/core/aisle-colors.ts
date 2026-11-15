@@ -20,7 +20,7 @@ export const AISLE_PALETTE: Record<AisleColorKey, string> = {
     slate: '#8b99a8',
 };
 
-export const DEFAULT_AISLE_COLOR: AisleColorKey = 'violet';
+export const DEFAULT_AISLE_COLOR: AisleColorKey = 'slate';
 export const AISLE_COLOR_FALLBACK = '#9b9b9b';
 
 export function isAisleColorKey(value: string): value is AisleColorKey {

@@ -1,0 +1,86 @@
+<div class="space-y-1.5">
+    @if (label()) {
+        <p class="uppercase font-bold text-muted text-sm tracking-wider">{{ label() }}</p>
+    }
+
+    <div class="relative">
+        <input
+            #field
+            type="text"
+            role="combobox"
+            aria-autocomplete="list"
+            autocomplete="off"
+            spellcheck="false"
+            [id]="fieldId()"
+            [placeholder]="placeholder()"
+            [attr.aria-label]="label() || placeholder() || null"
+            [attr.aria-expanded]="isOpen()"
+            [attr.aria-controls]="uid + '-listbox'"
+            [attr.aria-activedescendant]="isOpen() && activeIndex() >= 0 ? optionId(activeIndex()) : null"
+            [disabled]="disabled()"
+            [value]="value()"
+            class="w-full bg-surface pl-3.5 pr-10 py-2 rounded-sm border border-line outline-none focus:border-muted/75 focus:ring-3 focus:ring-primary/40"
+            (input)="onInput($event)"
+            (focus)="onFocus()"
+            (keydown)="onKeydown($event)"
+        />
+
+        @if (showClear()) {
+            <button
+                type="button"
+                aria-label="Effacer l'article"
+                class="absolute right-2 top-1/2 -translate-y-1/2 grid place-items-center size-6 rounded-full text-muted cursor-pointer transition-colors hover:bg-deep hover:text-ink"
+                (mousedown)="$event.preventDefault()"
+                (click)="clear()"
+            >
+                <svg lucideX [size]="14"></svg>
+            </button>
+        }
+
+        @if (isOpen()) {
+            <ul
+                #listbox
+                [id]="uid + '-listbox'"
+                role="listbox"
+                [attr.aria-label]="label() || null"
+                [style]="panelStyle()"
+                class="z-50 overflow-auto bg-surface border border-line rounded shadow-lg"
+            >
+                @for (option of rows(); track option.value; let i = $index) {
+                    <li
+                        [id]="optionId(i)"
+                        role="option"
+                        [attr.aria-selected]="option.value === value()"
+                        [class.bg-deep]="i === activeIndex()"
+                        class="flex items-center gap-2 px-3 py-2 cursor-pointer"
+                        (mousemove)="activeIndex.set(i)"
+                        (mousedown)="$event.preventDefault()"
+                        (click)="choose(option)"
+                    >
+                        <span class="flex-1 truncate">
+                            @if (option.create) {
+                                + Créer « {{ option.value }} »
+                            } @else {
+                                {{ option.value }}
+                            }
+                        </span>
+                        @if (option.hint) {
+                            <span class="flex items-center gap-1.5 min-w-0 text-sm text-muted">
+                                @if (option.hintColor) {
+                                    <span
+                                        class="size-2.5 shrink-0 rounded-full border border-ink/50"
+                                        [style.background-color]="option.hintColor"
+                                        aria-hidden="true"
+                                    ></span>
+                                }
+                                <span class="truncate">{{ option.hint }}</span>
+                            </span>
+                        }
+                    </li>
+                } @empty {
+                    <li class="px-3 py-2 text-muted">{{ emptyLabel() }}</li>
+                }
+            </ul>
+        }
+    </div>
+</div>
