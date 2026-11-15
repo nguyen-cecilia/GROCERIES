@@ -27,8 +27,13 @@
             </button>
         </div>
         <div class="flex items-center gap-2">
-            <div class="size-7 rounded-full bg-secondary font-bold text-sm flex justify-center items-center">C</div>
-            <p class="font-semibold text-sm">Cécilia</p>
+            <div
+                class="size-7 shrink-0 rounded-full bg-secondary font-bold text-sm flex justify-center items-center"
+                [attr.title]="authService.displayName()"
+            >
+                {{ authService.initials() }}
+            </div>
+            <p class="font-semibold text-sm truncate max-w-40">{{ authService.displayName() }}</p>
         </div>
     </header>
 }

@@ -8,6 +8,23 @@ export class AuthService {
     readonly user = computed(() => this.session()?.user ?? null);
     readonly isAuthenticated = computed(() => this.session() !== null);
 
+    readonly displayName = computed(() => {
+        const user = this.user();
+        if (!user) return '';
+
+        const firstName = user.user_metadata['firstName'];
+        if (typeof firstName === 'string' && firstName.trim() !== '') {
+            return firstName.trim();
+        }
+
+        return user.email?.split('@')[0] ?? '';
+    });
+
+    readonly initials = computed(() => {
+        const name = this.displayName();
+        return name === '' ? '?' : name.charAt(0).toUpperCase();
+    });
+
     constructor() {
         supabase.auth.onAuthStateChange((_, s) => this.session.set(s));
     }
