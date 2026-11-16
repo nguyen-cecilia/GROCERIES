@@ -4,11 +4,11 @@
     }
 
     h1 {
-        @apply font-display font-bold tracking-tight text-2xl/10;
+        @apply font-display font-bold tracking-tight text-2xl/9;
     }
 
     h2 {
-        @apply font-display font-bold tracking-tight text-xl/8;
+        @apply font-display font-bold tracking-tight text-xl/7;
     }
 
     h3 {

@@ -191,7 +191,7 @@
                         [checked]="item.checked"
                         (change)="toggleChecked(item, $event)"
                     >
-                    <div class="[grid-area:label] font-semibold text-md group-has-checked:line-through group-has-checked:text-muted">
+                    <div class="[grid-area:label] font-semibold text-md/5 group-has-checked:line-through group-has-checked:text-muted">
                         {{ item.article?.label }}
                     </div>
                     <div class="[grid-area:quantity] self-start flex items-center gap-2">
@@ -274,7 +274,7 @@
                 (click)="toggleTotals()"
             >
                 <span class="transition-transform duration-300" [class.rotate-180]="openingTotals()">
-                    <svg lucideChevronDown [size]="16"></svg>
+                    <svg lucideChevronUp [size]="16"></svg>
                 </span>
             </button>
         </div>

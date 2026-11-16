@@ -311,7 +311,7 @@
                                 <tbody class="max-md:block max-md:space-y-3">
                                     @for (article of filteredArticles(); track article.id) {
                                         <tr class="max-md:grid grid-cols-[1fr_auto_auto] [grid-template-areas:'label_label_price'_'aisle_aisle_action'] items-center gap-x-3">
-                                            <td class="[grid-area:label] font-bold text-md">{{ article.label }}</td>
+                                            <td class="[grid-area:label] font-bold text-md/5">{{ article.label }}</td>
                                             <td class="[grid-area:aisle]">
                                                 <app-badge-aisle
                                                     [color]="article.aisle?.color ?? null"

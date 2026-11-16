@@ -2,8 +2,8 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { ButtonComponent } from '../../components/button/button.component';
 import {
     LucideBrushCleaning,
-    LucideChevronDown,
     LucideChevronLeft,
+    LucideChevronUp,
     LucidePencil,
     LucidePlus,
     LucideRotateCcw,
@@ -60,7 +60,6 @@ type AisleChoice = {
         RouterLink,
         LucideRotateCcw,
         LucidePlus,
-        LucideChevronDown,
         LucidePencil,
         LucideBrushCleaning,
         BadgeAisleComponent,
@@ -75,6 +74,7 @@ type AisleChoice = {
         LucideX,
         InputAutocompleteComponent,
         GroceriesListItemUpdateComponent,
+        LucideChevronUp,
     ],
     templateUrl: './groceries-list.component.html',
 })
