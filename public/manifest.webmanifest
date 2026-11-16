@@ -1,6 +1,6 @@
 {
-    "name": "groceries",
-    "short_name": "groceries",
+    "name": "Groceries",
+    "short_name": "Groceries",
     "display": "standalone",
     "scope": "./",
     "start_url": "./",
@@ -24,6 +24,6 @@
             "purpose": "maskable any"
         }
     ],
-    "theme_color": "#F3E1C7",
-    "background_color": "#F3E1C7"
+    "theme_color": "#FAF6EE",
+    "background_color": "#FAF6EE"
 }
