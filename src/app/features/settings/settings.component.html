@@ -1,4 +1,12 @@
 <app-modal
+    title="{{ this.modalService.groceriesList.editing() ? 'Modifier la liste' : 'Ajouter une liste' }}"
+    [isOpen]="this.modalService.groceriesList.isOpen"
+    [onClose]="() => this.modalService.groceriesList.close()"
+>
+    <app-groceries-list-update [editing]="modalService.groceriesList.editing()" />
+</app-modal>
+
+<app-modal
     title="{{ this.modalService.aisle.editing() ? 'Modifier le rayon' : 'Ajouter un rayon' }}"
     [isOpen]="this.modalService.aisle.isOpen"
     [onClose]="() => this.modalService.aisle.close()"
@@ -52,6 +60,19 @@
             Compte
         </button>
         <button app-button
+                [variant]="activePanel() === 'lists' ? 'tabActive' : 'tab'"
+                shape="bigPill"
+                role="tab"
+                id="tab-lists"
+                aria-controls="panel-lists"
+                [attr.aria-selected]="activePanel() === 'lists'"
+                (click)="select('lists')"
+                class="shrink-0 whitespace-nowrap"
+        >
+            <div class="size-3 bg-secondary rounded-full"></div>
+            Listes
+        </button>
+        <button app-button
                 [variant]="activePanel() === 'aisles' ? 'tabActive' : 'tab'"
                 shape="bigPill"
                 role="tab"
@@ -61,7 +82,7 @@
                 (click)="select('aisles')"
                 class="shrink-0 whitespace-nowrap"
         >
-            <div class="size-3 bg-secondary rounded-full"></div>
+            <div class="size-3 bg-accent rounded-full"></div>
             Rayons
         </button>
         <button app-button
@@ -73,7 +94,7 @@
                 (click)="select('articles')"
                 class="shrink-0 whitespace-nowrap"
         >
-            <div class="size-3 bg-accent rounded-full"></div>
+            <div class="size-3 bg-primary rounded-full"></div>
             Articles
         </button>
         <button app-button
@@ -85,7 +106,7 @@
                 (click)="select('quantityUnits')"
                 class="shrink-0 whitespace-nowrap"
         >
-            <div class="size-3 bg-primary rounded-full"></div>
+            <div class="size-3 bg-secondary rounded-full"></div>
             Unités de quantité
         </button>
     </div>
@@ -134,6 +155,66 @@
                             {{ loading() ? 'Enregistrement…' : 'Sauvegarder' }}
                         </button>
                     </form>
+                </div>
+            }
+            <!-- ------------------------------ -->
+            <!--             LISTES             -->
+            <!-- ------------------------------ -->
+            @case ('lists') {
+                <div>
+                    <div class="flex items-start lg:items-center justify-between gap-3">
+                        <h2>Listes de courses</h2>
+                        <button app-button variant="primary" shape="bigPill" (click)="this.modalService.groceriesList.openCreate()">
+                            <svg lucidePlus [size]="20"></svg>
+                            Ajouter
+                        </button>
+                    </div>
+
+                    @if (groceriesListService.loading()) {
+                        <app-message variant="loading" [message]="messages.common.loading" />
+                    } @else if (groceriesListService.error()) {
+                        <app-message variant="error" [message]="groceriesListService.error()" />
+                    } @else if (groceriesListService.lists().length === 0) {
+                        <app-message variant="info" [message]="messages.groceriesList.empty" />
+                    } @else {
+                        <table class="max-md:block">
+                            <thead class="max-md:hidden">
+                            <tr>
+                                <th>
+                                    Label
+                                </th>
+                                <th>
+                                    Budget
+                                </th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody class="max-md:block max-md:space-y-3">
+                                @for (list of groceriesListService.lists(); track list.id) {
+                                    <tr class="max-md:grid grid-cols-[1fr_auto] [grid-template-areas:'label_action'_'budget_action'] items-center gap-x-3">
+                                        <td class="[grid-area:label]">
+                                            <button
+                                                app-button
+                                                variant="link"
+                                                class="font-bold text-md/5"
+                                                [routerLink]="['/liste-de-course', list.id]"
+                                            >
+                                                {{ list.label }}
+                                            </button>
+                                        </td>
+                                        <td class="[grid-area:budget] text-semibold font-display">
+                                            <span class="lg:hidden text-muted font-normal font-sans">Budget : </span>{{ list.budget|currency:'EUR' }}
+                                        </td>
+                                        <td class="[grid-area:action] flex items-center justify-end gap-2">
+                                            <button app-button variant="outline" shape="rounded" (click)="modalService.groceriesList.openEdit(list)">
+                                                <svg lucideSlidersHorizontal [size]="16"></svg>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
                 </div>
             }
             <!-- ------------------------------ -->

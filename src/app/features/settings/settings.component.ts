@@ -15,7 +15,7 @@ import {
     LucideTrendingUp,
 } from '@lucide/angular';
 import { AuthService } from '../../core/auth.service';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { form, FormField } from '@angular/forms/signals';
 import { ModalService } from '../../components/modal/modal.service';
 import { ModalComponent } from '../../components/modal/modal.component';
@@ -33,8 +33,10 @@ import { CurrencyPipe } from '@angular/common';
 import { Article } from '../article/article.model';
 import { Aisle } from '../aisle/aisle.model';
 import { normalizeLabel } from '../../core/utils';
+import { GroceriesListUpdateComponent } from '../groceries-list/groceries-list-update.component';
+import { GroceriesListService } from '../groceries-list/groceries-list.service';
 
-type AccountTabs = 'account' | 'aisles' | 'articles' | 'quantityUnits';
+type AccountTabs = 'account' | 'lists' | 'aisles' | 'articles' | 'quantityUnits';
 type SortKey = 'label' | 'aisle' | 'price';
 type SortDir = 'asc' | 'desc';
 type ArticleWithAisle = Article & { aisle: Aisle | null };
@@ -64,12 +66,15 @@ type ArticleWithAisle = Article & { aisle: Aisle | null };
         CurrencyPipe,
         LucideTrendingDown,
         LucideTrendingUp,
+        GroceriesListUpdateComponent,
+        RouterLink,
     ],
     templateUrl: './settings.component.html',
 })
 export class SettingsComponent {
     private readonly auth = inject(AuthService);
     private readonly router = inject(Router);
+    protected readonly groceriesListService = inject(GroceriesListService);
     protected readonly aisleService = inject(AisleService);
     protected readonly quantityUnitService = inject(QuantityUnitService);
     protected readonly articleService = inject(ArticleService);
@@ -154,6 +159,7 @@ export class SettingsComponent {
     });
 
     constructor() {
+        void this.groceriesListService.load();
         void this.aisleService.load();
         void this.articleService.load();
         void this.quantityUnitService.load();
