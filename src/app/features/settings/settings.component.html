@@ -23,6 +23,14 @@
 </app-modal>
 
 <app-modal
+    title="Ajouter à une liste"
+    [isOpen]="this.modalService.articleToList.isOpen"
+    [onClose]="() => modalService.articleToList.close()"
+>
+    <app-article-add-to-list [editing]="modalService.articleToList.editing()" />
+</app-modal>
+
+<app-modal
     title="{{ this.modalService.quantityUnit.editing() ? 'Modifier l\'unité de quantité' : 'Ajouter une unité de quantité' }}"
     [isOpen]="this.modalService.quantityUnit.isOpen"
     [onClose]="() => this.modalService.quantityUnit.close()"
@@ -413,8 +421,22 @@
                                                 }
                                             </td>
                                             <td class="[grid-area:action] flex items-center justify-end gap-2">
-                                                <button app-button variant="outline" shape="rounded" (click)="modalService.article.openEdit(article)">
+                                                <button
+                                                    app-button
+                                                    variant="outline"
+                                                    shape="rounded"
+                                                    (click)="modalService.article.openEdit(article)"
+                                                >
                                                     <svg lucideSlidersHorizontal [size]="16"></svg>
+                                                </button>
+                                                <button
+                                                    app-button
+                                                    variant="outline"
+                                                    shape="rounded"
+                                                    title="Ajouter à une liste"
+                                                    (click)="modalService.articleToList.openEdit(article)"
+                                                >
+                                                    <svg lucideListPlus [size]="16"></svg>
                                                 </button>
                                             </td>
                                         </tr>

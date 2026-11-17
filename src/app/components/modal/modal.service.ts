@@ -16,5 +16,6 @@ export class ModalService {
     readonly listItem = new ModalController<GroceriesListItemView>();
     readonly aisle = new ModalController<Aisle>();
     readonly article = new ModalController<Article>();
+    readonly articleToList = new ModalController<Article>();
     readonly quantityUnit = new ModalController<QuantityUnit>();
 }

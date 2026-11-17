@@ -199,6 +199,27 @@ export class GroceriesListService {
         return { error: null };
     }
 
+    async addArticleToList(
+        listId: string,
+        articleId: string,
+    ): Promise<{ error: string | null }> {
+        const exists = this.itemsState().some(
+            (item) => item.list_id === listId && item.article_id === articleId,
+        );
+        if (exists) return { error: null };
+
+        const { error } = await supabase.from('sg_groceries_list_item').insert({
+            list_id: listId,
+            article_id: articleId,
+            quantity: 1,
+        });
+
+        if (error) return { error: MESSAGES.groceriesList.addFailed };
+
+        await this.load();
+        return { error: null };
+    }
+
     async updateItem(itemId: string, input: UpdateItemInput): Promise<{ error: string | null }> {
         const item = this.itemsState().find((i) => i.id === itemId);
         if (!item) return { error: MESSAGES.groceriesList.saveItemFailed };

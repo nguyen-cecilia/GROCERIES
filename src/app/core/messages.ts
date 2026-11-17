@@ -31,6 +31,7 @@ export const MESSAGES = {
         deleteFailed: "Impossible de supprimer l'article, réessaie.",
         empty: "Aucun article pour l'instant. Ajoute le premier.",
         duplicateLabel: 'Un article porte déjà ce nom.',
+        alreadyInAllLists: "L'article est déjà dans toutes les listes.",
     },
     quantityUnit: {
         loadFailed: 'Impossible de charger les unités de quantité.',

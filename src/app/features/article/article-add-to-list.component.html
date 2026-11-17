@@ -1,0 +1,33 @@
+<form class="space-y-6" (submit)="onSubmit($event)" novalidate>
+    <div class="bg-deep px-3 py-2 rounded-sm flex items-center justify-between gap-1">
+        <p class="font-semibold leading-5">{{ editing()?.label }}</p>
+        <app-badge-aisle
+            size="sm"
+            [color]="aisle()?.color ?? null"
+            [label]="aisle()?.label ?? 'Aucun rayon'"
+        />
+    </div>
+
+    @if (groceriesListService.lists().length === 0) {
+        <app-message variant="info" [message]="messages.groceriesList.empty" />
+    } @else if (options().length === 0) {
+        <app-message variant="info" [message]="messages.article.alreadyInAllLists" />
+    } @else {
+        <app-select
+            label="Liste"
+            placeholder="Choisir une liste"
+            [options]="options()"
+            [value]="selectedListId()"
+            (valueChange)="selectedListId.set($event)"
+        />
+    }
+
+    <app-message variant="error" [message]="error()" />
+
+    <div class="flex justify-end">
+        <button app-button type="submit" [disabled]="!selectedListId() || loading()">
+            <svg lucideListPlus [size]="16"></svg>
+            Ajouter
+        </button>
+    </div>
+</form>

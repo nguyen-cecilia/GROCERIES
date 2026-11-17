@@ -5,6 +5,7 @@ import {
     LucideChevronDown,
     LucideChevronsUpDown,
     LucideChevronUp,
+    LucideListPlus,
     LucideLogOut,
     LucidePlus,
     LucideSave,
@@ -35,6 +36,7 @@ import { Aisle } from '../aisle/aisle.model';
 import { normalizeLabel } from '../../core/utils';
 import { GroceriesListUpdateComponent } from '../groceries-list/groceries-list-update.component';
 import { GroceriesListService } from '../groceries-list/groceries-list.service';
+import { ArticleAddToListComponent } from '../article/article-add-to-list.component';
 
 type AccountTabs = 'account' | 'lists' | 'aisles' | 'articles' | 'quantityUnits';
 type SortKey = 'label' | 'aisle' | 'price';
@@ -68,6 +70,8 @@ type ArticleWithAisle = Article & { aisle: Aisle | null };
         LucideTrendingUp,
         GroceriesListUpdateComponent,
         RouterLink,
+        ArticleAddToListComponent,
+        LucideListPlus,
     ],
     templateUrl: './settings.component.html',
 })
