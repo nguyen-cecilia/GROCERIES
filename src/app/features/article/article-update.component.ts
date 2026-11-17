@@ -12,6 +12,7 @@ import { MESSAGES } from '../../core/messages';
 import { AisleService } from '../aisle/aisle.service';
 import { MessageComponent } from '../../components/message/message.component';
 import { CurrencyPipe } from '@angular/common';
+import { GroceriesListService } from '../groceries-list/groceries-list.service';
 
 type ArticleFormModel = {
     label: Article['label'];
@@ -37,6 +38,7 @@ export class ArticleUpdateComponent {
     readonly editing = input<Article | null>(null);
 
     private readonly articleService = inject(ArticleService);
+    private readonly groceriesListService = inject(GroceriesListService);
     private readonly aisleService = inject(AisleService);
     private readonly modalService = inject(ModalService);
 
@@ -119,13 +121,19 @@ export class ArticleUpdateComponent {
         const article = this.editing();
         if (!article || this.loading()) return;
         this.loading.set(true);
+        this.error.set(null);
         const { error } = await this.articleService.remove(article.id);
         this.loading.set(false);
-        if (!error) {
-            this.modalService.article.close();
-            await this.articleService.load();
-        } else {
+
+        if (error) {
             this.error.set(MESSAGES.article.deleteFailed);
+            return;
         }
+
+        this.modalService.article.close();
+        await Promise.all([
+            this.articleService.load(),
+            this.groceriesListService.load(),
+        ]);
     }
 }

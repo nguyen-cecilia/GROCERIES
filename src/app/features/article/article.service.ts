@@ -49,6 +49,13 @@ export class ArticleService {
     }
 
     async remove(id: string) {
+        const { error: itemsError } = await supabase
+            .from('sg_groceries_list_item')
+            .delete()
+            .eq('article_id', id);
+
+        if (itemsError) return { error: itemsError };
+
         return supabase.from('sg_article').delete().eq('id', id);
     }
 }
