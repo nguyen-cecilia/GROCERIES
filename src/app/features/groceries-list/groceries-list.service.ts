@@ -13,7 +13,7 @@ import { QuantityUnitService } from '../quantity-unit/quantity-unit.service';
 import { Article } from '../article/article.model';
 import { normalizeLabel } from '../../core/utils';
 
-export type ListInput = { label: string; budget: number };
+export type ListInput = { label: string; budget: number; note: string };
 
 export type AddItemInput = {
     label: string;
@@ -122,6 +122,7 @@ export class GroceriesListService {
         return supabase.from('sg_groceries_list').insert({
             label: input.label.trim(),
             budget: input.budget,
+            note: input.note.trim(),
         });
     }
 
@@ -131,6 +132,7 @@ export class GroceriesListService {
             .update({
                 label: input.label.trim(),
                 budget: input.budget,
+                note: input.note.trim(),
             })
             .eq('id', id);
     }

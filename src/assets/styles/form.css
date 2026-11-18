@@ -14,6 +14,7 @@
         input[type="number"],
         input[type="email"],
         input[type="password"],
+        textarea,
         select {
             @apply w-full bg-surface px-3.5 py-2 rounded-sm border border-line outline-none focus:border-muted/75 focus:ring-3 focus:ring-primary/40;
         }
@@ -37,7 +38,7 @@
         }
 
         input[type="checkbox"] {
-            @apply form-checkbox size-7 rounded border-2 text-primary cursor-pointer focus:ring-offset-0 focus:ring-3 focus:ring-primary/60;
+            @apply form-checkbox size-7 rounded border-2 text-primary cursor-pointer focus:ring-offset-0 focus:ring-3 focus:ring-primary/60 resize-y;
         }
     }
 }

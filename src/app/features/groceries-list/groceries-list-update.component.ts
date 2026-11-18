@@ -31,7 +31,7 @@ export class GroceriesListUpdateComponent {
 
     protected readonly groceriesListService = inject(GroceriesListService);
 
-    protected readonly model = signal({ label: '', budget: 0 });
+    protected readonly model = signal({ label: '', budget: 0, note: '' });
     protected readonly form = form(this.model);
     protected readonly loading = signal(false);
     protected readonly error = signal<string | null>(null);
@@ -43,6 +43,7 @@ export class GroceriesListUpdateComponent {
                 this.model.set({
                     label: list?.label ?? '',
                     budget: list?.budget ?? 0,
+                    note: list?.note ?? '',
                 });
                 this.error.set(null);
             }
@@ -59,7 +60,11 @@ export class GroceriesListUpdateComponent {
         this.loading.set(true);
         this.error.set(null);
 
-        const input = { label: this.model().label, budget: this.model().budget };
+        const input = {
+            label: this.model().label,
+            budget: this.model().budget,
+            note: this.model().note,
+        };
         const list = this.editing();
         const { error: err } = list
             ? await this.groceriesListService.update(list.id, input)
