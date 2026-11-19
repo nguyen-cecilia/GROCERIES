@@ -58,8 +58,8 @@ export class GroceriesListService {
                 ...item,
                 article,
                 aisle: article?.aisle_id ? (aisles.get(article.aisle_id) ?? null) : null,
-                quantityUnit: item.quantity_unit_id
-                    ? (units.get(item.quantity_unit_id) ?? null)
+                quantityUnit: article?.quantity_unit_id
+                    ? (units.get(article.quantity_unit_id) ?? null)
                     : null,
             };
 
@@ -162,11 +162,15 @@ export class GroceriesListService {
         if (existing) {
             articleId = existing.id;
 
-            if (existing.aisle_id !== input.aisleId) {
+            if (
+                existing.aisle_id !== input.aisleId ||
+                existing.quantity_unit_id !== input.quantityUnitId
+            ) {
                 await this.articleService.update(existing.id, {
                     label: existing.label,
                     aisle_id: input.aisleId,
                     price: existing.price,
+                    quantity_unit_id: input.quantityUnitId,
                 });
             }
         } else {
@@ -174,6 +178,7 @@ export class GroceriesListService {
                 label,
                 aisle_id: input.aisleId,
                 price: null,
+                quantity_unit_id: input.quantityUnitId,
             });
             if (error || !data) return { error: MESSAGES.groceriesList.addFailed };
             articleId = data.id;
@@ -185,15 +190,16 @@ export class GroceriesListService {
 
         const { error } = inList
             ? await supabase
-                  .from('sg_groceries_list_item')
-                  .update({ quantity: inList.quantity + input.quantity })
-                  .eq('id', inList.id)
+                .from('sg_groceries_list_item')
+                .update({
+                    quantity: Math.round((inList.quantity + input.quantity) * 1000) / 1000,
+                })
+                .eq('id', inList.id)
             : await supabase.from('sg_groceries_list_item').insert({
-                  list_id: listId,
-                  article_id: articleId,
-                  quantity: input.quantity,
-                  quantity_unit_id: input.quantityUnitId,
-              });
+                list_id: listId,
+                article_id: articleId,
+                quantity: input.quantity,
+            });
 
         if (error) return { error: MESSAGES.groceriesList.addFailed };
 
@@ -236,6 +242,7 @@ export class GroceriesListService {
                 label,
                 aisle_id: input.aisleId,
                 price: input.price,
+                quantity_unit_id: input.quantityUnitId,
             });
             if (error) return { error: MESSAGES.article.saveFailed };
         } else {
@@ -243,6 +250,7 @@ export class GroceriesListService {
                 label,
                 aisle_id: input.aisleId,
                 price: input.price,
+                quantity_unit_id: input.quantityUnitId,
             });
             if (error || !data) return { error: MESSAGES.article.saveFailed };
             articleId = data.id;
@@ -253,7 +261,6 @@ export class GroceriesListService {
             .update({
                 article_id: articleId,
                 quantity: input.quantity,
-                quantity_unit_id: input.quantityUnitId,
             })
             .eq('id', itemId);
 
@@ -319,6 +326,7 @@ export class GroceriesListService {
             label: article.label,
             aisle_id: article.aisle_id,
             price,
+            quantity_unit_id: article.quantity_unit_id,
         });
 
         if (error) return { error: MESSAGES.article.saveFailed };

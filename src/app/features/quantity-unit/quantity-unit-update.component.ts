@@ -19,7 +19,7 @@ export class QuantityUnitUpdateComponent {
     private readonly quantityUnitService = inject(QuantityUnitService);
     private readonly modalService = inject(ModalService);
 
-    protected readonly model = signal({ label: '', apply_quantity: false });
+    protected readonly model = signal({ label: '' });
     protected readonly form = form(this.model);
     protected readonly loading = signal(false);
     protected readonly error = signal<string | null>(null);
@@ -30,7 +30,6 @@ export class QuantityUnitUpdateComponent {
             if (this.modalService.quantityUnit.isOpen()) {
                 this.model.set({
                     label: quantityUnit?.label ?? '',
-                    apply_quantity: quantityUnit?.apply_quantity ?? false,
                 });
                 this.error.set(null);
             }
@@ -45,7 +44,7 @@ export class QuantityUnitUpdateComponent {
         this.loading.set(true);
         this.error.set(null);
 
-        const input = { label: this.model().label, apply_quantity: this.model().apply_quantity };
+        const input = { label: this.model().label };
         const quantityUnit = this.editing();
         const { error: err } = quantityUnit
             ? await this.quantityUnitService.update(quantityUnit.id, input)

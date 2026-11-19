@@ -87,14 +87,14 @@ export class GroceriesListItemUpdateComponent {
                 aisle_id: item?.article?.aisle_id ?? '',
                 price: item?.article?.price ?? null,
                 quantity: item?.quantity ?? 1,
-                quantity_unit_id: item?.quantity_unit_id ?? '',
+                quantity_unit_id: item?.article?.quantity_unit_id ?? '',
             });
             this.error.set(null);
         });
     }
 
     protected readonly canSubmit = computed(
-        () => this.model().label.trim() !== '' && this.model().quantity >= 1,
+        () => this.model().label.trim() !== '' && this.model().quantity > 0,
     );
 
     protected applyLastPrice(): void {

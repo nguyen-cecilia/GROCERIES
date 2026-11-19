@@ -1,7 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { ButtonComponent } from '../../components/button/button.component';
 import {
-    LucideCalculator,
     LucideChevronDown,
     LucideChevronsUpDown,
     LucideChevronUp,
@@ -9,9 +8,7 @@ import {
     LucideLogOut,
     LucidePlus,
     LucideSave,
-    LucideScale,
     LucideSlidersHorizontal,
-    LucideStar,
     LucideTrendingDown,
     LucideTrendingUp,
 } from '@lucide/angular';
@@ -37,11 +34,15 @@ import { normalizeLabel } from '../../core/utils';
 import { GroceriesListUpdateComponent } from '../groceries-list/groceries-list-update.component';
 import { GroceriesListService } from '../groceries-list/groceries-list.service';
 import { ArticleAddToListComponent } from '../article/article-add-to-list.component';
+import { QuantityUnit } from '../groceries-list/groceries-list.model';
 
 type AccountTabs = 'account' | 'lists' | 'aisles' | 'articles' | 'quantityUnits';
-type SortKey = 'label' | 'aisle' | 'price';
+type SortKey = 'label' | 'aisle' | 'price' | 'unit';
 type SortDir = 'asc' | 'desc';
-type ArticleWithAisle = Article & { aisle: Aisle | null };
+type ArticleRow = Article & {
+    aisle: Aisle | null;
+    unit: QuantityUnit | null;
+};
 
 @Component({
     selector: 'app-settings',
@@ -61,9 +62,6 @@ type ArticleWithAisle = Article & { aisle: Aisle | null };
         ArticleUpdateComponent,
         BadgeAisleComponent,
         QuantityUnitUpdateComponent,
-        LucideStar,
-        LucideCalculator,
-        LucideScale,
         MessageComponent,
         CurrencyPipe,
         LucideTrendingDown,
@@ -133,10 +131,15 @@ export class SettingsComponent {
     }
 
     protected readonly articles = computed(() => {
-        const byId = new Map(this.aisleService.aisles().map((a) => [a.id, a]));
+        const aisles = new Map(this.aisleService.aisles().map((a) => [a.id, a]));
+        const units = new Map(this.quantityUnitService.quantityUnits().map((u) => [u.id, u]));
+
         return this.articleService.articles().map((article) => ({
             ...article,
-            aisle: article.aisle_id ? (byId.get(article.aisle_id) ?? null) : null,
+            aisle: article.aisle_id ? (aisles.get(article.aisle_id) ?? null) : null,
+            unit: article.quantity_unit_id
+                ? (units.get(article.quantity_unit_id) ?? null)
+                : null,
         }));
     });
 
@@ -151,7 +154,8 @@ export class SettingsComponent {
 
             const matchesText =
                 normalizeLabel(article.label).includes(query) ||
-                normalizeLabel(article.aisle?.label ?? '').includes(query);
+                normalizeLabel(article.aisle?.label ?? '').includes(query) ||
+                normalizeLabel(article.unit?.label ?? '').includes(query);
 
             if (matchesText) return true;
             if (price === null || article.price === null) return false;
@@ -215,8 +219,8 @@ export class SettingsComponent {
     }
 
     private compareArticles(
-        a: ArticleWithAisle,
-        b: ArticleWithAisle,
+        a: ArticleRow,
+        b: ArticleRow,
         key: SortKey,
         dir: SortDir,
     ): number {
@@ -236,6 +240,13 @@ export class SettingsComponent {
             case 'price': {
                 if (a.price === null || b.price === null) return this.nullsLast(a.price, b.price);
                 return factor * (a.price - b.price);
+            }
+
+            case 'unit': {
+                const left = a.unit?.label ?? null;
+                const right = b.unit?.label ?? null;
+                if (left === null || right === null) return this.nullsLast(left, right);
+                return factor * left.localeCompare(right, 'fr', { sensitivity: 'base' });
             }
         }
     }

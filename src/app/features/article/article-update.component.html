@@ -30,6 +30,13 @@
         }
     </div>
 
+    <app-select
+        label="Unité"
+        placeholder="Aucune unité"
+        [options]="unitOptions()"
+        [formField]="form.quantity_unit_id"
+    />
+
     <app-message variant="error" [message]="error()"/>
 
     <div class="flex items-center justify-between gap-3">

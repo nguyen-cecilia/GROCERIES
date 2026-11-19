@@ -302,12 +302,12 @@
                         <app-message variant="info" [message]="messages.aisle.empty" />
                     } @else {
                         <app-input-search
-                            placeholder="Label, rayon ou prix"
+                            placeholder="Label, rayon, prix ou unité"
                             [value]="search()"
                             (valueChange)="search.set($event)"
                         />
 
-                        <div class="lg:hidden flex items-center gap-2">
+                        <div class="lg:hidden flex flex-wrap items-center gap-2">
                             <button app-button variant="outline" (click)="toggleSort('label')">
                                 Label
                                 @if (sort().key === 'label') {
@@ -337,6 +337,19 @@
                             <button app-button variant="outline" (click)="toggleSort('price')">
                                 Prix
                                 @if (sort().key === 'price') {
+                                    @if (sort().dir === 'asc') {
+                                        <svg lucideChevronUp [size]="16"></svg>
+                                    } @else {
+                                        <svg lucideChevronDown [size]="16"></svg>
+                                    }
+                                } @else {
+                                    <svg lucideChevronsUpDown [size]="16"></svg>
+                                }
+                            </button>
+
+                            <button app-button variant="outline" (click)="toggleSort('unit')">
+                                Unité
+                                @if (sort().key === 'unit') {
                                     @if (sort().dir === 'asc') {
                                         <svg lucideChevronUp [size]="16"></svg>
                                     } @else {
@@ -394,12 +407,26 @@
                                             }
                                         </button>
                                     </th>
+                                    <th [attr.aria-sort]="ariaSort('unit')">
+                                        <button app-button variant="sortTable" (click)="toggleSort('unit')">
+                                            Unité
+                                            @if (sort().key === 'unit') {
+                                                @if (sort().dir === 'asc') {
+                                                    <svg lucideChevronUp [size]="14"></svg>
+                                                } @else {
+                                                    <svg lucideChevronDown [size]="14"></svg>
+                                                }
+                                            } @else {
+                                                <svg lucideChevronsUpDown [size]="14"></svg>
+                                            }
+                                        </button>
+                                    </th>
                                     <th></th>
                                 </tr>
                                 </thead>
                                 <tbody class="max-md:block max-md:space-y-3">
                                     @for (article of filteredArticles(); track article.id) {
-                                        <tr class="max-md:grid grid-cols-[1fr_auto_auto] [grid-template-areas:'label_label_price'_'aisle_aisle_action'] items-center gap-x-3">
+                                        <tr class="max-md:grid grid-cols-[1fr_auto_auto] [grid-template-areas:'label_label_price'_'unit_unit_price'_'aisle_aisle_action'] items-center gap-x-3">
                                             <td class="[grid-area:label] font-bold text-md/5">{{ article.label }}</td>
                                             <td class="[grid-area:aisle]">
                                                 <app-badge-aisle
@@ -419,6 +446,9 @@
                                                         {{ article.last_price | currency:'EUR' }}
                                                     </div>
                                                 }
+                                            </td>
+                                            <td class="[grid-area:unit] text-muted text-sm">
+                                                {{ article.unit?.label ?? '' }}
                                             </td>
                                             <td class="[grid-area:action] flex items-center justify-end gap-2">
                                                 <button
@@ -494,22 +524,8 @@
                                             <svg lucideChevronDown [size]="16"></svg>
                                         </button>
                                     </div>
-                                    <div class="flex-1">
-                                        <div class="flex items-center gap-2">
-                                            <p class="text-md font-semibold">{{ unit.label }}</p>
-                                            @if (i === 0) {
-                                                <svg lucideStar [size]="16" class="text-secondary"></svg>
-                                            }
-                                        </div>
-                                        <p class="flex items-center gap-1.5 text-sm/4 text-muted">
-                                            @if (unit.apply_quantity) {
-                                                <svg lucideCalculator [size]="14" class="shrink-0" aria-hidden="true" />
-                                                Prix multiplié par la quantité
-                                            } @else {
-                                                <svg lucideScale [size]="14" class="shrink-0" aria-hidden="true" />
-                                                Prix pour la quantité indiquée
-                                            }
-                                        </p>
+                                    <div class="flex-1 flex items-center gap-2 text-md font-semibold">
+                                        {{ unit.label }}
                                     </div>
                                     <button app-button variant="outline" shape="rounded" (click)="modalService.quantityUnit.openEdit(unit)">
                                         <svg lucideSlidersHorizontal [size]="16"></svg>

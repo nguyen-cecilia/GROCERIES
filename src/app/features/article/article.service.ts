@@ -3,7 +3,12 @@ import { Article } from './article.model';
 import { supabase } from '../../core/supabase';
 import { MESSAGES } from '../../core/messages';
 
-export type ArticleInput = { label: string; aisle_id: string | null; price: number | null };
+export type ArticleInput = {
+    label: string;
+    aisle_id: string | null;
+    price: number | null;
+    quantity_unit_id: string | null;
+};
 
 @Injectable({ providedIn: 'root' })
 export class ArticleService {
@@ -32,6 +37,7 @@ export class ArticleService {
                 label: input.label.trim(),
                 aisle_id: input.aisle_id,
                 price: input.price,
+                quantity_unit_id: input.quantity_unit_id,
             })
             .select()
             .single();
@@ -44,6 +50,7 @@ export class ArticleService {
                 label: input.label.trim(),
                 aisle_id: input.aisle_id,
                 price: input.price,
+                quantity_unit_id: input.quantity_unit_id,
             })
             .eq('id', id);
     }

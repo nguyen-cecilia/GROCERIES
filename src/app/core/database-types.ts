@@ -71,6 +71,7 @@ export type Database = {
                     label: string;
                     last_price: number | null;
                     price: number | null;
+                    quantity_unit_id: string | null;
                     updated_at: string;
                     user_id: string;
                 };
@@ -81,6 +82,7 @@ export type Database = {
                     label: string;
                     last_price?: number | null;
                     price?: number | null;
+                    quantity_unit_id?: string | null;
                     updated_at?: string;
                     user_id?: string;
                 };
@@ -91,6 +93,7 @@ export type Database = {
                     label?: string;
                     last_price?: number | null;
                     price?: number | null;
+                    quantity_unit_id?: string | null;
                     updated_at?: string;
                     user_id?: string;
                 };
@@ -100,6 +103,13 @@ export type Database = {
                         columns: ['aisle_id'];
                         isOneToOne: false;
                         referencedRelation: 'sg_aisle';
+                        referencedColumns: ['id'];
+                    },
+                    {
+                        foreignKeyName: 'sg_article_quantity_unit_id_fkey';
+                        columns: ['quantity_unit_id'];
+                        isOneToOne: false;
+                        referencedRelation: 'sg_quantity_unit';
                         referencedColumns: ['id'];
                     },
                 ];
@@ -142,7 +152,6 @@ export type Database = {
                     id: string;
                     list_id: string;
                     quantity: number;
-                    quantity_unit_id: string | null;
                     updated_at: string;
                 };
                 Insert: {
@@ -152,7 +161,6 @@ export type Database = {
                     id?: string;
                     list_id: string;
                     quantity?: number;
-                    quantity_unit_id?: string | null;
                     updated_at?: string;
                 };
                 Update: {
@@ -162,7 +170,6 @@ export type Database = {
                     id?: string;
                     list_id?: string;
                     quantity?: number;
-                    quantity_unit_id?: string | null;
                     updated_at?: string;
                 };
                 Relationships: [
@@ -180,18 +187,10 @@ export type Database = {
                         referencedRelation: 'sg_groceries_list';
                         referencedColumns: ['id'];
                     },
-                    {
-                        foreignKeyName: 'sg_groceries_list_item_quantity_unit_id_fkey';
-                        columns: ['quantity_unit_id'];
-                        isOneToOne: false;
-                        referencedRelation: 'sg_quantity_unit';
-                        referencedColumns: ['id'];
-                    },
                 ];
             };
             sg_quantity_unit: {
                 Row: {
-                    apply_quantity: boolean;
                     created_at: string;
                     id: string;
                     label: string;
@@ -200,7 +199,6 @@ export type Database = {
                     user_id: string;
                 };
                 Insert: {
-                    apply_quantity?: boolean;
                     created_at?: string;
                     id?: string;
                     label: string;
@@ -209,7 +207,6 @@ export type Database = {
                     user_id?: string;
                 };
                 Update: {
-                    apply_quantity?: boolean;
                     created_at?: string;
                     id?: string;
                     label?: string;

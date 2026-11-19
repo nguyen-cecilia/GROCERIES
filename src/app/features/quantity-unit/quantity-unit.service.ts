@@ -3,7 +3,7 @@ import { QuantityUnit } from '../groceries-list/groceries-list.model';
 import { supabase } from '../../core/supabase';
 import { MESSAGES } from '../../core/messages';
 
-export type QuantityUnitInput = { label: string; apply_quantity: boolean };
+export type QuantityUnitInput = { label: string };
 
 @Injectable({ providedIn: 'root' })
 export class QuantityUnitService {
@@ -33,7 +33,6 @@ export class QuantityUnitService {
     async create(input: QuantityUnitInput) {
         return supabase.from('sg_quantity_unit').insert({
             label: input.label.trim(),
-            apply_quantity: input.apply_quantity,
         });
     }
 
@@ -42,7 +41,6 @@ export class QuantityUnitService {
             .from('sg_quantity_unit')
             .update({
                 label: input.label.trim(),
-                apply_quantity: input.apply_quantity,
             })
             .eq('id', id);
     }

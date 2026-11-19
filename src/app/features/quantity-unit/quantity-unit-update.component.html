@@ -4,24 +4,6 @@
         <input type="text" id="label" placeholder="Ex : kg" [formField]="form.label">
     </label>
 
-    <label for="applyQuantity" class="flex items-center gap-3 cursor-pointer">
-        <input
-            type="checkbox"
-            id="applyQuantity"
-            [formField]="form.apply_quantity"
-        >
-        <div>
-            <p>Prendre en compte la quantité</p>
-            <p class="text-muted text-sm">
-                @if (model().apply_quantity) {
-                    Le prix saisi est multiplié par la quantité (ex : 2 × 1,25&nbsp;€ = 2,50&nbsp;€)
-                } @else {
-                    Le prix saisi est pour la quantité donnée (ex : 2 kg à 1,25&nbsp;€)
-                }
-            </p>
-        </div>
-    </label>
-
     <app-message variant="error" [message]="error()"/>
 
     <div class="flex items-center justify-between gap-3">

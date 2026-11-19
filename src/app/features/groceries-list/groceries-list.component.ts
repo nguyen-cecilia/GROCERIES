@@ -93,7 +93,7 @@ export class GroceriesListComponent {
         label: '',
         aisle_id: '',
         quantity: 1,
-        quantity_unit_id: this.quantityUnitService.quantityUnits()[0]?.id ?? '',
+        quantity_unit_id: '',
     });
     protected readonly adding = signal(false);
     protected readonly resetting = signal(false);
@@ -167,6 +167,7 @@ export class GroceriesListComponent {
     });
 
     protected readonly unitOptions = computed<SelectOption[]>(() => [
+        { value: '', label: 'Aucune unité' },
         ...this.quantityUnitService.quantityUnits().map((u) => ({
             value: u.id,
             label: u.label,
@@ -190,7 +191,8 @@ export class GroceriesListComponent {
         const checked = items.filter((item) => item.checked);
         const remaining = items.filter((item) => !item.checked);
 
-        const priceOf = (item: GroceriesListItemView) => (item.article?.price ?? 0) * item.quantity;
+        const priceOf = (item: GroceriesListItemView) =>
+            (item.article?.price ?? 0) * item.quantity;
 
         const spent = checked.reduce((sum, item) => sum + priceOf(item), 0);
         const planned = remaining.reduce((sum, item) => sum + priceOf(item), 0);
@@ -214,16 +216,7 @@ export class GroceriesListComponent {
         void this.groceriesListService.load();
         void this.articleService.load();
         void this.aisleService.load();
-        void this.quantityUnitService.load().then(() => {
-            this.model.update((m) =>
-                m.quantity_unit_id
-                    ? m
-                    : {
-                          ...m,
-                          quantity_unit_id: this.quantityUnitService.quantityUnits()[0]?.id ?? '',
-                      },
-            );
-        });
+        void this.quantityUnitService.load();
     }
 
     protected async resetItems(): Promise<void> {
@@ -271,6 +264,11 @@ export class GroceriesListComponent {
             ...m,
             label,
             aisle_id: match ? (match.aisle_id ?? '') : label.trim() ? m.aisle_id : '',
+            quantity_unit_id: match
+                ? (match.quantity_unit_id ?? '')
+                : label.trim()
+                  ? m.quantity_unit_id
+                  : '',
         }));
     }
 
@@ -321,7 +319,7 @@ export class GroceriesListComponent {
             label: '',
             aisle_id: '',
             quantity: 1,
-            quantity_unit_id: this.quantityUnitService.quantityUnits()[0]?.id ?? '',
+            quantity_unit_id: '',
         });
     }
 
@@ -330,7 +328,7 @@ export class GroceriesListComponent {
             label: '',
             aisle_id: '',
             quantity: 1,
-            quantity_unit_id: this.quantityUnitService.quantityUnits()[0]?.id ?? '',
+            quantity_unit_id: '',
         });
     }
 

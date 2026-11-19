@@ -30,7 +30,7 @@
 
     <section class="space-y-6">
         <div
-            class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6"
+            class="flex flex-col lg:flex-row items-start justify-between gap-6"
         >
             <div>
                 <h1>{{ list.label }}</h1>
@@ -110,8 +110,6 @@
                 <app-input-quantity
                     label="Quantité"
                     [value]="model().quantity"
-                    [precision]="0"
-                    [min]="1"
                     (valueChange)="setQuantity($event)"
                     radius="sm"
                     class="col-span-2"
@@ -203,13 +201,13 @@
                         <app-input-quantity
                             [id]="'qty-' + item.id"
                             [value]="item.quantity"
-                            [precision]="0"
-                            [min]="1"
                             size="sm"
                             (valueChange)="setItemQuantity(item, $event)"
                         />
                         @if (item.quantityUnit; as unit) {
                             <p class="text-muted max-md:text-sm">{{ unit.label }}</p>
+                        } @else {
+                            <p class="text-muted max-md:text-sm" title="Sans unité">×</p>
                         }
                     </div>
                     <div class="[grid-area:price] mb-0 flex flex-col items-end gap-1">

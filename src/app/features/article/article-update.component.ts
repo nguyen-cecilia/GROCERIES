@@ -13,11 +13,13 @@ import { AisleService } from '../aisle/aisle.service';
 import { MessageComponent } from '../../components/message/message.component';
 import { CurrencyPipe } from '@angular/common';
 import { GroceriesListService } from '../groceries-list/groceries-list.service';
+import { QuantityUnitService } from '../quantity-unit/quantity-unit.service';
 
 type ArticleFormModel = {
     label: Article['label'];
     aisle_id: Article['aisle_id'];
     price: Article['price'];
+    quantity_unit_id: string;
 };
 
 @Component({
@@ -40,6 +42,7 @@ export class ArticleUpdateComponent {
     private readonly articleService = inject(ArticleService);
     private readonly groceriesListService = inject(GroceriesListService);
     private readonly aisleService = inject(AisleService);
+    private readonly quantityUnitService = inject(QuantityUnitService);
     private readonly modalService = inject(ModalService);
 
     protected readonly lastPrice = computed(() => this.editing()?.last_price ?? null);
@@ -51,10 +54,18 @@ export class ArticleUpdateComponent {
             color: aisleColorHex(aisle.color),
         })),
     ]);
+    protected readonly unitOptions = computed<SelectOption[]>(() => [
+        { value: '', label: 'Aucune unité' },
+        ...this.quantityUnitService.quantityUnits().map((u) => ({
+            value: u.id,
+            label: u.label,
+        })),
+    ]);
     protected readonly model = signal<ArticleFormModel>({
         label: '',
         aisle_id: null,
         price: 0,
+        quantity_unit_id: '',
     });
     protected readonly form = form(this.model);
     protected readonly loading = signal(false);
@@ -74,6 +85,7 @@ export class ArticleUpdateComponent {
                     label: article?.label ?? '',
                     aisle_id: article?.aisle_id ?? '',
                     price: article?.price ?? null,
+                    quantity_unit_id: article?.quantity_unit_id ?? '',
                 });
                 this.error.set(null);
             }
@@ -97,11 +109,12 @@ export class ArticleUpdateComponent {
         this.loading.set(true);
         this.error.set(null);
 
-        const { label, aisle_id, price } = this.model();
+        const { label, aisle_id, price, quantity_unit_id } = this.model();
         const input = {
             label: label.trim(),
             aisle_id: aisle_id === '' ? null : aisle_id,
             price,
+            quantity_unit_id: quantity_unit_id === '' ? null : quantity_unit_id,
         };
         const article = this.editing();
         const { error: err } = article
@@ -131,9 +144,6 @@ export class ArticleUpdateComponent {
         }
 
         this.modalService.article.close();
-        await Promise.all([
-            this.articleService.load(),
-            this.groceriesListService.load(),
-        ]);
+        await Promise.all([this.articleService.load(), this.groceriesListService.load()]);
     }
 }
