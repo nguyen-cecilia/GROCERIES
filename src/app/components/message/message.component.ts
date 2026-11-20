@@ -1,25 +1,51 @@
 import { Component, input, output } from '@angular/core';
 import {
-    LucideCircleAlert,
     LucideCircleCheck,
+    LucideCircleExclamationPoint,
     LucideInfo,
-    LucideTriangleAlert,
+    LucideTriangleExclamationPoint,
     LucideX,
 } from '@lucide/angular';
 
 export type MessageVariant = 'error' | 'success' | 'warning' | 'info' | 'loading';
 
-const MESSAGE_STYLES: Record<MessageVariant, { box: string; icon: string }> = {
-    error: { box: 'py-3 bg-invalid/20 border-invalid/40 text-invalid', icon: 'text-invalid' },
-    success: { box: 'py-3 bg-valid/20 border-valid/40 text-valid', icon: 'text-valid' },
-    warning: { box: 'py-3 bg-secondary/15 border-secondary/40', icon: 'text-secondary' },
-    info: { box: 'py-3 bg-primary/10 border-primary/30', icon: 'text-primary' },
-    loading: { box: 'py-1 border-transparent justify-center', icon: '' },
+const MESSAGE_STYLES: Record<MessageVariant, { box: string; solid: string; icon: string }> = {
+    error: {
+        box: 'py-3 bg-invalid/20 border-invalid/40 text-invalid',
+        solid: 'py-3 bg-invalid-2 border-invalid/40 text-invalid',
+        icon: 'text-invalid',
+    },
+    success: {
+        box: 'py-3 bg-valid/20 border-valid/40 text-valid',
+        solid: 'py-3 bg-valid-2 border-valid/40 text-valid',
+        icon: 'text-valid',
+    },
+    warning: {
+        box: 'py-3 bg-secondary/15 border-secondary/40',
+        solid: 'py-3 bg-secondary-2 border-secondary/40',
+        icon: 'text-secondary',
+    },
+    info: {
+        box: 'py-3 bg-primary/10 border-primary/30',
+        solid: 'py-3 bg-primary-3 border-primary/30',
+        icon: 'text-primary',
+    },
+    loading: {
+        box: 'py-1 border-transparent justify-center',
+        solid: 'py-1 border-transparent justify-center',
+        icon: '',
+    },
 };
 
 @Component({
     selector: 'app-message',
-    imports: [LucideCircleAlert, LucideCircleCheck, LucideInfo, LucideTriangleAlert, LucideX],
+    imports: [
+        LucideCircleCheck,
+        LucideInfo,
+        LucideX,
+        LucideCircleExclamationPoint,
+        LucideTriangleExclamationPoint,
+    ],
     template: `
         @if (message()) {
             <div
@@ -27,12 +53,12 @@ const MESSAGE_STYLES: Record<MessageVariant, { box: string; icon: string }> = {
                 [attr.aria-live]="variant() === 'error' ? 'assertive' : 'polite'"
                 [attr.aria-busy]="variant() === 'loading' ? 'true' : null"
                 class="flex items-center gap-3 rounded-sm border px-4"
-                [class]="styles[variant()].box"
+                [class]="solid() ? styles[variant()].solid : styles[variant()].box"
             >
                 @switch (variant()) {
                     @case ('error') {
                         <svg
-                            lucideCircleAlert
+                            lucideCircleExclamationPoint
                             [size]="18"
                             class="shrink-0"
                             [class]="styles[variant()].icon"
@@ -48,7 +74,7 @@ const MESSAGE_STYLES: Record<MessageVariant, { box: string; icon: string }> = {
                     }
                     @case ('warning') {
                         <svg
-                            lucideTriangleAlert
+                            lucideTriangleExclamationPoint
                             [size]="18"
                             class="shrink-0"
                             [class]="styles[variant()].icon"
@@ -100,6 +126,7 @@ export class MessageComponent {
     readonly variant = input<MessageVariant>('info');
     readonly message = input<string | null>(null);
     readonly dismissible = input(false);
+    readonly solid = input(false);
     readonly closed = output<void>();
 
     protected readonly styles = MESSAGE_STYLES;

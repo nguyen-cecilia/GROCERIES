@@ -13,6 +13,8 @@ import { GroceriesListService } from './groceries-list.service';
 import { AISLE_COLOR_FALLBACK, aisleColorHex } from '../../core/aisle-colors';
 import { InputQuantityComponent } from '../../components/input-quantity/input-quantity.component';
 import { QuantityUnitService } from '../quantity-unit/quantity-unit.service';
+import { MESSAGES } from '../../core/messages';
+import { ToastService } from '../../components/toast/toast.service';
 
 type ItemFormModel = {
     label: string;
@@ -43,6 +45,7 @@ export class GroceriesListItemUpdateComponent {
     private readonly groceriesListService = inject(GroceriesListService);
     private readonly aisleService = inject(AisleService);
     private readonly quantityUnitService = inject(QuantityUnitService);
+    private readonly toast = inject(ToastService);
     private readonly modalService = inject(ModalService);
 
     protected readonly model = signal<ItemFormModel>({
@@ -126,6 +129,7 @@ export class GroceriesListItemUpdateComponent {
             return;
         }
 
+        this.toast.success(MESSAGES.groceriesList.itemUpdated);
         this.modalService.listItem.close();
     }
 
@@ -144,6 +148,7 @@ export class GroceriesListItemUpdateComponent {
             return;
         }
 
+        this.toast.success(MESSAGES.groceriesList.itemRemoved);
         this.modalService.listItem.close();
     }
 }

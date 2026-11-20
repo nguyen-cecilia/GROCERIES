@@ -7,6 +7,7 @@ import { QuantityUnitService } from './quantity-unit.service';
 import { form, FormField } from '@angular/forms/signals';
 import { MESSAGES } from '../../core/messages';
 import { MessageComponent } from '../../components/message/message.component';
+import { ToastService } from '../../components/toast/toast.service';
 
 @Component({
     selector: 'app-quantity-unit-update',
@@ -18,6 +19,7 @@ export class QuantityUnitUpdateComponent {
 
     private readonly quantityUnitService = inject(QuantityUnitService);
     private readonly modalService = inject(ModalService);
+    private readonly toast = inject(ToastService);
 
     protected readonly model = signal({ label: '' });
     protected readonly form = form(this.model);
@@ -55,6 +57,9 @@ export class QuantityUnitUpdateComponent {
             this.error.set(MESSAGES.quantityUnit.saveFailed);
             return;
         }
+        this.toast.success(
+            quantityUnit ? MESSAGES.quantityUnit.updated : MESSAGES.quantityUnit.created,
+        );
         this.modalService.quantityUnit.close();
         await this.quantityUnitService.load();
     }
@@ -66,6 +71,7 @@ export class QuantityUnitUpdateComponent {
         const { error } = await this.quantityUnitService.remove(quantityUnit.id);
         this.loading.set(false);
         if (!error) {
+            this.toast.success(MESSAGES.quantityUnit.deleted);
             this.modalService.quantityUnit.close();
             await this.quantityUnitService.load();
         } else {

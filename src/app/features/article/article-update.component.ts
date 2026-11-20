@@ -14,6 +14,7 @@ import { MessageComponent } from '../../components/message/message.component';
 import { CurrencyPipe } from '@angular/common';
 import { GroceriesListService } from '../groceries-list/groceries-list.service';
 import { QuantityUnitService } from '../quantity-unit/quantity-unit.service';
+import { ToastService } from '../../components/toast/toast.service';
 
 type ArticleFormModel = {
     label: Article['label'];
@@ -44,6 +45,7 @@ export class ArticleUpdateComponent {
     private readonly aisleService = inject(AisleService);
     private readonly quantityUnitService = inject(QuantityUnitService);
     private readonly modalService = inject(ModalService);
+    private readonly toast = inject(ToastService);
 
     protected readonly lastPrice = computed(() => this.editing()?.last_price ?? null);
     protected readonly aisleOptions = computed<SelectOption[]>(() => [
@@ -126,6 +128,7 @@ export class ArticleUpdateComponent {
             this.error.set(MESSAGES.article.saveFailed);
             return;
         }
+        this.toast.success(article ? MESSAGES.article.updated : MESSAGES.article.created);
         this.modalService.article.close();
         await this.articleService.load();
     }
@@ -143,6 +146,7 @@ export class ArticleUpdateComponent {
             return;
         }
 
+        this.toast.success(MESSAGES.article.deleted);
         this.modalService.article.close();
         await Promise.all([this.articleService.load(), this.groceriesListService.load()]);
     }

@@ -25,6 +25,7 @@ import { MESSAGES } from '../../core/messages';
 import { GroceriesListItemView, GroceriesListWithItems } from './groceries-list.model';
 import { aisleColorHex, AisleColorKey } from '../../core/aisle-colors';
 import { MessageComponent } from '../../components/message/message.component';
+import { ToastService } from '../../components/toast/toast.service';
 import { formatDate } from '../../core/utils';
 import { CurrencyPipe } from '@angular/common';
 import { AutocompleteOption, InputAutocompleteComponent } from '../../components/input-autocomplete/input-autocomplete.component';
@@ -83,6 +84,7 @@ export class GroceriesListComponent {
     private readonly articleService = inject(ArticleService);
     private readonly aisleService = inject(AisleService);
     private readonly quantityUnitService = inject(QuantityUnitService);
+    private readonly toast = inject(ToastService);
 
     protected groceriesListService = inject(GroceriesListService);
     protected modalService = inject(ModalService);
@@ -235,6 +237,7 @@ export class GroceriesListComponent {
             return;
         }
 
+        this.toast.success(MESSAGES.groceriesList.itemsReset);
         await this.groceriesListService.load();
     }
 
@@ -255,6 +258,7 @@ export class GroceriesListComponent {
             return;
         }
 
+        this.toast.success(MESSAGES.groceriesList.itemsCleared);
         await this.groceriesListService.load();
     }
 
@@ -315,6 +319,7 @@ export class GroceriesListComponent {
             return;
         }
 
+        this.toast.success(MESSAGES.groceriesList.itemAdded);
         this.model.set({
             label: '',
             aisle_id: '',
@@ -346,6 +351,7 @@ export class GroceriesListComponent {
         if (quantity === item.quantity) return;
         const { error } = await this.groceriesListService.setItemQuantity(item.id, quantity);
         if (error) this.error.set(error);
+        this.toast.success(MESSAGES.groceriesList.quantityUpdated);
     }
 
     protected async setItemPrice(item: GroceriesListItemView, price: number | null): Promise<void> {
@@ -353,6 +359,7 @@ export class GroceriesListComponent {
         if (!article || price === article.price) return;
         const { error } = await this.groceriesListService.setArticlePrice(article.id, price);
         if (error) this.error.set(error);
+        this.toast.success(MESSAGES.groceriesList.priceUpdated);
     }
 
     protected async applyLastPrice(item: GroceriesListItemView): Promise<void> {

@@ -14,6 +14,7 @@ import {
 } from '../../core/aisle-colors';
 import { MESSAGES } from '../../core/messages';
 import { MessageComponent } from '../../components/message/message.component';
+import { ToastService } from '../../components/toast/toast.service';
 
 @Component({
     selector: 'app-aisle-update',
@@ -32,6 +33,7 @@ export class AisleUpdateComponent {
 
     private readonly aisleService = inject(AisleService);
     private readonly modalService = inject(ModalService);
+    private readonly toast = inject(ToastService);
 
     protected readonly colorOptions = AISLE_COLOR_OPTIONS;
     protected readonly model = signal({ label: '', color: DEFAULT_AISLE_COLOR });
@@ -79,6 +81,7 @@ export class AisleUpdateComponent {
             this.error.set(MESSAGES.aisle.saveFailed);
             return;
         }
+        this.toast.success(aisle ? MESSAGES.aisle.updated : MESSAGES.aisle.created);
         this.modalService.aisle.close();
         await this.aisleService.load();
     }
@@ -90,6 +93,7 @@ export class AisleUpdateComponent {
         const { error } = await this.aisleService.remove(aisle.id);
         this.loading.set(false);
         if (!error) {
+            this.toast.success(MESSAGES.aisle.deleted);
             this.modalService.aisle.close();
             await this.aisleService.load();
         } else {

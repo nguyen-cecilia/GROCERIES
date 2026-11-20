@@ -9,6 +9,7 @@ import { MESSAGES } from '../../core/messages';
 import { MessageComponent } from '../../components/message/message.component';
 import { InputPriceComponent } from '../../components/input-price/input-price.component';
 import { Router } from '@angular/router';
+import { ToastService } from '../../components/toast/toast.service';
 
 @Component({
     selector: 'app-groceries-list-update',
@@ -28,6 +29,7 @@ export class GroceriesListUpdateComponent {
 
     private readonly modalService = inject(ModalService);
     private readonly router = inject(Router);
+    private readonly toast = inject(ToastService);
 
     protected readonly groceriesListService = inject(GroceriesListService);
 
@@ -75,6 +77,7 @@ export class GroceriesListUpdateComponent {
             this.error.set(MESSAGES.groceriesList.saveFailed);
             return;
         }
+        this.toast.success(list ? MESSAGES.groceriesList.updated : MESSAGES.groceriesList.created);
         this.modalService.groceriesList.close();
         await this.groceriesListService.load();
     }
@@ -86,6 +89,7 @@ export class GroceriesListUpdateComponent {
         const newId = await this.groceriesListService.duplicate(list.id);
         if (!newId) return;
 
+        this.toast.success(MESSAGES.groceriesList.duplicated);
         await this.router.navigate(['/liste-de-course', newId]);
     }
 
@@ -96,6 +100,7 @@ export class GroceriesListUpdateComponent {
         const { error } = await this.groceriesListService.remove(list.id);
         this.loading.set(false);
         if (!error) {
+            this.toast.success(MESSAGES.groceriesList.deleted);
             this.modalService.groceriesList.close();
             await this.groceriesListService.load();
             await this.router.navigateByUrl('/');

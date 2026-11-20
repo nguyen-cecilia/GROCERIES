@@ -2,6 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { LucideRotateCcw, LucideScrollText, LucideSettings } from '@lucide/angular';
 import { ButtonComponent } from './components/button/button.component';
+import { ToastComponent } from './components/toast/toast.component';
 import { AuthService } from './core/auth.service';
 import { SwUpdate } from '@angular/service-worker';
 
@@ -15,6 +16,7 @@ import { SwUpdate } from '@angular/service-worker';
         LucideScrollText,
         RouterLinkActive,
         LucideRotateCcw,
+        ToastComponent,
     ],
     templateUrl: './app.html',
 })

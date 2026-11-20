@@ -1,0 +1,11 @@
+@for (toast of toastService.toasts(); track toast.id) {
+    <div class="pointer-events-auto w-full max-w-100" animate.enter="animate-toast-in">
+        <app-message
+            [variant]="toast.variant"
+            [message]="toast.message"
+            [dismissible]="true"
+            [solid]="true"
+            (closed)="toastService.dismiss(toast.id)"
+        />
+    </div>
+}

@@ -34,6 +34,7 @@ import { normalizeLabel } from '../../core/utils';
 import { GroceriesListUpdateComponent } from '../groceries-list/groceries-list-update.component';
 import { GroceriesListService } from '../groceries-list/groceries-list.service';
 import { ArticleAddToListComponent } from '../article/article-add-to-list.component';
+import { ToastService } from '../../components/toast/toast.service';
 import { QuantityUnit } from '../groceries-list/groceries-list.model';
 
 type AccountTabs = 'account' | 'lists' | 'aisles' | 'articles' | 'quantityUnits';
@@ -81,6 +82,7 @@ export class SettingsComponent {
     protected readonly quantityUnitService = inject(QuantityUnitService);
     protected readonly articleService = inject(ArticleService);
     protected modalService = inject(ModalService);
+    private readonly toast = inject(ToastService);
 
     readonly activePanel = signal<AccountTabs>('account');
 
@@ -95,7 +97,6 @@ export class SettingsComponent {
     protected readonly messages = MESSAGES;
     protected readonly search = signal('');
     protected readonly loading = signal(false);
-    protected readonly success = signal<string | null>(null);
     protected readonly error = signal<string | null>(null);
     protected readonly passwordMismatch = computed(() => {
         const { password, confirmPassword } = this.accountModel();
@@ -183,7 +184,6 @@ export class SettingsComponent {
 
         this.loading.set(true);
         this.error.set(null);
-        this.success.set(null);
 
         const user = this.auth.user();
         const firstName = this.accountModel().firstName.trim();
@@ -200,7 +200,7 @@ export class SettingsComponent {
         if (error) {
             this.error.set(supabaseMessage(error.code, MESSAGES.account.saveFailed));
         } else {
-            this.success.set(MESSAGES.account.saved);
+            this.toast.success(MESSAGES.account.saved);
             this.accountModel.update((m) => ({ ...m, password: '', confirmPassword: '' }));
         }
     }

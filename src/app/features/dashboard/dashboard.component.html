@@ -65,7 +65,7 @@
                         app-button
                         variant="outline"
                         [disabled]="groceriesListService.duplicating() === last.id"
-                        (click)="groceriesListService.duplicate(last.id)"
+                        (click)="duplicateList(last.id)"
                     >
                         <svg lucideCopy [size]="16"></svg>
                         <span class="hidden lg:inline">Dupliquer</span>
@@ -132,7 +132,7 @@
                             app-button
                             variant="outline"
                             [disabled]="groceriesListService.duplicating() === list.id"
-                            (click)="groceriesListService.duplicate(list.id)"
+                            (click)="duplicateList(list.id)"
                         >
                             <svg lucideCopy [size]="16"></svg>
                             <span class="hidden lg:inline">Dupliquer</span>

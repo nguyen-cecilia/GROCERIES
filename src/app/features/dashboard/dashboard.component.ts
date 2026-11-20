@@ -16,6 +16,7 @@ import { AisleService } from '../aisle/aisle.service';
 import { formatDate } from '../../core/utils';
 import { MESSAGES } from '../../core/messages';
 import { MessageComponent } from '../../components/message/message.component';
+import { ToastService } from '../../components/toast/toast.service';
 import { CurrencyPipe } from '@angular/common';
 
 type ListView = GroceriesListWithItems & {
@@ -49,6 +50,7 @@ export class DashboardComponent {
 
     protected groceriesListService = inject(GroceriesListService);
     protected modalService = inject(ModalService);
+    private readonly toast = inject(ToastService);
 
     protected readonly messages = MESSAGES;
 
@@ -95,5 +97,10 @@ export class DashboardComponent {
         void this.groceriesListService.load();
         void this.articleService.load();
         void this.aisleService.load();
+    }
+
+    protected async duplicateList(id: string): Promise<void> {
+        const newId = await this.groceriesListService.duplicate(id);
+        if (newId) this.toast.success(MESSAGES.groceriesList.duplicated);
     }
 }

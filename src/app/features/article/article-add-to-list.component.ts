@@ -9,6 +9,7 @@ import { Article } from './article.model';
 import { MESSAGES } from '../../core/messages';
 import { BadgeAisleComponent } from '../../components/badge-aisle/badge-aisle.component';
 import { AisleService } from '../aisle/aisle.service';
+import { ToastService } from '../../components/toast/toast.service';
 
 @Component({
     selector: 'app-article-add-to-list',
@@ -26,6 +27,7 @@ export class ArticleAddToListComponent {
 
     private readonly modalService = inject(ModalService);
     private readonly aisleService = inject(AisleService);
+    private readonly toast = inject(ToastService);
     protected readonly groceriesListService = inject(GroceriesListService);
 
     protected readonly selectedListId = signal<string | null>(null);
@@ -86,6 +88,7 @@ export class ArticleAddToListComponent {
             return;
         }
 
+        this.toast.success(MESSAGES.groceriesList.itemAdded);
         this.modalService.articleToList.close();
     }
 }
